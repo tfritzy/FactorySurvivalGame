@@ -1,4 +1,4 @@
-public enum HexModelType
+public enum PrefabType
 {
-    DirtWithGrass
+    Hex_DirtWithGrass
 }

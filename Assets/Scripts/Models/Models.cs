@@ -3,15 +3,15 @@ using UnityEngine;
 
 public static class Models
 {
-    private static Dictionary<HexModelType, GameObject> _hexModels = new Dictionary<HexModelType, GameObject>();
-    public static GameObject GetHexModel(HexModelType type)
+    private static Dictionary<PrefabType, GameObject> _hexModels = new Dictionary<PrefabType, GameObject>();
+    public static GameObject GetHexModel(PrefabType type)
     {
         if (_hexModels == null)
-            _hexModels = new Dictionary<HexModelType, GameObject>();
+            _hexModels = new Dictionary<PrefabType, GameObject>();
 
         if (!_hexModels.ContainsKey(type))
         {
-            _hexModels[type] = Resources.Load<GameObject>("Models/Hexes/" + type.ToString());
+            _hexModels[type] = Resources.Load<GameObject>("Prefabs/" + type.ToString());
         }
 
         return _hexModels[type];

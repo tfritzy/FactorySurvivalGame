@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using FactoryCore;
 using UnityEngine;
 
@@ -8,18 +9,31 @@ public class WorldMono : MonoBehaviour
     private World World;
     private RectInt ShownHexRange = new RectInt(-15, -8, 30, 24);
     private Dictionary<Point3Int, GameObject> ShownHexesObjects = new Dictionary<Point3Int, GameObject>();
-    private LinkedList<GameObject> HexPool = new LinkedList<GameObject>();
     private Point2Int LastPlayerPosition = new Point2Int(-1, -1);
+    private Dictionary<PrefabType, List<GameObject>> PrefabPool = new Dictionary<PrefabType, List<GameObject>>();
 
     void Awake()
     {
         TerrainGenerator generator = new TerrainGenerator(100, 100, 25);
         this.World = new World(generator.GenerateFlatWorld());
+
+        Conveyor first = new Conveyor(this.World);
+        this.World.AddBuilding(first, new Point2Int(0, 0));
+        this.World.AddBuilding(new Conveyor(this.World), new Point2Int(1, 1));
+        this.World.AddBuilding(new Conveyor(this.World), new Point2Int(2, 1));
+        this.World.AddBuilding(new Conveyor(this.World), new Point2Int(3, 2));
+        this.World.AddBuilding(new Conveyor(this.World), new Point2Int(4, 2));
+        this.World.AddBuilding(new Conveyor(this.World), new Point2Int(5, 3));
+        this.World.AddBuilding(new Conveyor(this.World), new Point2Int(6, 3));
+        this.World.AddBuilding(new Conveyor(this.World), new Point2Int(7, 4));
+
+        first.Cell.AddItem(new Rock());
     }
 
     void Update()
     {
         UpdateShownHex();
+        World.Tick(Time.deltaTime);
     }
 
     private void UpdateShownHex()
@@ -51,27 +65,30 @@ public class WorldMono : MonoBehaviour
                     continue;
                 }
 
-                if (HexPool.Count > 0)
-                {
-                    GameObject pooledHex = HexPool.First.Value;
-                    pooledHex.SetActive(true);
-                    HexPool.RemoveFirst();
-                    pooledHex.transform.position = WorldConversions.HexToUnityPosition(point);
-                    ShownHexesObjects.Add(point, pooledHex);
-                }
-                else
-                {
-                    ShownHexesObjects.Add(
-                        point,
-                        GameObject.Instantiate(
-                            Models.GetHexModel(HexModelType.DirtWithGrass),
-                            WorldConversions.HexToUnityPosition(point),
-                            Quaternion.identity,
-                            this.transform
-                        )
-                    );
-                }
+                GameObject hex = GetFromPoolOrCreate(PrefabType.Hex_DirtWithGrass, point);
+                ShownHexesObjects[point] = hex;
             }
+        }
+    }
+
+    private GameObject GetFromPoolOrCreate(PrefabType type, Point3Int point)
+    {
+        if (PrefabPool.ContainsKey(type) && PrefabPool[type].Count > 0)
+        {
+            GameObject poolObj = PrefabPool[type].Last();
+            poolObj.SetActive(true);
+            PrefabPool[type].RemoveAt(PrefabPool[type].Count - 1);
+            poolObj.transform.position = WorldConversions.HexToUnityPosition(point);
+            return poolObj;
+        }
+        else
+        {
+            return GameObject.Instantiate(
+                Models.GetHexModel(type),
+                WorldConversions.HexToUnityPosition(point),
+                Quaternion.identity,
+                this.transform
+            );
         }
     }
 
@@ -91,8 +108,14 @@ public class WorldMono : MonoBehaviour
         {
             GameObject hex = ShownHexesObjects[point];
             ShownHexesObjects.Remove(point);
-            HexPool.AddLast(hex);
             hex.SetActive(false);
+
+            if (!PrefabPool.ContainsKey(PrefabType.Hex_DirtWithGrass))
+            {
+                PrefabPool[PrefabType.Hex_DirtWithGrass] = new List<GameObject>();
+            }
+
+            PrefabPool[PrefabType.Hex_DirtWithGrass].Add(hex);
         }
     }
 }
