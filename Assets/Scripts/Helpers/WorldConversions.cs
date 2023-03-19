@@ -12,4 +12,12 @@ public static class WorldConversions
         float yF = hexPosition.z * Constants.HEX_HEIGHT;
         return new Vector3(xF, yF, zF);
     }
+
+    public static Point2Int UnityPositionToHex(Vector3 unityPosition)
+    {
+        // TODO: This is not correct, but it's close enough for now
+        int x = Mathf.RoundToInt(unityPosition.x / HORIZONTAL_DIST);
+        int y = Mathf.RoundToInt(unityPosition.z / VERTICAL_DIST);
+        return new Point2Int(x, y);
+    }
 }
