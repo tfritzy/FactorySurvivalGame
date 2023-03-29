@@ -6,7 +6,7 @@ using UnityEngine;
 
 public class WorldMono : MonoBehaviour
 {
-    private World World;
+    private Context Context;
     private RectInt ShownHexRange = new RectInt(-15, -8, 30, 24);
     private Dictionary<Point3Int, GameObject> ShownHexesObjects = new Dictionary<Point3Int, GameObject>();
     private Point2Int LastPlayerPosition = new Point2Int(-1, -1);
@@ -14,19 +14,19 @@ public class WorldMono : MonoBehaviour
 
     void Awake()
     {
-        Context context = new Context();
+        this.Context = new Context();
         TerrainGenerator generator = new TerrainGenerator(100, 100, 25);
-        context.World = new World(generator.GenerateFlatWorld(context));
+        this.Context.World = new World(generator.GenerateFlatWorld(this.Context));
 
-        Conveyor first = new Conveyor(context);
-        this.World.AddBuilding(first, new Point2Int(0, 0));
-        this.World.AddBuilding(new Conveyor(context), new Point2Int(1, 1));
-        this.World.AddBuilding(new Conveyor(context), new Point2Int(2, 1));
-        this.World.AddBuilding(new Conveyor(context), new Point2Int(3, 2));
-        this.World.AddBuilding(new Conveyor(context), new Point2Int(4, 2));
-        this.World.AddBuilding(new Conveyor(context), new Point2Int(5, 3));
-        this.World.AddBuilding(new Conveyor(context), new Point2Int(6, 3));
-        this.World.AddBuilding(new Conveyor(context), new Point2Int(7, 4));
+        Conveyor first = new Conveyor(this.Context);
+        this.Context.World.AddBuilding(first, new Point2Int(0, 0));
+        this.Context.World.AddBuilding(new Conveyor(this.Context), new Point2Int(1, 1));
+        this.Context.World.AddBuilding(new Conveyor(this.Context), new Point2Int(2, 1));
+        this.Context.World.AddBuilding(new Conveyor(this.Context), new Point2Int(3, 2));
+        this.Context.World.AddBuilding(new Conveyor(this.Context), new Point2Int(4, 2));
+        this.Context.World.AddBuilding(new Conveyor(this.Context), new Point2Int(5, 3));
+        this.Context.World.AddBuilding(new Conveyor(this.Context), new Point2Int(6, 3));
+        this.Context.World.AddBuilding(new Conveyor(this.Context), new Point2Int(7, 4));
 
         first.Cell.AddItem(new Stone());
     }
@@ -34,7 +34,7 @@ public class WorldMono : MonoBehaviour
     void Update()
     {
         UpdateShownHex();
-        World.Tick(Time.deltaTime);
+        this.Context.World.Tick(Time.deltaTime);
     }
 
     private void UpdateShownHex()
@@ -53,12 +53,12 @@ public class WorldMono : MonoBehaviour
             for (int y = currentPos.y + ShownHexRange.min.y; y < currentPos.y + ShownHexRange.max.y; y++)
             {
 
-                if (x < 0 || x >= this.World.MaxX || y < 0 || y >= this.World.MaxY)
+                if (x < 0 || x >= this.Context.World.MaxX || y < 0 || y >= this.Context.World.MaxY)
                 {
                     continue;
                 }
 
-                int topHex = this.World.GetTopHexHeight(x, y);
+                int topHex = this.Context.World.GetTopHexHeight(x, y);
                 Point3Int point = new Point3Int(x, y, topHex);
 
                 if (ShownHexesObjects.ContainsKey(point))
