@@ -14,20 +14,21 @@ public class WorldMono : MonoBehaviour
 
     void Awake()
     {
+        Context context = new Context();
         TerrainGenerator generator = new TerrainGenerator(100, 100, 25);
-        this.World = new World(generator.GenerateFlatWorld());
+        context.World = new World(generator.GenerateFlatWorld(context));
 
-        Conveyor first = new Conveyor(this.World);
+        Conveyor first = new Conveyor(context);
         this.World.AddBuilding(first, new Point2Int(0, 0));
-        this.World.AddBuilding(new Conveyor(this.World), new Point2Int(1, 1));
-        this.World.AddBuilding(new Conveyor(this.World), new Point2Int(2, 1));
-        this.World.AddBuilding(new Conveyor(this.World), new Point2Int(3, 2));
-        this.World.AddBuilding(new Conveyor(this.World), new Point2Int(4, 2));
-        this.World.AddBuilding(new Conveyor(this.World), new Point2Int(5, 3));
-        this.World.AddBuilding(new Conveyor(this.World), new Point2Int(6, 3));
-        this.World.AddBuilding(new Conveyor(this.World), new Point2Int(7, 4));
+        this.World.AddBuilding(new Conveyor(context), new Point2Int(1, 1));
+        this.World.AddBuilding(new Conveyor(context), new Point2Int(2, 1));
+        this.World.AddBuilding(new Conveyor(context), new Point2Int(3, 2));
+        this.World.AddBuilding(new Conveyor(context), new Point2Int(4, 2));
+        this.World.AddBuilding(new Conveyor(context), new Point2Int(5, 3));
+        this.World.AddBuilding(new Conveyor(context), new Point2Int(6, 3));
+        this.World.AddBuilding(new Conveyor(context), new Point2Int(7, 4));
 
-        first.Cell.AddItem(new Rock());
+        first.Cell.AddItem(new Stone());
     }
 
     void Update()
