@@ -4,7 +4,7 @@ using UnityEngine;
 
 public abstract class CharacterMono : EntityMono
 {
-    public Character Character => (Character)this.Entity;
+    public Character Actual;
 
     private static Dictionary<CharacterType, List<GameObject>> CharacterPool = new Dictionary<CharacterType, List<GameObject>>();
 
@@ -12,23 +12,22 @@ public abstract class CharacterMono : EntityMono
 
     public override void Spawn()
     {
-        CharacterPool.TryGetValue(this.Character.Type, out List<GameObject> pool);
-        Point3Int pos = new Point3Int(
-            this.Character.GridPosition.x,
-            this.Character.GridPosition.y,
-            Managers.World.World.GetTopHexHeight(
-                this.Character.GridPosition.x,
-                this.Character.GridPosition.y));
-        this.body = Helpers.GetFromPoolOrCreate(Models.GetCharacterModel(Character.Type), pool, pos, this.transform);
+        CharacterPool.TryGetValue(this.Actual.Type, out List<GameObject> pool);
+        Point3Int gridPosition = new Point3Int(
+            this.Actual.GridPosition.x,
+            this.Actual.GridPosition.y,
+            Managers.World.World.GetTopHexHeight(this.Actual.GridPosition.x, this.Actual.GridPosition.y));
+        this.transform.position = WorldConversions.HexToUnityPosition(gridPosition);
+        this.body = Helpers.GetFromPoolOrCreate(Models.GetCharacterModel(Actual.Type), pool, this.transform);
     }
 
     public override void Despawn()
     {
         this.body.SetActive(false);
         this.body.transform.SetParent(null);
-        if (!CharacterPool.ContainsKey(Character.Type))
-            CharacterPool[Character.Type] = new List<GameObject>();
-        CharacterPool[Character.Type].Add(this.body);
+        if (!CharacterPool.ContainsKey(Actual.Type))
+            CharacterPool[Actual.Type] = new List<GameObject>();
+        CharacterPool[Actual.Type].Add(this.body);
 
         Destroy(this.gameObject);
     }

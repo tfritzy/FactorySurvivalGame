@@ -33,4 +33,18 @@ public static class Models
 
         return _characterModels[type];
     }
+
+    private static Dictionary<ItemType, GameObject> _itemModels = new Dictionary<ItemType, GameObject>();
+    public static GameObject GetItemModel(ItemType type)
+    {
+        if (_itemModels == null)
+            _itemModels = new Dictionary<ItemType, GameObject>();
+
+        if (!_itemModels.ContainsKey(type))
+        {
+            _itemModels[type] = Resources.Load<GameObject>("Prefabs/Items/" + type.ToString());
+        }
+
+        return _itemModels[type];
+    }
 }

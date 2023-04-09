@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class HexMono : EntityMono
 {
-    public Hex Hex => (Hex)this.Entity;
+    public Hex Actual;
 
     private static Dictionary<HexType, List<GameObject>> HexPool = new Dictionary<HexType, List<GameObject>>();
 
@@ -13,26 +13,20 @@ public class HexMono : EntityMono
 
     public override void Spawn()
     {
-        Debug.Log("Spawning hex at " + this.Hex.GridPosition);
-        Debug.Log("My hex is " + this.Hex?.Type);
-
         // Spawn own body
-        HexPool.TryGetValue(Hex.Type, out List<GameObject> pool);
-        Debug.Log("Model" + Models.GetHexModel(Hex.Type));
-        Debug.Log("Pool" + pool);
-        Debug.Log("Pos" + this.Hex.GridPosition);
-        Debug.Log("Parent" + this.transform);
-        this.body = Helpers.GetFromPoolOrCreate(Models.GetHexModel(Hex.Type), pool, this.Hex.GridPosition, this.transform);
+        HexPool.TryGetValue(this.Actual.Type, out List<GameObject> pool);
+        this.transform.position = WorldConversions.HexToUnityPosition(this.Actual.GridPosition);
+        this.body = Helpers.GetFromPoolOrCreate(Models.GetHexModel(this.Actual.Type), pool, this.transform);
 
         // Spawn building on top
-        Point3Int pos = this.Hex.GridPosition;
+        Point3Int pos = this.Actual.GridPosition;
         if (pos.z == Managers.World.World.GetTopHexHeight(pos.x, pos.y))
         {
             Building building = Managers.World.World.GetBuildingAt(pos.x, pos.y);
             if (building != null)
             {
                 CharacterMono characterMono = GetCharacterMono(building.Type);
-                characterMono.Entity = building;
+                characterMono.Actual = building;
                 characterMono.Spawn();
                 characters.Add(characterMono);
             }

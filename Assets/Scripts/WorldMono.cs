@@ -64,10 +64,9 @@ public class WorldMono : MonoBehaviour
                     continue;
                 }
 
-
                 GameObject shell = new GameObject("Hex");
                 HexMono hex = shell.AddComponent<HexMono>();
-                hex.Entity = Context.World.GetHex(point);
+                hex.Actual = Context.World.GetHex(point);
                 ShownHexesObjects[point] = hex;
                 hex.Spawn();
             }

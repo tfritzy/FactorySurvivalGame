@@ -5,22 +5,21 @@ using UnityEngine;
 
 public static class Helpers
 {
-    public static GameObject GetFromPoolOrCreate(GameObject prefab, List<GameObject> pool, Point3Int point, Transform parent)
+    public static GameObject GetFromPoolOrCreate(GameObject prefab, List<GameObject> pool, Transform parent)
     {
-        Debug.Log("GetFromPoolOrCreate");
         if (pool?.Count > 0)
         {
             GameObject poolObj = pool.Last();
             poolObj.SetActive(true);
             pool.RemoveAt(pool.Count - 1);
-            poolObj.transform.position = WorldConversions.HexToUnityPosition(point);
+            poolObj.transform.position = parent.transform.position;
             return poolObj;
         }
         else
         {
             return GameObject.Instantiate(
                 prefab,
-                WorldConversions.HexToUnityPosition(point),
+                parent.transform.position,
                 Quaternion.identity,
                 parent
             );
