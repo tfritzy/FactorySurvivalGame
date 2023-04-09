@@ -25,7 +25,7 @@ public class WorldMono : MonoBehaviour
         this.Context.World.AddBuilding(new Conveyor(this.Context), new Point2Int(2, 1));
         this.Context.World.AddBuilding(new Conveyor(this.Context), new Point2Int(3, 2));
 
-        first.ConveyorComponent.AddItem(new Stone());
+        first.Component.AddItem(new Stone());
     }
 
     void Update()

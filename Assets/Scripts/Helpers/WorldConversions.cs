@@ -21,4 +21,9 @@ public static class WorldConversions
         int y = Mathf.RoundToInt(unityPosition.z / VERTICAL_DIST);
         return new Point2Int(x, y);
     }
+
+    public static Point3Int TopPosOf2D(Point2Int point)
+    {
+        return new Point3Int(point.x, point.y, Managers.World.World.GetTopHexHeight(point.x, point.y));
+    }
 }
