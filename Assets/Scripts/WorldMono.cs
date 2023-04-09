@@ -1,22 +1,22 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using FactoryCore;
+using Core;
 using UnityEngine;
 
 public class WorldMono : MonoBehaviour
 {
+    public World World => Context.World;
     private Context Context;
     private RectInt ShownHexRange = new RectInt(-15, -8, 30, 24);
-    private Dictionary<Point3Int, GameObject> ShownHexesObjects = new Dictionary<Point3Int, GameObject>();
-    private Point2Int LastPlayerPosition = new Point2Int(-1, -1);
-    private Dictionary<PrefabType, List<GameObject>> PrefabPool = new Dictionary<PrefabType, List<GameObject>>();
+    private Dictionary<Point3Int, HexMono> ShownHexesObjects = new Dictionary<Point3Int, HexMono>();
+    private Point2Int PlayerPos = new Point2Int(-1, -1);
 
     void Awake()
     {
         this.Context = new Context();
         TerrainGenerator generator = new TerrainGenerator(100, 100, 25);
-        this.Context.World = new World(generator.GenerateFlatWorld(this.Context));
+        this.Context.World = new Core.World(generator.GenerateFlatWorld(this.Context));
 
         Conveyor first = new Conveyor(this.Context);
         this.Context.World.AddBuilding(first, new Point2Int(0, 0));
@@ -28,29 +28,27 @@ public class WorldMono : MonoBehaviour
         this.Context.World.AddBuilding(new Conveyor(this.Context), new Point2Int(6, 3));
         this.Context.World.AddBuilding(new Conveyor(this.Context), new Point2Int(7, 4));
 
-        first.Cell.AddItem(new Stone());
+        first.ConveyorComponent.AddItem(new Stone());
     }
 
     void Update()
     {
-        UpdateShownHex();
         this.Context.World.Tick(Time.deltaTime);
+
+        Point2Int currentPos = WorldConversions.UnityPositionToHex(Managers.Player.transform.position);
+        if (currentPos != PlayerPos)
+        {
+            PlayerPos = currentPos;
+            UpdateShownHex();
+        }
     }
 
     private void UpdateShownHex()
     {
-        Point2Int currentPos = WorldConversions.UnityPositionToHex(Managers.Player.transform.position);
-        if (currentPos == LastPlayerPosition)
+        DespawnOutOfRangeHex();
+        for (int x = PlayerPos.x + ShownHexRange.min.x; x < PlayerPos.x + ShownHexRange.max.x; x++)
         {
-            return;
-        }
-
-        DespawnOutOfRangeHex(currentPos);
-
-        LastPlayerPosition = currentPos;
-        for (int x = currentPos.x + ShownHexRange.min.x; x < currentPos.x + ShownHexRange.max.x; x++)
-        {
-            for (int y = currentPos.y + ShownHexRange.min.y; y < currentPos.y + ShownHexRange.max.y; y++)
+            for (int y = PlayerPos.y + ShownHexRange.min.y; y < PlayerPos.y + ShownHexRange.max.y; y++)
             {
 
                 if (x < 0 || x >= this.Context.World.MaxX || y < 0 || y >= this.Context.World.MaxY)
@@ -61,45 +59,28 @@ public class WorldMono : MonoBehaviour
                 int topHex = this.Context.World.GetTopHexHeight(x, y);
                 Point3Int point = new Point3Int(x, y, topHex);
 
-                if (ShownHexesObjects.ContainsKey(point))
+                if (ShownHexesObjects.ContainsKey(point) || Context.World.GetHex(point) == null)
                 {
                     continue;
                 }
 
-                GameObject hex = GetFromPoolOrCreate(PrefabType.Hex_DirtWithGrass, point);
+
+                GameObject shell = new GameObject("Hex");
+                HexMono hex = shell.AddComponent<HexMono>();
+                hex.Entity = Context.World.GetHex(point);
                 ShownHexesObjects[point] = hex;
+                hex.Spawn();
             }
         }
     }
 
-    private GameObject GetFromPoolOrCreate(PrefabType type, Point3Int point)
-    {
-        if (PrefabPool.ContainsKey(type) && PrefabPool[type].Count > 0)
-        {
-            GameObject poolObj = PrefabPool[type].Last();
-            poolObj.SetActive(true);
-            PrefabPool[type].RemoveAt(PrefabPool[type].Count - 1);
-            poolObj.transform.position = WorldConversions.HexToUnityPosition(point);
-            return poolObj;
-        }
-        else
-        {
-            return GameObject.Instantiate(
-                Models.GetHexModel(type),
-                WorldConversions.HexToUnityPosition(point),
-                Quaternion.identity,
-                this.transform
-            );
-        }
-    }
-
-    private void DespawnOutOfRangeHex(Point2Int currentPos)
+    private void DespawnOutOfRangeHex()
     {
         List<Point3Int> toRemove = new List<Point3Int>();
         foreach (Point3Int point in ShownHexesObjects.Keys)
         {
-            if (point.x < currentPos.x + ShownHexRange.min.x || point.x > currentPos.x + ShownHexRange.max.x ||
-                point.y < currentPos.y + ShownHexRange.min.y || point.y > currentPos.y + ShownHexRange.max.y)
+            if (point.x < PlayerPos.x + ShownHexRange.min.x || point.x > PlayerPos.x + ShownHexRange.max.x ||
+                point.y < PlayerPos.y + ShownHexRange.min.y || point.y > PlayerPos.y + ShownHexRange.max.y)
             {
                 toRemove.Add(point);
             }
@@ -107,16 +88,9 @@ public class WorldMono : MonoBehaviour
 
         foreach (Point3Int point in toRemove)
         {
-            GameObject hex = ShownHexesObjects[point];
+            HexMono hex = ShownHexesObjects[point];
             ShownHexesObjects.Remove(point);
-            hex.SetActive(false);
-
-            if (!PrefabPool.ContainsKey(PrefabType.Hex_DirtWithGrass))
-            {
-                PrefabPool[PrefabType.Hex_DirtWithGrass] = new List<GameObject>();
-            }
-
-            PrefabPool[PrefabType.Hex_DirtWithGrass].Add(hex);
+            hex.Despawn();
         }
     }
 }

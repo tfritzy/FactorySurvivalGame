@@ -1,3 +1,4 @@
+using Core;
 using UnityEngine;
 
 public static class Managers
@@ -13,6 +14,20 @@ public static class Managers
             }
 
             return _player;
+        }
+    }
+
+    private static WorldMono _world;
+    public static WorldMono World
+    {
+        get
+        {
+            if (_world == null)
+            {
+                _world = GameObject.Find("World").GetComponent<WorldMono>();
+            }
+
+            return _world;
         }
     }
 }
