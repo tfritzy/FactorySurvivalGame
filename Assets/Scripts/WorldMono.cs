@@ -20,13 +20,10 @@ public class WorldMono : MonoBehaviour
 
         Conveyor first = new Conveyor(this.Context);
         this.Context.World.AddBuilding(first, new Point2Int(0, 0));
+        this.Context.World.AddBuilding(new Conveyor(this.Context), new Point2Int(0, 1));
         this.Context.World.AddBuilding(new Conveyor(this.Context), new Point2Int(1, 1));
         this.Context.World.AddBuilding(new Conveyor(this.Context), new Point2Int(2, 1));
         this.Context.World.AddBuilding(new Conveyor(this.Context), new Point2Int(3, 2));
-        this.Context.World.AddBuilding(new Conveyor(this.Context), new Point2Int(4, 2));
-        this.Context.World.AddBuilding(new Conveyor(this.Context), new Point2Int(5, 3));
-        this.Context.World.AddBuilding(new Conveyor(this.Context), new Point2Int(6, 3));
-        this.Context.World.AddBuilding(new Conveyor(this.Context), new Point2Int(7, 4));
 
         first.ConveyorComponent.AddItem(new Stone());
     }
@@ -40,6 +37,16 @@ public class WorldMono : MonoBehaviour
         {
             PlayerPos = currentPos;
             UpdateShownHex();
+        }
+
+        TickShown(Time.deltaTime);
+    }
+
+    private void TickShown(float deltaTime)
+    {
+        foreach (HexMono hex in ShownHexesObjects.Values)
+        {
+            hex.Tick(deltaTime);
         }
     }
 

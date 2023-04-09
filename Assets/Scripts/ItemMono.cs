@@ -8,7 +8,9 @@ public class ItemMono : EntityMono
 
     private static Dictionary<ItemType, List<GameObject>> ItemPool = new Dictionary<ItemType, List<GameObject>>();
 
-    private GameObject body;
+    public GameObject body;
+
+    public override void Tick(float deltaTime) { }
 
     public override void Spawn()
     {

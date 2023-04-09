@@ -11,6 +11,14 @@ public class HexMono : EntityMono
     private List<CharacterMono> characters = new List<CharacterMono>();
     private GameObject body;
 
+    public override void Tick(float deltaTime)
+    {
+        foreach (CharacterMono characterMono in this.characters)
+        {
+            characterMono.Tick(deltaTime);
+        }
+    }
+
     public override void Spawn()
     {
         // Spawn own body

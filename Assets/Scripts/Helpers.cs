@@ -11,8 +11,9 @@ public static class Helpers
         {
             GameObject poolObj = pool.Last();
             poolObj.SetActive(true);
+            poolObj.transform.SetParent(parent);
             pool.RemoveAt(pool.Count - 1);
-            poolObj.transform.position = parent.transform.position;
+            poolObj.transform.localPosition = Vector3.zero;
             return poolObj;
         }
         else
