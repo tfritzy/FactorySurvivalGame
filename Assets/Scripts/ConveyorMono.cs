@@ -50,20 +50,15 @@ public class ConveyorMono : CharacterMono
             return this.transform.position;
         }
 
-        float progress = item.ProgressMeters;
+        float progress = 0f;
         int index = 0;
         while (progress < item.ProgressMeters && index < pathProgress.Count)
         {
             progress += pathProgress[index];
             index++;
         }
+        index -= 1;
 
-        if (index >= pathProgress.Count)
-        {
-            return path.Last();
-        }
-
-        Debug.Log($"Progress: {progress}, index: {index}");
         float progressAlongSegment = item.ProgressMeters - pathProgress[index - 1];
         float segmentLength = pathProgress[index] - pathProgress[index - 1];
         return Vector3.Lerp(path[index - 1], path[index], progressAlongSegment / segmentLength);
@@ -158,42 +153,48 @@ public class ConveyorMono : CharacterMono
             return;
         }
 
-        Debug.Log("Calculating path");
         cachedPathInputSide = conveyor.PrevSide;
         cachedPathOutputSide = conveyor.NextSide;
 
         Vector3 center = WorldConversions.HexToUnityPosition(WorldConversions.TopPosOf2D(owner.GridPosition));
-        Vector3 prevPos = center;
-        Vector3 nextPos = center;
+        Vector3 prev = center;
+        Vector3 next = center;
 
         if (this.prev != null)
         {
-            prevPos = WorldConversions.HexToUnityPosition(WorldConversions.TopPosOf2D(prev.GridPosition));
+            Vector3 prevConveyor = WorldConversions.HexToUnityPosition(WorldConversions.TopPosOf2D(this.prev.GridPosition));
+            Vector3 delta = (prevConveyor - center) / 2;
+            prev = center + delta;
 
-            if (next == null)
+            if (this.next == null)
             {
-                Vector3 delta = prevPos - center;
-                nextPos = center - delta;
+                next = center - delta;
             }
         }
 
         if (this.next != null)
         {
-            nextPos = WorldConversions.HexToUnityPosition(WorldConversions.TopPosOf2D(next.GridPosition));
+            Vector3 nextConveyor = WorldConversions.HexToUnityPosition(WorldConversions.TopPosOf2D(this.next.GridPosition));
+            Vector3 delta = (nextConveyor - center) / 2;
+            next = center + delta;
 
-            if (prev == null)
+            if (this.prev == null)
             {
-                Vector3 delta = nextPos - center;
-                prevPos = center - delta;
+                prev = center - delta;
             }
         }
 
         this.path = new List<Vector3>
         {
-            prevPos,
+            prev,
             center,
-            nextPos
+            next
         };
+
+        for (int i = 0; i < path.Count; i++)
+        {
+            path[i] += new Vector3(0f, 0.5f, 0f);
+        }
 
         this.pathProgress = new List<float>(path.Count);
         pathProgress.Add(0f);

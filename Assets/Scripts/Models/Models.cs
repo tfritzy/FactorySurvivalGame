@@ -15,8 +15,6 @@ public static class Models
             _hexModels[type] = Resources.Load<GameObject>("Prefabs/Hexes/" + type.ToString());
         }
 
-        Debug.Log("Returning hex model " + _hexModels[type]?.name);
-
         return _hexModels[type];
     }
 

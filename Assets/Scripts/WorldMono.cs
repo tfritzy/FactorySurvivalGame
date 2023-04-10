@@ -11,6 +11,7 @@ public class WorldMono : MonoBehaviour
     private RectInt ShownHexRange = new RectInt(-15, -8, 30, 24);
     private Dictionary<Point3Int, HexMono> ShownHexesObjects = new Dictionary<Point3Int, HexMono>();
     private Point2Int PlayerPos = new Point2Int(-1, -1);
+    private Conveyor first;
 
     void Awake()
     {
@@ -18,18 +19,24 @@ public class WorldMono : MonoBehaviour
         TerrainGenerator generator = new TerrainGenerator(100, 100, 25);
         this.Context.World = new Core.World(generator.GenerateFlatWorld(this.Context));
 
-        Conveyor first = new Conveyor(this.Context);
+        first = new Conveyor(this.Context);
         this.Context.World.AddBuilding(first, new Point2Int(0, 0));
         this.Context.World.AddBuilding(new Conveyor(this.Context), new Point2Int(0, 1));
         this.Context.World.AddBuilding(new Conveyor(this.Context), new Point2Int(1, 1));
         this.Context.World.AddBuilding(new Conveyor(this.Context), new Point2Int(2, 1));
         this.Context.World.AddBuilding(new Conveyor(this.Context), new Point2Int(3, 2));
-
-        first.Component.AddItem(new Stone());
     }
 
+    float itemTimer = 2f;
     void Update()
     {
+        if (itemTimer > 2f)
+        {
+            first.Component.AddItem(new Stone());
+            itemTimer = 0f;
+        }
+        itemTimer += Time.deltaTime;
+
         this.Context.World.Tick(Time.deltaTime);
 
         Point2Int currentPos = WorldConversions.UnityPositionToHex(Managers.Player.transform.position);
