@@ -1,15 +1,19 @@
+using System.Collections.Generic;
+using Core;
 using UnityEngine;
 using UnityEngine.UIElements;
 
-public class InventoryGrid : VisualElement
+public class InventoryGrid : ActiveElement
 {
-    private int width;
-    private int height;
+    private Point2Int dimensions;
+    private InventoryComponent inventory;
+    private List<InventorySlot> slots = new List<InventorySlot>();
 
-    public InventoryGrid(int width, int height)
+    public InventoryGrid(int width, int height, InventoryComponent inventory)
     {
-        this.width = width;
-        this.height = height;
+        this.inventory = inventory;
+
+        this.dimensions = new Point2Int(width, height);
 
         this.style.height = Length.Percent(100);
         this.style.width = Length.Percent(100);
@@ -20,15 +24,26 @@ public class InventoryGrid : VisualElement
 
     private void BuildGrid()
     {
-        for (int y = 0; y < height; y++)
+        slots = new List<InventorySlot>(inventory.Size);
+        for (int y = 0; y < this.dimensions.y; y++)
         {
             var row = new VisualElement();
             row.style.flexDirection = FlexDirection.Row;
             this.Add(row);
-            for (int x = 0; x < width; x++)
+            for (int x = 0; x < this.dimensions.x; x++)
             {
-                row.Add(new InventorySlot());
+                InventorySlot slot = new InventorySlot(new Point2Int(x, y), this.dimensions, inventory);
+                row.Add(slot);
+                slots.Add(slot);
             }
+        }
+    }
+
+    public override void Update()
+    {
+        for (int i = 0; i < slots.Count; i++)
+        {
+            slots[i].Update();
         }
     }
 }

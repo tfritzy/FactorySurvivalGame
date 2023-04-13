@@ -7,7 +7,7 @@ using UnityEngine;
 public class WorldMono : MonoBehaviour
 {
     public World World => Context.World;
-    private Context Context;
+    public Context Context;
     private RectInt ShownHexRange = new RectInt(-15, -8, 30, 24);
     private Dictionary<Point3Int, HexMono> ShownHexesObjects = new Dictionary<Point3Int, HexMono>();
     private Point2Int PlayerPos = new Point2Int(-1, -1);
