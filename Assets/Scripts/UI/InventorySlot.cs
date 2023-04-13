@@ -17,6 +17,20 @@ public class InventorySlot : ActiveElement
         this.index = pos.x + pos.y * parentDimensions.x;
         this.style.backgroundColor = Color.blue;
         FormatBorder(pos, parentDimensions);
+
+        this.RegisterCallback<MouseUpEvent>(OnMouseUp);
+    }
+
+    private void OnMouseUp(MouseUpEvent evt)
+    {
+        if (evt.button == 0)
+        {
+            this.style.color = Color.red;
+        }
+        else if (evt.button == 1)
+        {
+            this.style.color = Color.green;
+        }
     }
 
     private void FormatBorder(Point2Int pos, Point2Int dimensions)

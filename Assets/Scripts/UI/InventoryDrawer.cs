@@ -10,6 +10,9 @@ public class InventoryDrawer : Drawer
     public InventoryDrawer()
     {
         this.style.justifyContent = Justify.SpaceBetween;
+        this.style.backgroundColor = Color.white;
+        this.SetAllBorderWidth(10);
+        this.SetAllBorderColor(Color.black);
 
         InitWornSection();
         InitBackpackGrid();
@@ -35,7 +38,7 @@ public class InventoryDrawer : Drawer
         backpackSection.Add(BuildButtonRow());
 
         this.inventoryGrid = new InventoryGrid(10, 20, inventory);
-        backpackSection.Add(new InventoryGrid(10, 20, inventory));
+        backpackSection.Add(this.inventoryGrid);
         this.Add(backpackSection);
     }
 
@@ -52,5 +55,6 @@ public class InventoryDrawer : Drawer
     public override void Update()
     {
         this.inventoryGrid.Update();
+        this.wornItemsSection.Update();
     }
 }
