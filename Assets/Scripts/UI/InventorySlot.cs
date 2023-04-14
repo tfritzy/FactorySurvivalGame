@@ -1,3 +1,4 @@
+using System;
 using Core;
 using UnityEngine;
 using UnityEngine.UIElements;
@@ -8,29 +9,28 @@ public class InventorySlot : ActiveElement
     private const float size = 50;
     private int index;
     private InventoryComponent containingInventory;
+    private Action<InventoryComponent, int> onSelect;
 
-    public InventorySlot(Point2Int pos, Point2Int parentDimensions, InventoryComponent inventory)
+    public struct Props
     {
-        this.containingInventory = inventory;
-        this.style.width = size;
-        this.style.height = size;
-        this.index = pos.x + pos.y * parentDimensions.x;
-        this.style.backgroundColor = Color.blue;
-        FormatBorder(pos, parentDimensions);
-
-        this.RegisterCallback<MouseUpEvent>(OnMouseUp);
+        public Point2Int pos;
+        public Point2Int parentDimensions;
+        public InventoryComponent inventory;
+        public Action<InventoryComponent, int> onSelect;
     }
 
-    private void OnMouseUp(MouseUpEvent evt)
+    public InventorySlot(Props props)
     {
-        if (evt.button == 0)
-        {
-            this.style.color = Color.red;
-        }
-        else if (evt.button == 1)
-        {
-            this.style.color = Color.green;
-        }
+        this.onSelect = props.onSelect;
+        this.containingInventory = props.inventory;
+        this.index = props.pos.x + props.pos.y * props.parentDimensions.x;
+
+        this.style.backgroundColor = Color.blue;
+        this.style.width = size;
+        this.style.height = size;
+
+        FormatBorder(props.pos, props.parentDimensions);
+        this.RegisterCallback<MouseUpEvent>(OnMouseUp);
     }
 
     private void FormatBorder(Point2Int pos, Point2Int dimensions)
@@ -59,15 +59,20 @@ public class InventorySlot : ActiveElement
         }
     }
 
+    private void OnMouseUp(MouseUpEvent evt)
+    {
+        this.onSelect(this.containingInventory, this.index);
+    }
+
     public override void Update()
     {
-        if (this.containingInventory.GetItem(this.index) != null)
+        if (this.containingInventory.GetItemAt(this.index) != null)
         {
             this.style.backgroundColor = Color.green;
         }
         else
         {
-            this.style.backgroundColor = Color.red;
+            this.style.backgroundColor = Color.blue;
         }
     }
 }

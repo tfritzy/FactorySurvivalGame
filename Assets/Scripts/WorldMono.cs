@@ -17,7 +17,7 @@ public class WorldMono : MonoBehaviour
     {
         this.Context = new Context();
         TerrainGenerator generator = new TerrainGenerator(100, 100, 25);
-        this.Context.World = new Core.World(generator.GenerateFlatWorld(this.Context));
+        this.Context.SetWorld(new Core.World(generator.GenerateFlatWorld(this.Context)));
 
         first = new Conveyor(this.Context);
         this.Context.World.AddBuilding(first, new Point2Int(0, 0));

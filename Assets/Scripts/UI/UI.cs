@@ -6,17 +6,17 @@ using UnityEngine.UIElements;
 public class UI : MonoBehaviour
 {
     private VisualElement root;
-    private InventoryDrawer inventoryDrawer;
+    private InGameHud inGameHud;
 
     void Start()
     {
         root = GetComponent<UIDocument>().rootVisualElement;
-        this.inventoryDrawer = new InventoryDrawer();
-        root.Add(this.inventoryDrawer);
+        this.inGameHud = new InGameHud();
+        root.Add(this.inGameHud);
     }
 
     void Update()
     {
-        this.inventoryDrawer.Update();
+        this.inGameHud.Update();
     }
 }

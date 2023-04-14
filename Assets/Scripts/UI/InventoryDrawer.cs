@@ -1,3 +1,4 @@
+using System;
 using Core;
 using UnityEngine;
 using UnityEngine.UIElements;
@@ -6,9 +7,20 @@ public class InventoryDrawer : Drawer
 {
     private InventoryGrid inventoryGrid;
     private WornItemsSection wornItemsSection;
+    private Action<InventoryComponent, int> onSelectSlot;
+    private InventoryComponent inventory;
 
-    public InventoryDrawer()
+    public struct Props
     {
+        public InventoryComponent inventory;
+        public Action<InventoryComponent, int> onSelectSlot;
+    }
+
+    public InventoryDrawer(Props props)
+    {
+        this.inventory = props.inventory;
+        this.onSelectSlot = props.onSelectSlot;
+
         this.style.justifyContent = Justify.SpaceBetween;
         this.style.backgroundColor = Color.white;
         this.SetAllBorderWidth(10);
@@ -27,17 +39,18 @@ public class InventoryDrawer : Drawer
 
     private void InitBackpackGrid()
     {
-        Character character = new Dummy(Managers.World.Context);
-        InventoryComponent inventory = new InventoryComponent(character, 200);
-        inventory.AddItem(new Stone(), 1);
-        inventory.AddItem(new Stone(), 8);
-        inventory.AddItem(new Stone(), 12);
-        inventory.AddItem(new Stone(), 25);
         var backpackSection = new VisualElement();
         backpackSection.style.height = Length.Percent(60);
         backpackSection.Add(BuildButtonRow());
 
-        this.inventoryGrid = new InventoryGrid(10, 20, inventory);
+        this.inventoryGrid = new InventoryGrid(new InventoryGrid.Props
+        {
+            width = 10,
+            height = 20,
+            inventory = inventory,
+            onSelectSlot = this.onSelectSlot
+        });
+
         backpackSection.Add(this.inventoryGrid);
         this.Add(backpackSection);
     }
