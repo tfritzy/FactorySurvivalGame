@@ -1,4 +1,6 @@
+using System.Collections.Generic;
 using Core;
+using UnityEngine;
 using UnityEngine.UIElements;
 
 public class InGameHud : ActiveElement
@@ -6,6 +8,8 @@ public class InGameHud : ActiveElement
     private InventoryDrawer inventoryDrawer;
     private InventoryComponent selectedSourceInventory;
     private int selectedSourceIndex;
+    private SlotItemIcon hoveringSlot;
+    private HashSet<int> touchedByDrag = new HashSet<int>();
 
     public InGameHud()
     {
@@ -14,17 +18,21 @@ public class InGameHud : ActiveElement
 
         Character character = new Dummy(Managers.World.Context);
         InventoryComponent inventory = new InventoryComponent(character, 200);
-        inventory.AddItem(new Stone(), 1);
-        inventory.AddItem(new Stone(), 8);
-        inventory.AddItem(new Stone(), 12);
-        inventory.AddItem(new Stone(), 25);
+        inventory.AddItem(new Stone(5), 1);
+        inventory.AddItem(new Stone(7), 8);
+        inventory.AddItem(new Stone(6), 12);
+        inventory.AddItem(new Stone(7), 25);
+        inventory.AddItem(new Stone(7), 35);
+        inventory.AddItem(new Stone(7), 40);
 
         this.inventoryDrawer = new InventoryDrawer(new InventoryDrawer.Props
         {
             inventory = inventory,
-            onSelectSlot = this.OnSelectSlot
+            onSlotMouseUp = this.OnSlotMouseUp,
+            onSlotMouseHold = this.OnSlotMouseHold,
         });
         this.Add(this.inventoryDrawer);
+        InitHoveringSlot();
     }
 
     public override void Update()
@@ -32,17 +40,66 @@ public class InGameHud : ActiveElement
         this.inventoryDrawer.Update();
     }
 
-    private void OnSelectSlot(InventoryComponent inventory, int index)
+    private void InitHoveringSlot()
+    {
+        this.hoveringSlot = new SlotItemIcon();
+        this.Add(this.hoveringSlot);
+        this.hoveringSlot.style.position = Position.Absolute;
+        this.RegisterCallback<MouseMoveEvent>(OnMouseMoveEvent);
+        this.hoveringSlot.style.display = DisplayStyle.None;
+    }
+
+    private void OnMouseMoveEvent(MouseMoveEvent e)
+    {
+        if (this.selectedSourceInventory != null)
+        {
+            this.hoveringSlot.style.top = e.localMousePosition.y;
+            this.hoveringSlot.style.left = e.localMousePosition.x;
+        }
+    }
+
+    private void OnSlotMouseUp(MouseUpEvent evt, InventoryComponent inventory, int index)
     {
         if (selectedSourceInventory == null)
         {
+            if (inventory.GetItemAt(index) == null)
+                return;
+
             selectedSourceInventory = inventory;
             selectedSourceIndex = index;
+            this.hoveringSlot.style.display = DisplayStyle.Flex;
+            this.hoveringSlot.style.top = evt.mousePosition.y;
+            this.hoveringSlot.style.left = evt.mousePosition.x;
+            this.hoveringSlot.Update(inventory.GetItemAt(index));
         }
         else
         {
             selectedSourceInventory.TransferIndex(inventory, selectedSourceIndex, index);
             selectedSourceInventory = null;
+            this.hoveringSlot.style.display = DisplayStyle.None;
+        }
+    }
+
+    private void OnSlotMouseHold(MouseMoveEvent evt, InventoryComponent inventory, int index)
+    {
+        if (selectedSourceInventory != null)
+        {
+            if (!touchedByDrag.Contains(index))
+            {
+                Item heldItem = selectedSourceInventory.GetItemAt(selectedSourceIndex);
+
+                selectedSourceInventory.DecrementCountOf(selectedSourceIndex, 1);
+                Item split = Item.Create(heldItem.Type);
+                inventory.AddItem(split, index);
+
+                if (selectedSourceInventory.GetItemAt(selectedSourceIndex) == null)
+                {
+                    selectedSourceInventory = null;
+                    this.hoveringSlot.style.display = DisplayStyle.None;
+                }
+
+                touchedByDrag.Add(index);
+            }
         }
     }
 }

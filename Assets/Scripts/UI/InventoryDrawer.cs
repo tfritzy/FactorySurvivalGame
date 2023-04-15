@@ -7,19 +7,22 @@ public class InventoryDrawer : Drawer
 {
     private InventoryGrid inventoryGrid;
     private WornItemsSection wornItemsSection;
-    private Action<InventoryComponent, int> onSelectSlot;
+    public Action<MouseUpEvent, InventoryComponent, int> onSlotMouseUp;
+    public Action<MouseMoveEvent, InventoryComponent, int> onSlotMouseHold;
     private InventoryComponent inventory;
 
     public struct Props
     {
         public InventoryComponent inventory;
-        public Action<InventoryComponent, int> onSelectSlot;
+        public Action<MouseUpEvent, InventoryComponent, int> onSlotMouseUp;
+        public Action<MouseMoveEvent, InventoryComponent, int> onSlotMouseHold;
     }
 
     public InventoryDrawer(Props props)
     {
         this.inventory = props.inventory;
-        this.onSelectSlot = props.onSelectSlot;
+        this.onSlotMouseUp = props.onSlotMouseUp;
+        this.onSlotMouseHold = props.onSlotMouseHold;
 
         this.style.justifyContent = Justify.SpaceBetween;
         this.style.backgroundColor = Color.white;
@@ -48,7 +51,8 @@ public class InventoryDrawer : Drawer
             width = 10,
             height = 20,
             inventory = inventory,
-            onSelectSlot = this.onSelectSlot
+            onSlotMouseUp = this.onSlotMouseUp,
+            onSlotMouseHold = this.onSlotMouseHold
         });
 
         backpackSection.Add(this.inventoryGrid);

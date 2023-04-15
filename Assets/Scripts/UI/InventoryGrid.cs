@@ -9,19 +9,22 @@ public class InventoryGrid : ActiveElement
     private Point2Int dimensions;
     private InventoryComponent inventory;
     private List<InventorySlot> slots = new List<InventorySlot>();
-    private Action<InventoryComponent, int> onSelectSlot;
+    private Action<MouseUpEvent, InventoryComponent, int> onSlotMouseUp;
+    public Action<MouseMoveEvent, InventoryComponent, int> onSlotMouseHold;
 
     public struct Props
     {
         public int width;
         public int height;
         public InventoryComponent inventory;
-        public Action<InventoryComponent, int> onSelectSlot;
+        public Action<MouseUpEvent, InventoryComponent, int> onSlotMouseUp;
+        public Action<MouseMoveEvent, InventoryComponent, int> onSlotMouseHold;
     }
 
     public InventoryGrid(Props props)
     {
-        this.onSelectSlot = props.onSelectSlot;
+        this.onSlotMouseUp = props.onSlotMouseUp;
+        this.onSlotMouseHold = props.onSlotMouseHold;
         this.inventory = props.inventory;
         this.dimensions = new Point2Int(props.width, props.height);
 
@@ -47,7 +50,8 @@ public class InventoryGrid : ActiveElement
                     pos = new Point2Int(x, y),
                     parentDimensions = this.dimensions,
                     inventory = this.inventory,
-                    onSelect = this.onSelectSlot
+                    onMouseUp = this.onSlotMouseUp,
+                    onMouseHold = this.onSlotMouseHold
                 });
                 row.Add(slot);
                 slots.Add(slot);

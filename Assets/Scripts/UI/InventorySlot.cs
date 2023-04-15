@@ -9,19 +9,23 @@ public class InventorySlot : ActiveElement
     private const float size = 50;
     private int index;
     private InventoryComponent containingInventory;
-    private Action<InventoryComponent, int> onSelect;
+    private Action<MouseUpEvent, InventoryComponent, int> onMouseUp;
+    public Action<MouseMoveEvent, InventoryComponent, int> onMouseHold;
+    private SlotItemIcon itemIcon;
 
     public struct Props
     {
         public Point2Int pos;
         public Point2Int parentDimensions;
         public InventoryComponent inventory;
-        public Action<InventoryComponent, int> onSelect;
+        public Action<MouseUpEvent, InventoryComponent, int> onMouseUp;
+        public Action<MouseMoveEvent, InventoryComponent, int> onMouseHold;
     }
 
     public InventorySlot(Props props)
     {
-        this.onSelect = props.onSelect;
+        this.onMouseUp = props.onMouseUp;
+        this.onMouseHold = props.onMouseHold;
         this.containingInventory = props.inventory;
         this.index = props.pos.x + props.pos.y * props.parentDimensions.x;
 
@@ -29,11 +33,13 @@ public class InventorySlot : ActiveElement
         this.style.width = size;
         this.style.height = size;
 
-        FormatBorder(props.pos, props.parentDimensions);
+        InitBorder(props.pos, props.parentDimensions);
         this.RegisterCallback<MouseUpEvent>(OnMouseUp);
+        this.RegisterCallback<MouseMoveEvent>(OnMouseMove);
+        InitSlotIcon();
     }
 
-    private void FormatBorder(Point2Int pos, Point2Int dimensions)
+    private void InitBorder(Point2Int pos, Point2Int dimensions)
     {
         this.SetAllBorderWidth(borderWidth);
         this.SetAllBorderColor(Color.black);
@@ -59,14 +65,33 @@ public class InventorySlot : ActiveElement
         }
     }
 
+    private void InitSlotIcon()
+    {
+        this.itemIcon = new SlotItemIcon();
+        this.Add(this.itemIcon);
+        this.style.alignItems = Align.Center;
+        this.style.justifyContent = Justify.Center;
+    }
+
     private void OnMouseUp(MouseUpEvent evt)
     {
-        this.onSelect(this.containingInventory, this.index);
+        this.onMouseUp(evt, this.containingInventory, this.index);
+    }
+
+    private void OnMouseMove(MouseMoveEvent evt)
+    {
+        if (evt.pressedButtons > 0)
+        {
+            this.onMouseHold(evt, this.containingInventory, this.index);
+        }
     }
 
     public override void Update()
     {
-        if (this.containingInventory.GetItemAt(this.index) != null)
+        var item = this.containingInventory.GetItemAt(this.index);
+        this.itemIcon.Update(item);
+
+        if (item != null)
         {
             this.style.backgroundColor = Color.green;
         }
