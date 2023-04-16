@@ -28,8 +28,8 @@ public class InventoryGrid : ActiveElement
         this.inventory = props.inventory;
         this.dimensions = new Point2Int(props.width, props.height);
 
-        this.style.height = Length.Percent(100);
-        this.style.width = Length.Percent(100);
+        this.style.height = props.height * InventorySlot.Size;
+        this.style.width = props.width * InventorySlot.Size;
         this.style.backgroundColor = Color.yellow;
 
         BuildGrid();

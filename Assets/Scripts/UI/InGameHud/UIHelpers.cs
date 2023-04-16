@@ -26,4 +26,12 @@ public static class UIHelpers
         element.style.paddingTop = padding;
         element.style.paddingBottom = padding;
     }
+
+    public static void SetAllMargin(this VisualElement element, float margin)
+    {
+        element.style.marginLeft = margin;
+        element.style.marginRight = margin;
+        element.style.marginTop = margin;
+        element.style.marginBottom = margin;
+    }
 }

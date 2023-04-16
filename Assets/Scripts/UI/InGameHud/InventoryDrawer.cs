@@ -43,13 +43,12 @@ public class InventoryDrawer : Drawer
     private void InitBackpackGrid()
     {
         var backpackSection = new VisualElement();
-        backpackSection.style.height = Length.Percent(60);
         backpackSection.Add(BuildButtonRow());
 
         this.inventoryGrid = new InventoryGrid(new InventoryGrid.Props
         {
             width = 10,
-            height = 20,
+            height = 14,
             inventory = inventory,
             onSlotMouseUp = this.onSlotMouseUp,
             onSlotMouseHold = this.onSlotMouseHold

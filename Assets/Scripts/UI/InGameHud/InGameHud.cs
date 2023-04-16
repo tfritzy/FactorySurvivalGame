@@ -6,6 +6,7 @@ using UnityEngine.UIElements;
 public class InGameHud : ActiveElement
 {
     private InventoryDrawer inventoryDrawer;
+    private ActiveItemsBar activeItemsBar;
     private InventoryComponent selectedSourceInventory;
     private int selectedSourceIndex;
     private SlotItemIcon hoveringSlot;
@@ -16,6 +17,19 @@ public class InGameHud : ActiveElement
         this.style.width = Length.Percent(100);
         this.style.height = Length.Percent(100);
 
+        InitInventory();
+        InitActionBar();
+        InitHoveringSlot();
+    }
+
+    public override void Update()
+    {
+        this.inventoryDrawer.Update();
+        this.activeItemsBar.Update();
+    }
+
+    private void InitInventory()
+    {
         Character character = new Dummy(Managers.World.Context);
         InventoryComponent inventory = new InventoryComponent(character, 200);
         inventory.AddItem(new Stone(5), 1);
@@ -32,12 +46,20 @@ public class InGameHud : ActiveElement
             onSlotMouseHold = this.OnSlotMouseHold,
         });
         this.Add(this.inventoryDrawer);
-        InitHoveringSlot();
     }
 
-    public override void Update()
+    private void InitActionBar()
     {
-        this.inventoryDrawer.Update();
+        this.style.alignItems = Align.Center;
+        this.style.flexDirection = FlexDirection.ColumnReverse;
+
+        this.activeItemsBar = new ActiveItemsBar(new ActiveItemsBar.Props
+        {
+            onSlotMouseUp = this.OnSlotMouseUp,
+            onSlotMouseHold = this.OnSlotMouseHold,
+            onInventoryButtonClicked = () => this.inventoryDrawer.ToggleShown(),
+        });
+        this.Add(this.activeItemsBar);
     }
 
     private void InitHoveringSlot()
@@ -71,6 +93,7 @@ public class InGameHud : ActiveElement
             this.hoveringSlot.style.top = evt.mousePosition.y;
             this.hoveringSlot.style.left = evt.mousePosition.x;
             this.hoveringSlot.Update(inventory.GetItemAt(index));
+            this.touchedByDrag = new HashSet<int>();
         }
         else
         {

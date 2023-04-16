@@ -5,8 +5,8 @@ using UnityEngine.UIElements;
 
 public class InventorySlot : ActiveElement
 {
+    public const float Size = 50;
     private const float borderWidth = 2;
-    private const float size = 50;
     private int index;
     private InventoryComponent containingInventory;
     private Action<MouseUpEvent, InventoryComponent, int> onMouseUp;
@@ -30,8 +30,8 @@ public class InventorySlot : ActiveElement
         this.index = props.pos.x + props.pos.y * props.parentDimensions.x;
 
         this.style.backgroundColor = Color.blue;
-        this.style.width = size;
-        this.style.height = size;
+        this.style.width = Size;
+        this.style.height = Size;
 
         InitBorder(props.pos, props.parentDimensions);
         this.RegisterCallback<MouseUpEvent>(OnMouseUp);
