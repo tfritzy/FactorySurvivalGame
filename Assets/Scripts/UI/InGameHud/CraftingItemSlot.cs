@@ -12,9 +12,11 @@ public class CraftingItemSlot : VisualElement
 
         this.style.width = InventorySlot.Size;
         this.style.height = InventorySlot.Size;
-        this.style.backgroundColor = Color.blue;
         this.style.alignItems = Align.Center;
         this.style.justifyContent = Justify.Center;
+        this.SetAllBorderWidth(2);
+        UI.ColorTheme.ApplyPanelBorderColor(this);
+
 
         var slotIcon = new SlotItemIcon();
         slotIcon.Update(this.item);

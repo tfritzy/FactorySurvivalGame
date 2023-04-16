@@ -34,4 +34,12 @@ public static class UIHelpers
         element.style.marginTop = margin;
         element.style.marginBottom = margin;
     }
+
+    public static void SetAllBorderRadius(this VisualElement element, float radius)
+    {
+        element.style.borderTopLeftRadius = radius;
+        element.style.borderTopRightRadius = radius;
+        element.style.borderBottomLeftRadius = radius;
+        element.style.borderBottomRightRadius = radius;
+    }
 }

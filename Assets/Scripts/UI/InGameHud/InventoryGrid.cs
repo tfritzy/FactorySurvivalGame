@@ -30,19 +30,30 @@ public class InventoryGrid : ActiveElement
 
         this.style.height = props.height * InventorySlot.Size;
         this.style.width = props.width * InventorySlot.Size;
-        this.style.backgroundColor = Color.yellow;
 
-        BuildGrid();
+        var outerBorder = new VisualElement();
+        UI.ColorTheme.ApplyPanelBorderColor(outerBorder, inverse: true);
+        outerBorder.SetAllBorderWidth(2);
+        outerBorder.SetAllBorderRadius(5);
+        this.Add(outerBorder);
+
+        var innerBorder = new VisualElement();
+        UI.ColorTheme.ApplyPanelBorderColor(innerBorder);
+        innerBorder.SetAllBorderWidth(2);
+        innerBorder.SetAllBorderRadius(5);
+        outerBorder.Add(innerBorder);
+
+        BuildGrid(innerBorder);
     }
 
-    private void BuildGrid()
+    private void BuildGrid(VisualElement container)
     {
         slots = new List<InventorySlot>(inventory.Size);
         for (int y = 0; y < this.dimensions.y; y++)
         {
             var row = new VisualElement();
             row.style.flexDirection = FlexDirection.Row;
-            this.Add(row);
+            container.Add(row);
             for (int x = 0; x < this.dimensions.x; x++)
             {
                 InventorySlot slot = new InventorySlot(new InventorySlot.Props

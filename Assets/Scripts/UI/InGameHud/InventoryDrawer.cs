@@ -25,8 +25,6 @@ public class InventoryDrawer : Drawer
         this.onSlotMouseHold = props.onSlotMouseHold;
 
         this.style.justifyContent = Justify.SpaceBetween;
-        this.style.backgroundColor = Color.white;
-        this.SetAllBorderWidth(10);
         this.SetAllBorderColor(Color.black);
 
         InitWornSection();

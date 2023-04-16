@@ -29,11 +29,12 @@ public class InventorySlot : ActiveElement
         this.containingInventory = props.inventory;
         this.index = props.pos.x + props.pos.y * props.parentDimensions.x;
 
-        this.style.backgroundColor = Color.blue;
         this.style.width = Size;
         this.style.height = Size;
-
+        this.style.backgroundImage = new StyleBackground(UIElements.GetElement(UIElementType.Vignette));
+        this.style.backgroundColor = Color.black;
         InitBorder(props.pos, props.parentDimensions);
+
         this.RegisterCallback<MouseUpEvent>(OnMouseUp);
         this.RegisterCallback<MouseMoveEvent>(OnMouseMove);
         InitSlotIcon();
@@ -42,26 +43,26 @@ public class InventorySlot : ActiveElement
     private void InitBorder(Point2Int pos, Point2Int dimensions)
     {
         this.SetAllBorderWidth(borderWidth);
-        this.SetAllBorderColor(Color.black);
+        UI.ColorTheme.ApplyPanelBorderColor(this);
 
-        if (pos.x == 0)
+        if (pos.x == 0 && pos.y == 0)
         {
-            this.style.borderLeftWidth = borderWidth * 2;
+            this.style.borderTopLeftRadius = 5;
         }
 
-        if (pos.y == 0)
+        if (pos.x == dimensions.x - 1 && pos.y == 0)
         {
-            this.style.borderTopWidth = borderWidth * 2;
+            this.style.borderTopLeftRadius = 5;
         }
 
-        if (pos.x == dimensions.x - 1)
+        if (pos.x == 0 && pos.y == dimensions.y - 1)
         {
-            this.style.borderRightWidth = borderWidth * 2;
+            this.style.borderBottomLeftRadius = 5;
         }
 
-        if (pos.y == dimensions.y - 1)
+        if (pos.x == dimensions.x - 1 && pos.y == dimensions.y - 1)
         {
-            this.style.borderBottomWidth = borderWidth * 2;
+            this.style.borderBottomRightRadius = 5;
         }
     }
 
@@ -93,11 +94,11 @@ public class InventorySlot : ActiveElement
 
         if (item != null)
         {
-            this.style.backgroundColor = Color.green;
+            this.style.backgroundColor = UI.ColorTheme.OccupiedInventorySlot;
         }
         else
         {
-            this.style.backgroundColor = Color.blue;
+            this.style.backgroundColor = UI.ColorTheme.PanelBackgroundColor;
         }
     }
 }

@@ -17,7 +17,11 @@ public abstract class Modal : ActiveElement
         this.pickingMode = PickingMode.Ignore;
 
         this.modal = new VisualElement();
-        this.modal.style.backgroundColor = Color.magenta;
+        this.modal.style.backgroundColor = UI.ColorTheme.PanelBackgroundColor;
+        UI.ColorTheme.ApplyPanelBorderColor(this.modal);
+        this.modal.SetAllBorderRadius(10);
+        this.modal.SetAllBorderWidth(1);
+        this.modal.SetAllPadding(10);
         this.Add(this.modal);
     }
 }
