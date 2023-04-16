@@ -14,6 +14,7 @@ public class ActiveItemsBar : ActiveElement
         public Action<MouseUpEvent, InventoryComponent, int> onSlotMouseUp;
         public Action<MouseMoveEvent, InventoryComponent, int> onSlotMouseHold;
         public Action onInventoryButtonClicked;
+        public Action onCraftingButtonClicked;
     }
     public ActiveItemsBar(Props props)
     {
@@ -31,6 +32,7 @@ public class ActiveItemsBar : ActiveElement
         buttonContainer.style.height = Length.Percent(100);
 
         var craftingButton = new Button();
+        craftingButton.clicked += props.onCraftingButtonClicked;
         craftingButton.style.backgroundColor = Color.cyan;
         craftingButton.style.width = InventorySlot.Size;
         craftingButton.style.height = Length.Percent(50);

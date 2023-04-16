@@ -2,13 +2,20 @@ using UnityEngine.UIElements;
 
 public abstract class ActiveElement : VisualElement
 {
+    public bool Shown { get; private set; } = true;
     public abstract void Update();
 
     public void ToggleShown()
     {
-        this.style.display =
-            this.style.display == DisplayStyle.Flex ?
-                DisplayStyle.None :
-                DisplayStyle.Flex;
+        Shown = !Shown;
+
+        if (Shown)
+        {
+            this.style.display = DisplayStyle.Flex;
+        }
+        else
+        {
+            this.style.display = DisplayStyle.None;
+        }
     }
 }

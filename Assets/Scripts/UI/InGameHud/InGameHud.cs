@@ -7,6 +7,7 @@ public class InGameHud : ActiveElement
 {
     private InventoryDrawer inventoryDrawer;
     private ActiveItemsBar activeItemsBar;
+    private CraftingMenu craftingMenu;
     private InventoryComponent selectedSourceInventory;
     private int selectedSourceIndex;
     private SlotItemIcon hoveringSlot;
@@ -16,9 +17,12 @@ public class InGameHud : ActiveElement
     {
         this.style.width = Length.Percent(100);
         this.style.height = Length.Percent(100);
+        this.style.alignItems = Align.Center;
+        this.style.flexDirection = FlexDirection.ColumnReverse;
 
         InitInventory();
         InitActionBar();
+        InitCraftingMenu();
         InitHoveringSlot();
     }
 
@@ -26,6 +30,8 @@ public class InGameHud : ActiveElement
     {
         this.inventoryDrawer.Update();
         this.activeItemsBar.Update();
+
+        ListenForHotkeys();
     }
 
     private void InitInventory()
@@ -50,16 +56,30 @@ public class InGameHud : ActiveElement
 
     private void InitActionBar()
     {
-        this.style.alignItems = Align.Center;
-        this.style.flexDirection = FlexDirection.ColumnReverse;
-
         this.activeItemsBar = new ActiveItemsBar(new ActiveItemsBar.Props
         {
             onSlotMouseUp = this.OnSlotMouseUp,
             onSlotMouseHold = this.OnSlotMouseHold,
             onInventoryButtonClicked = () => this.inventoryDrawer.ToggleShown(),
+            onCraftingButtonClicked = ToggleCraftingMenu,
         });
         this.Add(this.activeItemsBar);
+    }
+
+    private void InitCraftingMenu()
+    {
+        this.craftingMenu = new CraftingMenu();
+        this.Add(this.craftingMenu);
+    }
+
+    private void ToggleCraftingMenu()
+    {
+        this.craftingMenu.ToggleShown();
+
+        if (this.inventoryDrawer.Shown != this.craftingMenu.Shown)
+        {
+            this.inventoryDrawer.ToggleShown();
+        }
     }
 
     private void InitHoveringSlot()
@@ -123,6 +143,19 @@ public class InGameHud : ActiveElement
 
                 touchedByDrag.Add(index);
             }
+        }
+    }
+
+    private void ListenForHotkeys()
+    {
+        if (Input.GetKeyDown(KeyCode.I))
+        {
+            this.inventoryDrawer.ToggleShown();
+        }
+
+        if (Input.GetKeyDown(KeyCode.C))
+        {
+            ToggleCraftingMenu();
         }
     }
 }
