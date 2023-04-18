@@ -6,20 +6,21 @@ using UnityEngine.UIElements;
 public class InventorySlot : ActiveElement
 {
     public const float Size = 50;
-    private const float borderWidth = 2;
     private int index;
     private InventoryComponent containingInventory;
     private Action<MouseUpEvent, InventoryComponent, int> onMouseUp;
     public Action<MouseMoveEvent, InventoryComponent, int> onMouseHold;
     private SlotItemIcon itemIcon;
 
-    public struct Props
+    public class Props
     {
         public Point2Int pos;
         public Point2Int parentDimensions;
         public InventoryComponent inventory;
         public Action<MouseUpEvent, InventoryComponent, int> onMouseUp;
         public Action<MouseMoveEvent, InventoryComponent, int> onMouseHold;
+        public bool SelfSufficientBorder;
+        public float BorderWidth = 2;
     }
 
     public InventorySlot(Props props)
@@ -29,49 +30,61 @@ public class InventorySlot : ActiveElement
         this.containingInventory = props.inventory;
         this.index = props.pos.x + props.pos.y * props.parentDimensions.x;
 
-        this.style.width = Size;
-        this.style.height = Size;
-        this.style.backgroundImage = new StyleBackground(UIElements.GetElement(UIElementType.Vignette));
-        this.style.backgroundColor = Color.black;
-        InitBorder(props.pos, props.parentDimensions);
+        InitBorder(props);
+        this.Content.style.width = Size;
+        this.Content.style.height = Size;
+        this.Content.style.backgroundImage = new StyleBackground(UIElements.GetElement(UIElementType.Vignette));
 
         this.RegisterCallback<MouseUpEvent>(OnMouseUp);
         this.RegisterCallback<MouseMoveEvent>(OnMouseMove);
         InitSlotIcon();
     }
 
-    private void InitBorder(Point2Int pos, Point2Int dimensions)
+    private void InitBorder(Props props)
     {
-        this.SetAllBorderWidth(borderWidth);
-        UI.ColorTheme.ApplyPanelBorderColor(this);
-
-        if (pos.x == 0 && pos.y == 0)
+        if (props.SelfSufficientBorder)
         {
-            this.style.borderTopLeftRadius = 5;
+            var outerBorder = new VisualElement();
+            UI.ColorTheme.Apply3DPanelBorderColor(outerBorder, inverse: true);
+            outerBorder.SetAllBorderWidth(props.BorderWidth);
+            outerBorder.SetAllBorderRadius(5);
+            this.Add(outerBorder);
+
+            this.Content = new VisualElement();
+            this.Content.SetAllBorderRadius(5);
+            outerBorder.Add(this.Content);
         }
 
-        if (pos.x == dimensions.x - 1 && pos.y == 0)
+        this.Content.SetAllBorderWidth(props.BorderWidth);
+        UI.ColorTheme.Apply3DPanelBorderColor(this.Content);
+
+        if (props.pos.x == 0 && props.pos.y == 0)
         {
-            this.style.borderTopLeftRadius = 5;
+            this.Content.style.borderTopLeftRadius = 5;
         }
 
-        if (pos.x == 0 && pos.y == dimensions.y - 1)
+        if (props.pos.x == props.parentDimensions.x - 1 && props.pos.y == 0)
         {
-            this.style.borderBottomLeftRadius = 5;
+            this.Content.style.borderTopLeftRadius = 5;
         }
 
-        if (pos.x == dimensions.x - 1 && pos.y == dimensions.y - 1)
+        if (props.pos.x == 0 && props.pos.y == props.parentDimensions.y - 1)
         {
-            this.style.borderBottomRightRadius = 5;
+            this.Content.style.borderBottomLeftRadius = 5;
+        }
+
+        if (props.pos.x == props.parentDimensions.x - 1 && props.pos.y == props.parentDimensions.y - 1)
+        {
+            this.Content.style.borderBottomRightRadius = 5;
         }
     }
 
     private void InitSlotIcon()
     {
         this.itemIcon = new SlotItemIcon();
-        this.Add(this.itemIcon);
-        this.style.alignItems = Align.Center;
-        this.style.justifyContent = Justify.Center;
+        this.Content.Add(this.itemIcon);
+        this.Content.style.alignItems = Align.Center;
+        this.Content.style.justifyContent = Justify.Center;
     }
 
     private void OnMouseUp(MouseUpEvent evt)
@@ -94,11 +107,11 @@ public class InventorySlot : ActiveElement
 
         if (item != null)
         {
-            this.style.backgroundColor = UI.ColorTheme.OccupiedInventorySlot;
+            this.Content.style.backgroundColor = UI.ColorTheme.OccupiedInventorySlot;
         }
         else
         {
-            this.style.backgroundColor = UI.ColorTheme.PanelBackgroundColor;
+            this.Content.style.backgroundColor = UI.ColorTheme.PanelBackgroundColor;
         }
     }
 }

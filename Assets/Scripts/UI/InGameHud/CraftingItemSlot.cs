@@ -15,8 +15,7 @@ public class CraftingItemSlot : VisualElement
         this.style.alignItems = Align.Center;
         this.style.justifyContent = Justify.Center;
         this.SetAllBorderWidth(2);
-        UI.ColorTheme.ApplyPanelBorderColor(this);
-
+        UI.ColorTheme.Apply3DPanelBorderColor(this);
 
         var slotIcon = new SlotItemIcon();
         slotIcon.Update(this.item);

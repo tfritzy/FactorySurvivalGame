@@ -7,6 +7,8 @@ public class DarkTheme : ColorTheme
 
     private static Color panelBackgroundColor => new Color(0.1f, 0.1f, 0.1f);
     public override Color PanelBackgroundColor => panelBackgroundColor;
+    private static Color panelForegroundColor => new Color(0.15f, 0.15f, 0.15f);
+    public override Color PanelForegroundColor => panelForegroundColor;
 
     private static Color panelOutlineColorMid => new Color(0.3f, 0.3f, 0.3f);
     private static Color panelOutlineColorBright => new Color(0.4f, 0.4f, 0.4f);

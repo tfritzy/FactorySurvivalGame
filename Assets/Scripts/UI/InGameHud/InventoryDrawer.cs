@@ -25,7 +25,6 @@ public class InventoryDrawer : Drawer
         this.onSlotMouseHold = props.onSlotMouseHold;
 
         this.style.justifyContent = Justify.SpaceBetween;
-        this.SetAllBorderColor(Color.black);
 
         InitWornSection();
         InitBackpackGrid();
