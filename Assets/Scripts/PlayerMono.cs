@@ -7,6 +7,9 @@ public class PlayerMono : MonoBehaviour
     public int SelectedInventoryIndex;
     public Player Actual;
 
+    private Item? SelectedItem => this.SelectedInventory.GetItemAt(this.SelectedInventoryIndex);
+    private Building? PreviewBuilding;
+
     private static PlayerMono instance;
     public static PlayerMono Instance
     {
@@ -30,6 +33,30 @@ public class PlayerMono : MonoBehaviour
     void Update()
     {
         ListenForInventoryControls();
+        PreviewSelectedItem();
+    }
+
+    private void PreviewSelectedItem()
+    {
+        if (PreviewBuilding != null)
+        {
+            return;
+        }
+
+        if (this.SelectedItem == null)
+        {
+            return;
+        }
+
+        if (this.SelectedItem.Builds != null)
+        {
+            PreviewBuilding =
+                (Building)Character.Create(
+                    this.SelectedItem.Builds.Value,
+                    WorldMono.Instance.Context,
+                    this.Actual.Alliance);
+            WorldMono.Instance.World.AddBuilding(PreviewBuilding, new Point2Int(0, 0));
+        }
     }
 
     private void ListenForInventoryControls()

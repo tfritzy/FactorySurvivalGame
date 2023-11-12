@@ -41,7 +41,7 @@ public class SlotItemIcon : VisualElement
         else
         {
             // TODO: Caching
-            this.style.backgroundImage = new StyleBackground(Icons.GetIcon(ItemType.Stone));
+            this.style.backgroundImage = new StyleBackground(Icons.GetIcon(item.Type));
 
             if (item.Quantity > 1)
                 this.quantityLabel.text = item.Quantity.ToString();

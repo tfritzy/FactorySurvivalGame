@@ -13,6 +13,19 @@ public class WorldMono : MonoBehaviour
     private Point2Int PlayerPos = new Point2Int(-1, -1);
     private Conveyor first;
 
+    private static WorldMono instance;
+    public static WorldMono Instance
+    {
+        get
+        {
+            if (instance == null)
+            {
+                instance = GameObject.FindObjectOfType<WorldMono>();
+            }
+            return instance;
+        }
+    }
+
     void Awake()
     {
         Context = new Context();
@@ -29,6 +42,11 @@ public class WorldMono : MonoBehaviour
         {
             PlayerPos = currentPos;
             UpdateShownHex();
+        }
+
+        while (World.UnseenUpdates.Count > 0)
+        {
+            HandleUpdate(World.UnseenUpdates.First());
         }
     }
 
@@ -89,5 +107,21 @@ public class WorldMono : MonoBehaviour
         {
             ShownHexesObjects.Remove(point);
         }
+    }
+
+    private void HandleUpdate(Update update)
+    {
+        Debug.Log("Handling event of type: " + update.Type);
+        switch (update.Type)
+        {
+            case UpdateType.BuildingAdded:
+                BuildingAdded updateBuildingAdded = (BuildingAdded)update;
+                Building newBuilding = World.GetBuildingAt(updateBuildingAdded.GridPosition);
+                GameObject building = Instantiate(Models.GetCharacterModel(newBuilding.Type));
+                building.transform.position = WorldConversions.HexToUnityPosition(newBuilding.GridPosition);
+                building.transform.SetParent(transform);
+                break;
+        }
+        World.AckUpdate();
     }
 }
