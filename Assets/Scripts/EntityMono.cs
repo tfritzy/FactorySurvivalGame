@@ -5,5 +5,5 @@ public abstract class EntityMono : MonoBehaviour
 {
     public abstract void Spawn();
     public abstract void Despawn();
-    public abstract void Tick(float deltaTime);
+    public virtual void Tick(float deltaTime) { }
 }

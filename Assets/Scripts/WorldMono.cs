@@ -84,5 +84,10 @@ public class WorldMono : MonoBehaviour
                 Destroy(ShownHexesObjects[point][i]);
             }
         }
+
+        foreach (Point3Int point in toRemove)
+        {
+            ShownHexesObjects.Remove(point);
+        }
     }
 }

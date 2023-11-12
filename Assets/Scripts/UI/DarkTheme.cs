@@ -19,4 +19,6 @@ public class DarkTheme : ColorTheme
 
     private static Color occupiedInventorySlot => new Color(0.17f, 0.17f, 0.17f);
     public override Color OccupiedInventorySlot => occupiedInventorySlot;
+    private static Color selectedInventorySlot => ColorExtensions.FromHex("#662a2a");
+    public override Color SelectedInventorySlot => selectedInventorySlot;
 }

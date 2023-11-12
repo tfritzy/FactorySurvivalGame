@@ -30,4 +30,5 @@ public abstract class ColorTheme
     }
 
     public abstract Color OccupiedInventorySlot { get; }
+    public abstract Color SelectedInventorySlot { get; }
 }

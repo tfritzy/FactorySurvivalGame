@@ -11,6 +11,7 @@ public class InventoryGrid : ActiveElement
     private List<InventorySlot> slots = new List<InventorySlot>();
     private Action<MouseUpEvent, Inventory, int> onSlotMouseUp;
     public Action<MouseMoveEvent, Inventory, int> onSlotMouseHold;
+    public int SelectedIndex = 1;
 
     public struct Props
     {

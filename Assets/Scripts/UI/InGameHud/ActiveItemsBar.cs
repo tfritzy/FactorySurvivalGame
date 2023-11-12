@@ -50,12 +50,8 @@ public class ActiveItemsBar : ActiveElement
 
     private void InitInventory(Props props)
     {
-        var dummy = new Dummy(Managers.World.Context, 0);
-        Inventory inventory = new Inventory(dummy, 10, 20);
-        inventory.AddItem(new Stone(5), 1);
-        inventory.AddItem(new Stone(7), 8);
-        inventory.AddItem(new Stone(6), 12);
-        inventory.AddItem(new Stone(7), 25);
+        Inventory inventory = PlayerMono.Instance.Actual.GetComponent<ActiveItems>();
+        inventory.AddItem(new ConveyorItem(5), 1);
         inventory.AddItem(new Stone(7), 35);
         inventory.AddItem(new Stone(7), 40);
 

@@ -36,18 +36,13 @@ public class InGameHud : ActiveElement
 
     private void InitInventory()
     {
-        Character character = new Dummy(Managers.World.Context, 0);
-        Inventory inventory = new Inventory(character, 10, 20);
-        inventory.AddItem(new Stone(5), 1);
-        inventory.AddItem(new Stone(7), 8);
-        inventory.AddItem(new Stone(6), 12);
-        inventory.AddItem(new Stone(7), 25);
-        inventory.AddItem(new Stone(7), 35);
-        inventory.AddItem(new Stone(7), 40);
+        Player player = PlayerMono.Instance.Actual;
+        player.GetComponent<Inventory>().AddItem(new Stone(5), 1);
+        player.GetComponent<Inventory>().AddItem(new ConveyorItem(5), 1);
 
         this.inventoryDrawer = new InventoryDrawer(new InventoryDrawer.Props
         {
-            inventory = inventory,
+            inventory = player.GetComponent<Inventory>(),
             onSlotMouseUp = this.OnSlotMouseUp,
             onSlotMouseHold = this.OnSlotMouseHold,
         });
@@ -70,6 +65,7 @@ public class InGameHud : ActiveElement
     {
         this.craftingMenu = new CraftingMenu();
         this.Add(this.craftingMenu);
+        ToggleCraftingMenu();
     }
 
     private void ToggleCraftingMenu()

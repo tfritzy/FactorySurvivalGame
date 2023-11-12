@@ -77,6 +77,7 @@ public class InventorySlot : ActiveElement
         {
             this.Content.style.borderBottomRightRadius = 5;
         }
+
     }
 
     private void InitSlotIcon()
@@ -105,7 +106,12 @@ public class InventorySlot : ActiveElement
         var item = this.containingInventory.GetItemAt(this.index);
         this.itemIcon.Update(item);
 
-        if (item != null)
+        if (PlayerMono.Instance.SelectedInventory == this.containingInventory &&
+            PlayerMono.Instance.SelectedInventoryIndex == this.index)
+        {
+            this.Content.style.backgroundColor = UI.ColorTheme.SelectedInventorySlot;
+        }
+        else if (item != null)
         {
             this.Content.style.backgroundColor = UI.ColorTheme.OccupiedInventorySlot;
         }
