@@ -7,18 +7,18 @@ using UnityEngine.UIElements;
 public class InventoryGrid : ActiveElement
 {
     private Point2Int dimensions;
-    private InventoryComponent inventory;
+    private Inventory inventory;
     private List<InventorySlot> slots = new List<InventorySlot>();
-    private Action<MouseUpEvent, InventoryComponent, int> onSlotMouseUp;
-    public Action<MouseMoveEvent, InventoryComponent, int> onSlotMouseHold;
+    private Action<MouseUpEvent, Inventory, int> onSlotMouseUp;
+    public Action<MouseMoveEvent, Inventory, int> onSlotMouseHold;
 
     public struct Props
     {
         public int width;
         public int height;
-        public InventoryComponent inventory;
-        public Action<MouseUpEvent, InventoryComponent, int> onSlotMouseUp;
-        public Action<MouseMoveEvent, InventoryComponent, int> onSlotMouseHold;
+        public Inventory inventory;
+        public Action<MouseUpEvent, Inventory, int> onSlotMouseUp;
+        public Action<MouseMoveEvent, Inventory, int> onSlotMouseHold;
         public float Gap;
         public bool HideBorder;
         public float? SlotBorderWidth;

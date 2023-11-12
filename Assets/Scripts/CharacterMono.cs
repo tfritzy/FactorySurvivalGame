@@ -12,23 +12,23 @@ public abstract class CharacterMono : EntityMono
 
     public override void Spawn()
     {
-        CharacterPool.TryGetValue(this.Actual.Type, out List<GameObject> pool);
+        CharacterPool.TryGetValue(Actual.Type, out List<GameObject> pool);
         Point3Int gridPosition = new Point3Int(
-            this.Actual.GridPosition.x,
-            this.Actual.GridPosition.y,
-            Managers.World.World.GetTopHexHeight(this.Actual.GridPosition.x, this.Actual.GridPosition.y));
-        this.transform.position = WorldConversions.HexToUnityPosition(gridPosition);
-        this.body = Helpers.GetFromPoolOrCreate(Models.GetCharacterModel(Actual.Type), pool, this.transform);
+            Actual.GridPosition.x,
+            Actual.GridPosition.y,
+            Managers.World.World.GetTopHex(Actual.GridPosition.x, Actual.GridPosition.y).z);
+        transform.position = WorldConversions.HexToUnityPosition(gridPosition);
+        body = Helpers.GetFromPoolOrCreate(Models.GetCharacterModel(Actual.Type), pool, transform);
     }
 
     public override void Despawn()
     {
-        this.body.SetActive(false);
-        this.body.transform.SetParent(null);
+        body.SetActive(false);
+        body.transform.SetParent(null);
         if (!CharacterPool.ContainsKey(Actual.Type))
             CharacterPool[Actual.Type] = new List<GameObject>();
-        CharacterPool[Actual.Type].Add(this.body);
+        CharacterPool[Actual.Type].Add(body);
 
-        Destroy(this.gameObject);
+        Destroy(gameObject);
     }
 }

@@ -156,13 +156,13 @@ public class ConveyorMono : CharacterMono
         cachedPathInputSide = conveyor.PrevSide;
         cachedPathOutputSide = conveyor.NextSide;
 
-        Vector3 center = WorldConversions.HexToUnityPosition(WorldConversions.TopPosOf2D(owner.GridPosition));
+        Vector3 center = WorldConversions.HexToUnityPosition(owner.GridPosition);
         Vector3 prev = center;
         Vector3 next = center;
 
         if (this.prev != null)
         {
-            Vector3 prevConveyor = WorldConversions.HexToUnityPosition(WorldConversions.TopPosOf2D(this.prev.GridPosition));
+            Vector3 prevConveyor = WorldConversions.HexToUnityPosition(this.prev.GridPosition);
             Vector3 delta = (prevConveyor - center) / 2;
             prev = center + delta;
 
@@ -174,7 +174,7 @@ public class ConveyorMono : CharacterMono
 
         if (this.next != null)
         {
-            Vector3 nextConveyor = WorldConversions.HexToUnityPosition(WorldConversions.TopPosOf2D(this.next.GridPosition));
+            Vector3 nextConveyor = WorldConversions.HexToUnityPosition(this.next.GridPosition);
             Vector3 delta = (nextConveyor - center) / 2;
             next = center + delta;
 

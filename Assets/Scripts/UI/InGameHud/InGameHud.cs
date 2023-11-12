@@ -8,7 +8,7 @@ public class InGameHud : ActiveElement
     private InventoryDrawer inventoryDrawer;
     private ActiveItemsBar activeItemsBar;
     private CraftingMenu craftingMenu;
-    private InventoryComponent selectedSourceInventory;
+    private Inventory selectedSourceInventory;
     private int selectedSourceIndex;
     private SlotItemIcon hoveringSlot;
     private HashSet<int> touchedByDrag = new HashSet<int>();
@@ -36,8 +36,8 @@ public class InGameHud : ActiveElement
 
     private void InitInventory()
     {
-        Character character = new Dummy(Managers.World.Context);
-        InventoryComponent inventory = new InventoryComponent(character, 200);
+        Character character = new Dummy(Managers.World.Context, 0);
+        Inventory inventory = new Inventory(character, 10, 20);
         inventory.AddItem(new Stone(5), 1);
         inventory.AddItem(new Stone(7), 8);
         inventory.AddItem(new Stone(6), 12);
@@ -100,7 +100,7 @@ public class InGameHud : ActiveElement
         }
     }
 
-    private void OnSlotMouseUp(MouseUpEvent evt, InventoryComponent inventory, int index)
+    private void OnSlotMouseUp(MouseUpEvent evt, Inventory inventory, int index)
     {
         if (selectedSourceInventory == null)
         {
@@ -123,7 +123,7 @@ public class InGameHud : ActiveElement
         }
     }
 
-    private void OnSlotMouseHold(MouseMoveEvent evt, InventoryComponent inventory, int index)
+    private void OnSlotMouseHold(MouseMoveEvent evt, Inventory inventory, int index)
     {
         if (selectedSourceInventory != null)
         {

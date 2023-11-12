@@ -4,18 +4,18 @@ using UnityEngine;
 
 public static class Models
 {
-    private static Dictionary<HexType, GameObject> _hexModels = new Dictionary<HexType, GameObject>();
-    public static GameObject GetHexModel(HexType type)
+    private static Dictionary<TriangleSubType, GameObject> _subTypeMeshes = new Dictionary<TriangleSubType, GameObject>();
+    public static GameObject GetTriangleMesh(TriangleSubType type)
     {
-        if (_hexModels == null)
-            _hexModels = new Dictionary<HexType, GameObject>();
+        if (_subTypeMeshes == null)
+            _subTypeMeshes = new Dictionary<TriangleSubType, GameObject>();
 
-        if (!_hexModels.ContainsKey(type))
+        if (!_subTypeMeshes.ContainsKey(type))
         {
-            _hexModels[type] = Resources.Load<GameObject>("Prefabs/Hexes/" + type.ToString());
+            _subTypeMeshes[type] = Resources.Load<GameObject>("Prefabs/Triangles/" + type.ToString());
         }
 
-        return _hexModels[type];
+        return _subTypeMeshes[type];
     }
 
     private static Dictionary<CharacterType, GameObject> _characterModels = new Dictionary<CharacterType, GameObject>();

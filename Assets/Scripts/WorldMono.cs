@@ -9,51 +9,26 @@ public class WorldMono : MonoBehaviour
     public World World => Context.World;
     public Context Context;
     private RectInt ShownHexRange = new RectInt(-15, -8, 30, 24);
-    private Dictionary<Point3Int, HexMono> ShownHexesObjects = new Dictionary<Point3Int, HexMono>();
+    private Dictionary<Point3Int, GameObject[]> ShownHexesObjects = new Dictionary<Point3Int, GameObject[]>();
     private Point2Int PlayerPos = new Point2Int(-1, -1);
     private Conveyor first;
 
     void Awake()
     {
-        this.Context = new Context();
+        Context = new Context();
         TerrainGenerator generator = new TerrainGenerator(100, 100, 25);
-        this.Context.SetWorld(new Core.World(generator.GenerateFlatWorld(this.Context)));
-
-        first = new Conveyor(this.Context);
-        this.Context.World.AddBuilding(first, new Point2Int(0, 0));
-        this.Context.World.AddBuilding(new Conveyor(this.Context), new Point2Int(0, 1));
-        this.Context.World.AddBuilding(new Conveyor(this.Context), new Point2Int(1, 1));
-        this.Context.World.AddBuilding(new Conveyor(this.Context), new Point2Int(2, 1));
-        this.Context.World.AddBuilding(new Conveyor(this.Context), new Point2Int(3, 2));
+        Context.SetWorld(new World(new Core.Terrain(generator.GenerateFlatWorld(Context))));
     }
 
-    float itemTimer = 2f;
     void Update()
     {
-        if (itemTimer > 2f)
-        {
-            first.Component.AddItem(new Stone());
-            itemTimer = 0f;
-        }
-        itemTimer += Time.deltaTime;
-
-        this.Context.World.Tick(Time.deltaTime);
+        Context.World.Tick(Time.deltaTime);
 
         Point2Int currentPos = WorldConversions.UnityPositionToHex(Managers.Player.transform.position);
         if (currentPos != PlayerPos)
         {
             PlayerPos = currentPos;
             UpdateShownHex();
-        }
-
-        TickShown(Time.deltaTime);
-    }
-
-    private void TickShown(float deltaTime)
-    {
-        foreach (HexMono hex in ShownHexesObjects.Values)
-        {
-            hex.Tick(deltaTime);
         }
     }
 
@@ -64,25 +39,28 @@ public class WorldMono : MonoBehaviour
         {
             for (int y = PlayerPos.y + ShownHexRange.min.y; y < PlayerPos.y + ShownHexRange.max.y; y++)
             {
-
-                if (x < 0 || x >= this.Context.World.MaxX || y < 0 || y >= this.Context.World.MaxY)
+                if (x < 0 || x >= Context.World.MaxX || y < 0 || y >= Context.World.MaxY)
                 {
                     continue;
                 }
 
-                int topHex = this.Context.World.GetTopHexHeight(x, y);
-                Point3Int point = new Point3Int(x, y, topHex);
+                Point3Int topHex = Context.World.GetTopHex(x, y);
 
-                if (ShownHexesObjects.ContainsKey(point) || Context.World.GetHex(point) == null)
+                if (ShownHexesObjects.ContainsKey(topHex) || Context.World.Terrain.GetAt(topHex) == null)
                 {
                     continue;
                 }
 
-                GameObject shell = new GameObject("Hex");
-                HexMono hex = shell.AddComponent<HexMono>();
-                hex.Actual = Context.World.GetHex(point);
-                ShownHexesObjects[point] = hex;
-                hex.Spawn();
+                var point = Context.World.Terrain.GetAt(topHex);
+                GameObject[] hex = new GameObject[6];
+                for (int i = 0; i < 6; i++)
+                {
+                    hex[i] = Instantiate(Models.GetTriangleMesh(point.Value.Traingles[i].SubType));
+                    hex[i].transform.position = WorldConversions.HexToUnityPosition(topHex);
+                    hex[i].transform.SetParent(transform);
+                    hex[i].transform.rotation = Quaternion.Euler(0, 60 * i, 0);
+                }
+                ShownHexesObjects.Add(topHex, hex);
             }
         }
     }
@@ -101,9 +79,10 @@ public class WorldMono : MonoBehaviour
 
         foreach (Point3Int point in toRemove)
         {
-            HexMono hex = ShownHexesObjects[point];
-            ShownHexesObjects.Remove(point);
-            hex.Despawn();
+            for (int i = 0; i < 6; i++)
+            {
+                Destroy(ShownHexesObjects[point][i]);
+            }
         }
     }
 }

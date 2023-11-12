@@ -23,8 +23,8 @@ public class WornItemsSection : ActiveElement
 
     private void InitItemsSection()
     {
-        var dummy = new Dummy(Managers.World.Context);
-        InventoryComponent inventory = new InventoryComponent(dummy, 5);
+        var dummy = new Dummy(Managers.World.Context, 0);
+        Inventory inventory = new Inventory(dummy, 5, 1);
         var grid = new InventoryGrid(new InventoryGrid.Props
         {
             height = 5,

@@ -7,18 +7,18 @@ public class InventorySlot : ActiveElement
 {
     public const float Size = 50;
     private int index;
-    private InventoryComponent containingInventory;
-    private Action<MouseUpEvent, InventoryComponent, int> onMouseUp;
-    public Action<MouseMoveEvent, InventoryComponent, int> onMouseHold;
+    private Inventory containingInventory;
+    private Action<MouseUpEvent, Inventory, int> onMouseUp;
+    public Action<MouseMoveEvent, Inventory, int> onMouseHold;
     private SlotItemIcon itemIcon;
 
     public class Props
     {
         public Point2Int pos;
         public Point2Int parentDimensions;
-        public InventoryComponent inventory;
-        public Action<MouseUpEvent, InventoryComponent, int> onMouseUp;
-        public Action<MouseMoveEvent, InventoryComponent, int> onMouseHold;
+        public Inventory inventory;
+        public Action<MouseUpEvent, Inventory, int> onMouseUp;
+        public Action<MouseMoveEvent, Inventory, int> onMouseHold;
         public bool SelfSufficientBorder;
         public float BorderWidth = 2;
     }

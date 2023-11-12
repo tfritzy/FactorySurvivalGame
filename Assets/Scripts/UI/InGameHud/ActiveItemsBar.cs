@@ -11,8 +11,8 @@ public class ActiveItemsBar : ActiveElement
 
     public struct Props
     {
-        public Action<MouseUpEvent, InventoryComponent, int> onSlotMouseUp;
-        public Action<MouseMoveEvent, InventoryComponent, int> onSlotMouseHold;
+        public Action<MouseUpEvent, Inventory, int> onSlotMouseUp;
+        public Action<MouseMoveEvent, Inventory, int> onSlotMouseHold;
         public Action onInventoryButtonClicked;
         public Action onCraftingButtonClicked;
     }
@@ -50,8 +50,8 @@ public class ActiveItemsBar : ActiveElement
 
     private void InitInventory(Props props)
     {
-        var dummy = new Dummy(Managers.World.Context);
-        InventoryComponent inventory = new InventoryComponent(dummy, 200);
+        var dummy = new Dummy(Managers.World.Context, 0);
+        Inventory inventory = new Inventory(dummy, 10, 20);
         inventory.AddItem(new Stone(5), 1);
         inventory.AddItem(new Stone(7), 8);
         inventory.AddItem(new Stone(6), 12);

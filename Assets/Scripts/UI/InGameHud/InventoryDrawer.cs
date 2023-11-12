@@ -7,15 +7,15 @@ public class InventoryDrawer : Drawer
 {
     private InventoryGrid inventoryGrid;
     private WornItemsSection wornItemsSection;
-    public Action<MouseUpEvent, InventoryComponent, int> onSlotMouseUp;
-    public Action<MouseMoveEvent, InventoryComponent, int> onSlotMouseHold;
-    private InventoryComponent inventory;
+    public Action<MouseUpEvent, Inventory, int> onSlotMouseUp;
+    public Action<MouseMoveEvent, Inventory, int> onSlotMouseHold;
+    private Inventory inventory;
 
     public struct Props
     {
-        public InventoryComponent inventory;
-        public Action<MouseUpEvent, InventoryComponent, int> onSlotMouseUp;
-        public Action<MouseMoveEvent, InventoryComponent, int> onSlotMouseHold;
+        public Inventory inventory;
+        public Action<MouseUpEvent, Inventory, int> onSlotMouseUp;
+        public Action<MouseMoveEvent, Inventory, int> onSlotMouseHold;
     }
 
     public InventoryDrawer(Props props)
