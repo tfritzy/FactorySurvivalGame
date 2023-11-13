@@ -1,3 +1,4 @@
+using System.Drawing;
 using Core;
 using UnityEngine;
 
@@ -14,11 +15,14 @@ public static class WorldConversions
         return new Vector3(xF, yF, zF);
     }
 
-    public static Point2Int UnityPositionToHex(Vector3 unityPosition)
+    public static Point3Int UnityPositionToHex(Vector3 unityPosition)
     {
-        // TODO: This is not correct, but it's close enough for now
-        int x = Mathf.RoundToInt(unityPosition.x / HORIZONTAL_DIST);
-        int y = Mathf.RoundToInt(unityPosition.z / VERTICAL_DIST);
-        return new Point2Int(x, y);
+        Point3Int res =
+            GridHelpers.PixelToEvenRPlusHeight(new Point3Float(unityPosition.x, unityPosition.z, unityPosition.y));
+        if (res.y % 2 == 1)
+        {
+            res.x -= 1; // 🤷‍♀️
+        }
+        return res;
     }
 }

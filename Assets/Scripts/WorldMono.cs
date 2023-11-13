@@ -10,6 +10,7 @@ public class WorldMono : MonoBehaviour
     public Context Context;
     private RectInt ShownHexRange = new RectInt(-15, -8, 30, 24);
     private Dictionary<Point3Int, GameObject[]> ShownHexesObjects = new Dictionary<Point3Int, GameObject[]>();
+    private Dictionary<ulong, GameObject> SpawnedCharacters = new Dictionary<ulong, GameObject>();
     private Point2Int PlayerPos = new Point2Int(-1, -1);
     private Conveyor first;
 
@@ -37,7 +38,7 @@ public class WorldMono : MonoBehaviour
     {
         Context.World.Tick(Time.deltaTime);
 
-        Point2Int currentPos = WorldConversions.UnityPositionToHex(Managers.Player.transform.position);
+        Point2Int currentPos = (Point2Int)WorldConversions.UnityPositionToHex(Managers.Player.transform.position);
         if (currentPos != PlayerPos)
         {
             PlayerPos = currentPos;
@@ -120,6 +121,12 @@ public class WorldMono : MonoBehaviour
                 GameObject building = Instantiate(Models.GetCharacterModel(newBuilding.Type));
                 building.transform.position = WorldConversions.HexToUnityPosition(newBuilding.GridPosition);
                 building.transform.SetParent(transform);
+                SpawnedCharacters.Add(newBuilding.Id, building);
+                break;
+            case UpdateType.BuildingRemoved:
+                BuildingRemoved updateBuildingRemoved = (BuildingRemoved)update;
+                Destroy(SpawnedCharacters[updateBuildingRemoved.Id]);
+                SpawnedCharacters.Remove(updateBuildingRemoved.Id);
                 break;
         }
         World.AckUpdate();

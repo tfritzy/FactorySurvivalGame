@@ -2,15 +2,9 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "Unity Editor",
-            "type": "unity",
-            "request": "launch",
-            "path": "E:/development/FactorySurvivalGame/Library/EditorInstance.json"
-        },
-        {
             "name": "Attach to Unity",
             "type": "vstuc",
             "request": "attach"
         }
-    ]
+     ]
 }

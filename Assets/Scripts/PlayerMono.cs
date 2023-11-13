@@ -23,9 +23,9 @@ public class PlayerMono : MonoBehaviour
         }
     }
 
-    void Start()
+    void Awake()
     {
-        this.Actual = new Player(Managers.World.Context, 0);
+        this.Actual = new Player(WorldMono.Instance.Context, 0);
         this.SelectedInventory = this.Actual.GetComponent<ActiveItems>();
         this.SelectedInventoryIndex = 0;
     }
@@ -34,15 +34,11 @@ public class PlayerMono : MonoBehaviour
     {
         ListenForInventoryControls();
         PreviewSelectedItem();
+        BuildPreviewBuilding();
     }
 
     private void PreviewSelectedItem()
     {
-        if (PreviewBuilding != null)
-        {
-            return;
-        }
-
         if (this.SelectedItem == null)
         {
             return;
@@ -50,13 +46,43 @@ public class PlayerMono : MonoBehaviour
 
         if (this.SelectedItem.Builds != null)
         {
+            Point3Int? hex = RaycastHelper.GetHexUnderCursor();
+            if (hex == null ||
+                hex == PreviewBuilding?.GridPosition ||
+                !WorldMono.Instance.World.Terrain.IsInBounds(hex.Value))
+            {
+                return;
+            }
+
+            if (PreviewBuilding != null)
+            {
+                WorldMono.Instance.World.RemoveBuilding(PreviewBuilding.Id);
+                PreviewBuilding = null;
+            }
+
             PreviewBuilding =
-                (Building)Character.Create(
-                    this.SelectedItem.Builds.Value,
-                    WorldMono.Instance.Context,
-                    this.Actual.Alliance);
-            WorldMono.Instance.World.AddBuilding(PreviewBuilding, new Point2Int(0, 0));
+                this.Actual.BuidPreviewBuildingFromItem(
+                    this.SelectedInventoryIndex,
+                    (Point2Int)hex.Value);
         }
+    }
+
+    private void BuildPreviewBuilding()
+    {
+        if (PreviewBuilding == null)
+        {
+            return;
+        }
+
+        if (!Input.GetMouseButton(0))
+        {
+            return;
+        }
+
+        this.Actual.MakePreviewBuildingRealFromItem(
+            this.SelectedInventoryIndex,
+            PreviewBuilding);
+        PreviewBuilding = null;
     }
 
     private void ListenForInventoryControls()

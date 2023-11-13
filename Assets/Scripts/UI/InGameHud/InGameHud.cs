@@ -37,8 +37,6 @@ public class InGameHud : ActiveElement
     private void InitInventory()
     {
         Player player = PlayerMono.Instance.Actual;
-        player.GetComponent<Inventory>().AddItem(new Stone(6), 1);
-        player.GetComponent<Inventory>().AddItem(new ConveyorItem(4), 2);
 
         this.inventoryDrawer = new InventoryDrawer(new InventoryDrawer.Props
         {
