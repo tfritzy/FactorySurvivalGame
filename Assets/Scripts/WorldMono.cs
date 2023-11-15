@@ -31,7 +31,9 @@ public class WorldMono : MonoBehaviour
     {
         Context = new Context();
         TerrainGenerator generator = new TerrainGenerator(100, 100, 25);
-        Context.SetWorld(new World(new Core.Terrain(generator.GenerateFlatWorld(Context))));
+        Context.SetWorld(new World(
+            new Core.Terrain(generator.GenerateFlatWorld(Context),
+            Context)));
     }
 
     void Update()
@@ -74,7 +76,7 @@ public class WorldMono : MonoBehaviour
                 GameObject[] hex = new GameObject[6];
                 for (int i = 0; i < 6; i++)
                 {
-                    hex[i] = Instantiate(Models.GetTriangleMesh(point.Value.Traingles[i].SubType));
+                    hex[i] = Instantiate(Models.GetTriangleMesh(point[i].SubType));
                     hex[i].transform.position = WorldConversions.HexToUnityPosition(topHex);
                     hex[i].transform.SetParent(transform);
                     hex[i].transform.rotation = Quaternion.Euler(0, 60 * i, 0);
@@ -122,6 +124,7 @@ public class WorldMono : MonoBehaviour
                 building.transform.position = WorldConversions.HexToUnityPosition(newBuilding.GridPosition);
                 building.transform.SetParent(transform);
                 SpawnedCharacters.Add(newBuilding.Id, building);
+                building.GetComponent<EntityMono>().Setup(newBuilding);
                 break;
             case UpdateType.BuildingRemoved:
                 BuildingRemoved updateBuildingRemoved = (BuildingRemoved)update;

@@ -9,7 +9,7 @@ public static class WorldConversions
 
     public static Vector3 HexToUnityPosition(Point3Int hexPosition)
     {
-        float xF = HORIZONTAL_DIST * hexPosition.x + (hexPosition.y % 2 == 1 ? Constants.HEX_APOTHEM : 0);
+        float xF = HORIZONTAL_DIST * hexPosition.x - (hexPosition.y % 2 == 1 ? Constants.HEX_APOTHEM : 0);
         float zF = VERTICAL_DIST * hexPosition.y;
         float yF = hexPosition.z * Constants.HEX_HEIGHT;
         return new Vector3(xF, yF, zF);
@@ -19,10 +19,7 @@ public static class WorldConversions
     {
         Point3Int res =
             GridHelpers.PixelToEvenRPlusHeight(new Point3Float(unityPosition.x, unityPosition.z, unityPosition.y));
-        if (res.y % 2 == 1)
-        {
-            res.x -= 1; // 🤷‍♀️
-        }
+        res.y = -res.y;
         return res;
     }
 }

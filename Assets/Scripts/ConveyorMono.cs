@@ -12,26 +12,46 @@ public class ConveyorMono : CharacterMono
     private LinkedList<ItemMono> itemBodies = new LinkedList<ItemMono>();
     private List<Vector3> path = new List<Vector3>();
     private List<float> pathProgress = new List<float>();
-
-    public override void Spawn()
+    private GameObject _straightBody;
+    public GameObject StraightBody
     {
-        base.Spawn();
+        get
+        {
+            if (_straightBody == null)
+            {
+                _straightBody = this.transform.Find("Straight").gameObject;
+            }
+            return _straightBody;
+
+        }
+    }
+    private GameObject _curvedBody;
+    public GameObject CurvedBody
+    {
+        get
+        {
+            if (_curvedBody == null)
+            {
+                _curvedBody = this.transform.Find("Curved").gameObject;
+            }
+            return _curvedBody;
+
+        }
     }
 
-    override public void Despawn()
+    public override void Setup(Entity entity)
     {
-        base.Despawn();
-
-        foreach (ItemMono itemMono in this.itemBodies)
-        {
-            itemMono.Despawn();
-        }
+        base.Setup(entity);
+        UpdateOwnBody();
     }
 
     public override void Tick(float deltaTime)
     {
+        base.Tick(deltaTime);
+
         MaintainBodyParity();
         UpdatePath();
+        UpdateOwnBody();
 
         var current = conveyor.Items.First;
         var currentBody = itemBodies.First;
@@ -64,9 +84,38 @@ public class ConveyorMono : CharacterMono
         return Vector3.Lerp(path[index - 1], path[index], progressAlongSegment / segmentLength);
     }
 
+    private bool? cachedCurved;
+    public void UpdateOwnBody()
+    {
+        if (Actual.Conveyor.IsCurved() != cachedCurved)
+        {
+            cachedCurved = Actual.Conveyor.IsCurved();
+            if (cachedCurved.Value)
+            {
+                CurvedBody.SetActive(true);
+                StraightBody.gameObject.SetActive(false);
+            }
+            else
+            {
+                StraightBody.gameObject.SetActive(true);
+                CurvedBody.SetActive(false);
+
+                if (Actual.Conveyor.PrevSide != null)
+                {
+                    var rotation = (int)Actual.Conveyor.PrevSide * 60;
+                    StraightBody.transform.rotation = Quaternion.Euler(0, rotation, 0);
+                }
+                else if (Actual.Conveyor.NextSide != null)
+                {
+                    var rotation = (int)Actual.Conveyor.NextSide * 60;
+                    StraightBody.transform.rotation = Quaternion.Euler(0, rotation, 0);
+                }
+            }
+        }
+    }
+
     private void MaintainBodyParity()
     {
-
         if (itemBodies.Count == 0 || conveyor.Items.Count == 0)
         {
             FullReset();
@@ -79,12 +128,12 @@ public class ConveyorMono : CharacterMono
         {
             if (itemBodies.First.Value.Actual.Type != conveyor.Items.First.Value.Item.Type)
             {
-                itemBodies.First.Value.Despawn();
+                // itemBodies.First.Value.Despawn();
                 itemBodies.RemoveFirst();
             }
             else if (itemBodies.Last.Value.Actual.Type != conveyor.Items.Last.Value.Item.Type)
             {
-                itemBodies.Last.Value.Despawn();
+                // itemBodies.Last.Value.Despawn();
                 itemBodies.RemoveLast();
             }
             else
@@ -124,7 +173,7 @@ public class ConveyorMono : CharacterMono
         ItemMono itemMono = itemShell.AddComponent<ItemMono>();
         itemMono.Actual = item;
         itemMono.transform.position = this.transform.position;
-        itemMono.Spawn();
+        // itemMono.Spawn();
         return itemMono;
     }
 
@@ -132,7 +181,7 @@ public class ConveyorMono : CharacterMono
     {
         foreach (ItemMono itemMono in itemBodies)
         {
-            itemMono.Despawn();
+            // itemMono.Despawn();
         }
 
         itemBodies = new LinkedList<ItemMono>();
