@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class TextureScroll : MonoBehaviour
 {
+    public bool Reversed = false;
     private Material material;
 
     void Update()
@@ -14,7 +15,7 @@ public class TextureScroll : MonoBehaviour
         }
 
         Vector2 offset = material.mainTextureOffset;
-        offset.x -= Time.deltaTime / 10;
+        offset.x += (Reversed ? -1 : 1) * Time.deltaTime / 10;
         material.mainTextureOffset = offset;
     }
 }

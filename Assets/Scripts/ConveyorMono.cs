@@ -5,6 +5,9 @@ using UnityEngine;
 
 public class ConveyorMono : CharacterMono
 {
+    public Texture2D ConveyorForwardTexture;
+    public Texture2D ConveyorBackwardsTexture;
+
     private Building owner => (Building)this.Actual;
     private ConveyorComponent conveyor => owner.GetComponent<ConveyorComponent>();
     private Building next => (Building)conveyor.Next?.Owner;
@@ -93,11 +96,6 @@ public class ConveyorMono : CharacterMono
             Actual.Conveyor.PrevSide != cachedPrev ||
             Actual.Conveyor.NextSide != cachedNext)
         {
-            Debug.Log(
-                "Conveyor at " + ((Building)Actual).GridPosition +
-                " has next: " + Actual.Conveyor.NextSide +
-                " and prev: " + Actual.Conveyor.PrevSide +
-                " and is curved: " + Actual.Conveyor.IsCurved());
             cachedNext = Actual.Conveyor.NextSide;
             cachedPrev = Actual.Conveyor.PrevSide;
             cachedCurved = Actual.Conveyor.IsCurved();
@@ -115,9 +113,12 @@ public class ConveyorMono : CharacterMono
                 int delta = outSide - inSide;
                 bool flipped = delta != 2;
 
-                Debug.Log("Has curved prev side on: " + Actual.Conveyor.PrevSide);
                 var rotation = ((int)Actual.Conveyor.PrevSide + (flipped ? 4 : 0)) * 60;
                 CurvedBody.transform.rotation = Quaternion.Euler(0, rotation, 0);
+
+                GetComponentInChildren<TextureScroll>().Reversed = flipped;
+                CurvedBody.transform.Find("Belt").GetComponent<MeshRenderer>().material.mainTexture
+                    = flipped ? ConveyorBackwardsTexture : ConveyorForwardTexture;
             }
             else
             {
