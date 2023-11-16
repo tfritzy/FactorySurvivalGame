@@ -85,15 +85,39 @@ public class ConveyorMono : CharacterMono
     }
 
     private bool? cachedCurved;
+    private HexSide? cachedPrev;
+    private HexSide? cachedNext;
     public void UpdateOwnBody()
     {
-        if (Actual.Conveyor.IsCurved() != cachedCurved)
+        if (Actual.Conveyor.IsCurved() != cachedCurved ||
+            Actual.Conveyor.PrevSide != cachedPrev ||
+            Actual.Conveyor.NextSide != cachedNext)
         {
+            Debug.Log(
+                "Conveyor at " + ((Building)Actual).GridPosition +
+                " has next: " + Actual.Conveyor.NextSide +
+                " and prev: " + Actual.Conveyor.PrevSide +
+                " and is curved: " + Actual.Conveyor.IsCurved());
+            cachedNext = Actual.Conveyor.NextSide;
+            cachedPrev = Actual.Conveyor.PrevSide;
             cachedCurved = Actual.Conveyor.IsCurved();
             if (cachedCurved.Value)
             {
                 CurvedBody.SetActive(true);
                 StraightBody.gameObject.SetActive(false);
+
+                int inSide = (int)Actual.Conveyor.PrevSide;
+                int outSide = (int)Actual.Conveyor.NextSide;
+                if (outSide < 2 && inSide > 3)
+                    outSide += 6;
+                if (inSide > 3 && outSide < 2)
+                    inSide -= 6;
+                int delta = outSide - inSide;
+                bool flipped = delta != 2;
+
+                Debug.Log("Has curved prev side on: " + Actual.Conveyor.PrevSide);
+                var rotation = ((int)Actual.Conveyor.PrevSide + (flipped ? 4 : 0)) * 60;
+                CurvedBody.transform.rotation = Quaternion.Euler(0, rotation, 0);
             }
             else
             {
@@ -102,11 +126,13 @@ public class ConveyorMono : CharacterMono
 
                 if (Actual.Conveyor.PrevSide != null)
                 {
-                    var rotation = (int)Actual.Conveyor.PrevSide * 60;
+                    Debug.Log("Has prev side on: " + Actual.Conveyor.PrevSide);
+                    var rotation = ((int)Actual.Conveyor.PrevSide + 3) * 60;
                     StraightBody.transform.rotation = Quaternion.Euler(0, rotation, 0);
                 }
                 else if (Actual.Conveyor.NextSide != null)
                 {
+                    Debug.Log("Has next side on: " + Actual.Conveyor.NextSide);
                     var rotation = (int)Actual.Conveyor.NextSide * 60;
                     StraightBody.transform.rotation = Quaternion.Euler(0, rotation, 0);
                 }
