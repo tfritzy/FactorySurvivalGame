@@ -9,7 +9,7 @@ public class WorldMono : MonoBehaviour
     public World World => Context.World;
     public Context Context;
     private RectInt ShownHexRange = new RectInt(-15, -8, 30, 24);
-    private Dictionary<Point3Int, GameObject[]> ShownHexesObjects = new Dictionary<Point3Int, GameObject[]>();
+    private Dictionary<Point2Int, GameObject[]> ShownHexesObjects = new Dictionary<Point2Int, GameObject[]>();
     private Dictionary<ulong, GameObject> SpawnedCharacters = new Dictionary<ulong, GameObject>();
     private Point2Int PlayerPos = new Point2Int(-1, -1);
     private Conveyor first;
@@ -69,7 +69,8 @@ public class WorldMono : MonoBehaviour
                 for (int z = topHeight; z >= 0; z--)
                 {
                     Point3Int hex = new Point3Int(x, y, z);
-                    if (ShownHexesObjects.ContainsKey(hex) || Context.World.Terrain.GetAt(hex) == null)
+                    var point2Hex = (Point2Int)hex;
+                    if (ShownHexesObjects.ContainsKey(point2Hex) || Context.World.Terrain.GetAt(hex) == null)
                     {
                         continue;
                     }
@@ -78,12 +79,16 @@ public class WorldMono : MonoBehaviour
                     GameObject[] hexes = new GameObject[6];
                     for (int i = 0; i < 6; i++)
                     {
-                        hexes[i] = Instantiate(Models.GetTriangleMesh(point[i].SubType));
+                        hexes[i] = HexPool.GetTri(point[i].SubType, this.transform);
                         hexes[i].transform.position = WorldConversions.HexToUnityPosition(hex);
                         hexes[i].transform.SetParent(transform);
                         hexes[i].transform.rotation = Quaternion.Euler(0, 60 * i, 0);
                     }
-                    ShownHexesObjects.Add(hex, hexes);
+                    ShownHexesObjects.Add(point2Hex, hexes);
+                    if (World.GetBuildingAt(point2Hex) != null)
+                    {
+                        SetGrassActiveForHex(point2Hex, false);
+                    }
                 }
             }
         }
@@ -91,8 +96,8 @@ public class WorldMono : MonoBehaviour
 
     private void DespawnOutOfRangeHex()
     {
-        List<Point3Int> toRemove = new List<Point3Int>();
-        foreach (Point3Int point in ShownHexesObjects.Keys)
+        List<Point2Int> toRemove = new();
+        foreach (Point2Int point in ShownHexesObjects.Keys)
         {
             if (point.x < PlayerPos.x + ShownHexRange.min.x || point.x > PlayerPos.x + ShownHexRange.max.x ||
                 point.y < PlayerPos.y + ShownHexRange.min.y || point.y > PlayerPos.y + ShownHexRange.max.y)
@@ -101,15 +106,18 @@ public class WorldMono : MonoBehaviour
             }
         }
 
-        foreach (Point3Int point in toRemove)
+        foreach (Point2Int point in toRemove)
         {
+            SetGrassActiveForHex(point, true);
             for (int i = 0; i < 6; i++)
             {
-                Destroy(ShownHexesObjects[point][i]);
+                var parsedType =
+                    System.Enum.Parse(typeof(TriangleSubType), ShownHexesObjects[point][i].name);
+                HexPool.ReturnTri((TriangleSubType)parsedType, ShownHexesObjects[point][i]);
             }
         }
 
-        foreach (Point3Int point in toRemove)
+        foreach (Point2Int point in toRemove)
         {
             ShownHexesObjects.Remove(point);
         }
@@ -128,19 +136,19 @@ public class WorldMono : MonoBehaviour
                 building.transform.SetParent(transform);
                 SpawnedCharacters.Add(newBuilding.Id, building);
                 building.GetComponent<EntityMono>().Setup(newBuilding);
-                SetGrassActiveForHex(newBuilding.GridPosition, false);
+                SetGrassActiveForHex((Point2Int)newBuilding.GridPosition, false);
                 break;
             case UpdateType.BuildingRemoved:
                 BuildingRemoved updateBuildingRemoved = (BuildingRemoved)update;
                 Destroy(SpawnedCharacters[updateBuildingRemoved.Id]);
                 SpawnedCharacters.Remove(updateBuildingRemoved.Id);
-                SetGrassActiveForHex(updateBuildingRemoved.GridPosition, true);
+                SetGrassActiveForHex((Point2Int)updateBuildingRemoved.GridPosition, true);
                 break;
         }
         World.AckUpdate();
     }
 
-    private void SetGrassActiveForHex(Point3Int hex, bool active)
+    private void SetGrassActiveForHex(Point2Int hex, bool active)
     {
         if (ShownHexesObjects.ContainsKey(hex))
         {
