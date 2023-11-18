@@ -32,7 +32,7 @@ public class WorldMono : MonoBehaviour
         Context = new Context();
         TerrainGenerator generator = new TerrainGenerator(100, 100, 25);
         Context.SetWorld(new World(
-            new Core.Terrain(generator.GenerateFlatWorld(Context),
+            new Core.Terrain(generator.GenerateRollingHills(Context),
             Context)));
     }
 
@@ -65,23 +65,26 @@ public class WorldMono : MonoBehaviour
                     continue;
                 }
 
-                Point3Int topHex = Context.World.GetTopHex(x, y);
-
-                if (ShownHexesObjects.ContainsKey(topHex) || Context.World.Terrain.GetAt(topHex) == null)
+                int topHeight = Context.World.Terrain.GetTopHex(new Point2Int(x, y)).z;
+                for (int z = topHeight; z >= 0; z--)
                 {
-                    continue;
-                }
+                    Point3Int hex = new Point3Int(x, y, z);
+                    if (ShownHexesObjects.ContainsKey(hex) || Context.World.Terrain.GetAt(hex) == null)
+                    {
+                        continue;
+                    }
 
-                var point = Context.World.Terrain.GetAt(topHex);
-                GameObject[] hex = new GameObject[6];
-                for (int i = 0; i < 6; i++)
-                {
-                    hex[i] = Instantiate(Models.GetTriangleMesh(point[i].SubType));
-                    hex[i].transform.position = WorldConversions.HexToUnityPosition(topHex);
-                    hex[i].transform.SetParent(transform);
-                    hex[i].transform.rotation = Quaternion.Euler(0, 60 * i, 0);
+                    var point = Context.World.Terrain.GetAt(hex);
+                    GameObject[] hexes = new GameObject[6];
+                    for (int i = 0; i < 6; i++)
+                    {
+                        hexes[i] = Instantiate(Models.GetTriangleMesh(point[i].SubType));
+                        hexes[i].transform.position = WorldConversions.HexToUnityPosition(hex);
+                        hexes[i].transform.SetParent(transform);
+                        hexes[i].transform.rotation = Quaternion.Euler(90, 60 * i, 0);
+                    }
+                    ShownHexesObjects.Add(hex, hexes);
                 }
-                ShownHexesObjects.Add(topHex, hex);
             }
         }
     }

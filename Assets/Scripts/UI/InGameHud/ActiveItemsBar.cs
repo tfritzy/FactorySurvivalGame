@@ -21,7 +21,7 @@ public class ActiveItemsBar : ActiveElement
         this.style.backgroundColor = Color.red;
         this.style.flexDirection = FlexDirection.Row;
 
-        InitButtons(props);
+        // InitButtons(props);
         InitInventory(props);
     }
 
