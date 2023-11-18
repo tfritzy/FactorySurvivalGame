@@ -32,7 +32,7 @@ public class WorldMono : MonoBehaviour
         Context = new Context();
         TerrainGenerator generator = new TerrainGenerator(100, 100, 25);
         Context.SetWorld(new World(
-            new Core.Terrain(generator.GenerateRollingHills(Context),
+            new Core.Terrain(generator.GenerateFlatWorld(Context),
             Context)));
     }
 
@@ -81,7 +81,7 @@ public class WorldMono : MonoBehaviour
                         hexes[i] = Instantiate(Models.GetTriangleMesh(point[i].SubType));
                         hexes[i].transform.position = WorldConversions.HexToUnityPosition(hex);
                         hexes[i].transform.SetParent(transform);
-                        hexes[i].transform.rotation = Quaternion.Euler(90, 60 * i, 0);
+                        hexes[i].transform.rotation = Quaternion.Euler(0, 60 * i, 0);
                     }
                     ShownHexesObjects.Add(hex, hexes);
                 }
@@ -128,13 +128,26 @@ public class WorldMono : MonoBehaviour
                 building.transform.SetParent(transform);
                 SpawnedCharacters.Add(newBuilding.Id, building);
                 building.GetComponent<EntityMono>().Setup(newBuilding);
+                SetGrassActiveForHex(newBuilding.GridPosition, false);
                 break;
             case UpdateType.BuildingRemoved:
                 BuildingRemoved updateBuildingRemoved = (BuildingRemoved)update;
                 Destroy(SpawnedCharacters[updateBuildingRemoved.Id]);
                 SpawnedCharacters.Remove(updateBuildingRemoved.Id);
+                SetGrassActiveForHex(updateBuildingRemoved.GridPosition, true);
                 break;
         }
         World.AckUpdate();
+    }
+
+    private void SetGrassActiveForHex(Point3Int hex, bool active)
+    {
+        if (ShownHexesObjects.ContainsKey(hex))
+        {
+            for (int i = 0; i < 6; i++)
+            {
+                ShownHexesObjects[hex][i].transform.Find("Grass").gameObject.SetActive(active);
+            }
+        }
     }
 }

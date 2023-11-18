@@ -8,7 +8,7 @@ public abstract class EntityMono : MonoBehaviour
     {
         this.Actual = entity;
     }
-    protected Entity Actual;
+    public Entity Actual { get; protected set; }
 
 
     void Update()
