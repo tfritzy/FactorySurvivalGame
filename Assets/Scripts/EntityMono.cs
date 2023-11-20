@@ -10,7 +10,6 @@ public abstract class EntityMono : MonoBehaviour
     }
     public Entity Actual { get; protected set; }
 
-
     void Update()
     {
         Tick(Time.deltaTime);

@@ -1,13 +1,12 @@
-using System.Collections.Generic;
 using Core;
 using UnityEngine;
 
-public class ItemMono : EntityMono
+public class ItemMono : MonoBehaviour
 {
-    public Item Actual;
+    public Item Item { get; private set; }
 
-    private static Dictionary<ItemType, List<GameObject>> ItemPool = new Dictionary<ItemType, List<GameObject>>();
-
-    public GameObject body;
-
+    public void SetItem(Item item)
+    {
+        Item = item;
+    }
 }

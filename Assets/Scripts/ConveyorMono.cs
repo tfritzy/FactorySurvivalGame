@@ -153,12 +153,12 @@ public class ConveyorMono : CharacterMono
 
         if (deltaCount == 1)
         {
-            if (itemBodies.First.Value.Actual.Type != conveyor.Items.First.Value.Item.Type)
+            if (itemBodies.First.Value.Item.Type != conveyor.Items.First.Value.Item.Type)
             {
                 // itemBodies.First.Value.Despawn();
                 itemBodies.RemoveFirst();
             }
-            else if (itemBodies.Last.Value.Actual.Type != conveyor.Items.Last.Value.Item.Type)
+            else if (itemBodies.Last.Value.Item.Type != conveyor.Items.Last.Value.Item.Type)
             {
                 // itemBodies.Last.Value.Despawn();
                 itemBodies.RemoveLast();
@@ -171,12 +171,12 @@ public class ConveyorMono : CharacterMono
         }
         else if (deltaCount == -1)
         {
-            if (itemBodies.First.Value.Actual.Type != conveyor.Items.First.Value.Item.Type)
+            if (itemBodies.First.Value.Item.Type != conveyor.Items.First.Value.Item.Type)
             {
                 ItemMono item = BuildItem(conveyor.Items.First.Value.Item);
                 itemBodies.AddFirst(item);
             }
-            else if (itemBodies.Last.Value.Actual.Type != conveyor.Items.Last.Value.Item.Type)
+            else if (itemBodies.Last.Value.Item.Type != conveyor.Items.Last.Value.Item.Type)
             {
                 ItemMono item = BuildItem(conveyor.Items.Last.Value.Item);
                 itemBodies.AddLast(item);
@@ -196,19 +196,18 @@ public class ConveyorMono : CharacterMono
 
     private ItemMono BuildItem(Item item)
     {
-        GameObject itemShell = new GameObject("Item");
-        ItemMono itemMono = itemShell.AddComponent<ItemMono>();
-        itemMono.Actual = item;
-        itemMono.transform.position = this.transform.position;
-        // itemMono.Spawn();
-        return itemMono;
+        GameObject itemBody = Instantiate(Models.GetItemModel(item.Type));
+        var mono = itemBody.AddComponent<ItemMono>();
+        mono.SetItem(item);
+        itemBody.transform.position = this.transform.position;
+        return mono;
     }
 
     private void FullReset()
     {
-        foreach (ItemMono itemMono in itemBodies)
+        foreach (ItemMono item in itemBodies)
         {
-            // itemMono.Despawn();
+            Destroy(item.gameObject);
         }
 
         itemBodies = new LinkedList<ItemMono>();

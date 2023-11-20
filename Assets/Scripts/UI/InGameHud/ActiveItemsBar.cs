@@ -53,6 +53,7 @@ public class ActiveItemsBar : ActiveElement
         Inventory inventory = PlayerMono.Instance.Actual.GetComponent<ActiveItems>();
         inventory.AddItem(new ConveyorItem(16), 1);
         inventory.AddItem(new ConveyorItem(16), 2);
+        inventory.AddItem(new MineshaftItem(), 3);
         inventory.AddItem(new Stone(7), 10);
 
         this.inventoryGrid = new InventoryGrid(new InventoryGrid.Props
