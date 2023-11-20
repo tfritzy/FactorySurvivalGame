@@ -155,12 +155,12 @@ public class ConveyorMono : CharacterMono
         {
             if (itemBodies.First.Value.Item.Type != conveyor.Items.First.Value.Item.Type)
             {
-                // itemBodies.First.Value.Despawn();
+                ItemPool.ReturnItem(itemBodies.First.Value.Item.Type, itemBodies.First.Value.gameObject);
                 itemBodies.RemoveFirst();
             }
             else if (itemBodies.Last.Value.Item.Type != conveyor.Items.Last.Value.Item.Type)
             {
-                // itemBodies.Last.Value.Despawn();
+                ItemPool.ReturnItem(itemBodies.Last.Value.Item.Type, itemBodies.Last.Value.gameObject);
                 itemBodies.RemoveLast();
             }
             else
@@ -196,8 +196,8 @@ public class ConveyorMono : CharacterMono
 
     private ItemMono BuildItem(Item item)
     {
-        GameObject itemBody = Instantiate(Models.GetItemModel(item.Type));
-        var mono = itemBody.AddComponent<ItemMono>();
+        var itemBody = ItemPool.GetItem(item.Type, this.transform);
+        var mono = itemBody.GetComponent<ItemMono>();
         mono.SetItem(item);
         itemBody.transform.position = this.transform.position;
         return mono;
@@ -268,7 +268,7 @@ public class ConveyorMono : CharacterMono
 
         for (int i = 0; i < path.Count; i++)
         {
-            path[i] += new Vector3(0f, 0.5f, 0f);
+            path[i] += new Vector3(0f, 0.25f, 0f);
         }
 
         this.pathProgress = new List<float>(path.Count);
