@@ -135,7 +135,7 @@ public class WorldMono : MonoBehaviour
                 building.transform.position = WorldConversions.HexToUnityPosition(newBuilding.GridPosition);
                 building.transform.SetParent(transform);
                 SpawnedCharacters.Add(newBuilding.Id, building);
-                building.GetComponent<EntityMono>()?.Setup(newBuilding);
+                building.GetComponent<EntityMono>().Setup(newBuilding);
                 SetGrassActiveForHex((Point2Int)newBuilding.GridPosition, false);
                 break;
             case UpdateType.BuildingRemoved:

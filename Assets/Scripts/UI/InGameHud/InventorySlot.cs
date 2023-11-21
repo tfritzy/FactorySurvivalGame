@@ -45,7 +45,7 @@ public class InventorySlot : ActiveElement
         if (props.SelfSufficientBorder)
         {
             var outerBorder = new VisualElement();
-            UI.ColorTheme.Apply3DPanelBorderColor(outerBorder, inverse: true);
+            UIManager.ColorTheme.Apply3DPanelBorderColor(outerBorder, inverse: true);
             outerBorder.SetAllBorderWidth(props.BorderWidth);
             outerBorder.SetAllBorderRadius(5);
             this.Add(outerBorder);
@@ -56,7 +56,7 @@ public class InventorySlot : ActiveElement
         }
 
         this.Content.SetAllBorderWidth(props.BorderWidth);
-        UI.ColorTheme.Apply3DPanelBorderColor(this.Content);
+        UIManager.ColorTheme.Apply3DPanelBorderColor(this.Content);
 
         if (props.pos.x == 0 && props.pos.y == 0)
         {
@@ -109,15 +109,15 @@ public class InventorySlot : ActiveElement
         if (PlayerMono.Instance.SelectedInventory == this.containingInventory &&
             PlayerMono.Instance.SelectedInventoryIndex == this.index)
         {
-            this.Content.style.backgroundColor = UI.ColorTheme.SelectedInventorySlot;
+            this.Content.style.backgroundColor = UIManager.ColorTheme.SelectedInventorySlot;
         }
         else if (item != null)
         {
-            this.Content.style.backgroundColor = UI.ColorTheme.OccupiedInventorySlot;
+            this.Content.style.backgroundColor = UIManager.ColorTheme.OccupiedInventorySlot;
         }
         else
         {
-            this.Content.style.backgroundColor = UI.ColorTheme.PanelBackgroundColor;
+            this.Content.style.backgroundColor = UIManager.ColorTheme.PanelBackgroundColor;
         }
     }
 }

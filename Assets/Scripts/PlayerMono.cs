@@ -7,7 +7,7 @@ public class PlayerMono : MonoBehaviour
     public int SelectedInventoryIndex;
     public Player Actual;
 
-    private Item? SelectedItem => this.SelectedInventory.GetItemAt(this.SelectedInventoryIndex);
+    private Item? SelectedItem => SelectedInventory.GetItemAt(SelectedInventoryIndex);
     private Building? PreviewBuilding;
 
     private static PlayerMono instance;
@@ -25,9 +25,9 @@ public class PlayerMono : MonoBehaviour
 
     void Awake()
     {
-        this.Actual = new Player(WorldMono.Instance.Context, 0);
-        this.SelectedInventory = this.Actual.GetComponent<ActiveItems>();
-        this.SelectedInventoryIndex = 0;
+        Actual = new Player(WorldMono.Instance.Context, 0);
+        SelectedInventory = Actual.GetComponent<ActiveItems>();
+        SelectedInventoryIndex = 0;
     }
 
     void Update()
@@ -39,12 +39,12 @@ public class PlayerMono : MonoBehaviour
 
     private void PreviewSelectedItem()
     {
-        if (this.SelectedItem == null)
+        if (SelectedItem == null)
         {
             return;
         }
 
-        if (this.SelectedItem.Builds != null)
+        if (SelectedItem.Builds != null)
         {
             Point3Int? hex = RaycastHelper.GetHexUnderCursor();
             if (hex == null ||
@@ -61,8 +61,8 @@ public class PlayerMono : MonoBehaviour
             }
 
             PreviewBuilding =
-                this.Actual.BuidPreviewBuildingFromItem(
-                    this.SelectedInventoryIndex,
+                Actual.BuidPreviewBuildingFromItem(
+                    SelectedInventoryIndex,
                     (Point2Int)hex.Value);
         }
     }
@@ -79,8 +79,8 @@ public class PlayerMono : MonoBehaviour
             return;
         }
 
-        this.Actual.MakePreviewBuildingRealFromItem(
-            this.SelectedInventoryIndex,
+        Actual.MakePreviewBuildingRealFromItem(
+            SelectedInventoryIndex,
             PreviewBuilding);
         PreviewBuilding = null;
     }
@@ -89,29 +89,29 @@ public class PlayerMono : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.RightArrow))
         {
-            this.SelectedInventoryIndex++;
+            SelectedInventoryIndex++;
         }
         else if (Input.GetKeyDown(KeyCode.LeftArrow))
         {
-            this.SelectedInventoryIndex--;
+            SelectedInventoryIndex--;
         }
         else if (Input.GetKeyDown(KeyCode.UpArrow))
         {
-            this.SelectedInventoryIndex -= this.SelectedInventory.Width;
+            SelectedInventoryIndex -= SelectedInventory.Width;
         }
         else if (Input.GetKeyDown(KeyCode.DownArrow))
         {
-            this.SelectedInventoryIndex += this.SelectedInventory.Width;
+            SelectedInventoryIndex += SelectedInventory.Width;
         }
 
-        if (this.SelectedInventoryIndex > this.SelectedInventory.Size)
+        if (SelectedInventoryIndex > SelectedInventory.Size)
         {
-            this.SelectedInventoryIndex = this.SelectedInventoryIndex % this.SelectedInventory.Size;
+            SelectedInventoryIndex %= SelectedInventory.Size;
         }
 
-        if (this.SelectedInventoryIndex < 0)
+        if (SelectedInventoryIndex < 0)
         {
-            this.SelectedInventoryIndex = this.SelectedInventory.Size + this.SelectedInventoryIndex;
+            SelectedInventoryIndex = SelectedInventory.Size + SelectedInventoryIndex;
         }
     }
 }

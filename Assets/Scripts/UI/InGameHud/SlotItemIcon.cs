@@ -25,7 +25,7 @@ public class SlotItemIcon : VisualElement
         this.quantityLabel.style.bottom = -8;
         this.quantityLabel.pickingMode = PickingMode.Ignore;
         this.quantityLabel.style.fontSize = 14;
-        this.quantityLabel.style.color = UI.ColorTheme.ItemSlotTextColor;
+        this.quantityLabel.style.color = UIManager.ColorTheme.ItemSlotTextColor;
         this.quantityLabel.style.unityFontStyleAndWeight = FontStyle.Bold;
         this.quantityLabel.style.unityTextOutlineColor = Color.black;
         this.quantityLabel.style.unityTextOutlineWidth = 1;

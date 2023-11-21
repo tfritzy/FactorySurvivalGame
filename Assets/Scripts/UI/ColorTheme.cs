@@ -3,6 +3,7 @@ using UnityEngine.UIElements;
 
 public abstract class ColorTheme
 {
+    public abstract Color PrimaryText { get; }
     public abstract Color ItemSlotTextColor { get; }
 
     public abstract Color PanelBackgroundColor { get; }
@@ -15,17 +16,17 @@ public abstract class ColorTheme
     {
         if (!inverse)
         {
-            element.style.borderTopColor = UI.ColorTheme.PanelOutlineColorDark;
-            element.style.borderRightColor = UI.ColorTheme.PanelOutlineColorDark;
-            element.style.borderBottomColor = UI.ColorTheme.PanelOutlineColorBright;
-            element.style.borderLeftColor = UI.ColorTheme.PanelOutlineColorBright;
+            element.style.borderTopColor = UIManager.ColorTheme.PanelOutlineColorDark;
+            element.style.borderRightColor = UIManager.ColorTheme.PanelOutlineColorDark;
+            element.style.borderBottomColor = UIManager.ColorTheme.PanelOutlineColorBright;
+            element.style.borderLeftColor = UIManager.ColorTheme.PanelOutlineColorBright;
         }
         else
         {
-            element.style.borderBottomColor = UI.ColorTheme.PanelOutlineColorDark;
-            element.style.borderLeftColor = UI.ColorTheme.PanelOutlineColorDark;
-            element.style.borderTopColor = UI.ColorTheme.PanelOutlineColorBright;
-            element.style.borderRightColor = UI.ColorTheme.PanelOutlineColorBright;
+            element.style.borderBottomColor = UIManager.ColorTheme.PanelOutlineColorDark;
+            element.style.borderLeftColor = UIManager.ColorTheme.PanelOutlineColorDark;
+            element.style.borderTopColor = UIManager.ColorTheme.PanelOutlineColorBright;
+            element.style.borderRightColor = UIManager.ColorTheme.PanelOutlineColorBright;
         }
     }
 
