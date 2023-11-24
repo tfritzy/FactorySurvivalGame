@@ -45,7 +45,6 @@ public class UIManager : MonoBehaviour
         characterInspector?.RemoveFromHierarchy();
         characterInspector = new CharacterInspector(character, onClose);
         root.Add(characterInspector);
-        characterInspector.style.display = DisplayStyle.Flex;
     }
 
     public void CloseCharacterInspector()

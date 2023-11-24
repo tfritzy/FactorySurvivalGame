@@ -1,14 +1,40 @@
 using Core;
+using HighlightPlus;
 using UnityEngine;
 
 public class CharacterInspectionManager : MonoBehaviour
 {
     private bool menuOpen = false;
+    public HighlightProfile HighlightProfile;
+    private CharacterMono highlightedObject;
 
     void Update()
     {
+        CharacterMono c = RaycastHelper.GetCharacterUnderCursor();
+
         ListenForHotkeys();
-        CheckOpenMenu();
+        CheckOpenMenu(c);
+        UpdateHighlight(c);
+    }
+
+    private void UpdateHighlight(CharacterMono c)
+    {
+        if (c != highlightedObject)
+        {
+            if (highlightedObject != null)
+            {
+                Destroy(highlightedObject?.gameObject.GetComponent<HighlightEffect>());
+            }
+
+            highlightedObject = c;
+
+            if (c != null)
+            {
+                var he = highlightedObject?.gameObject.AddComponent<HighlightEffect>();
+                he.ProfileLoad(HighlightProfile);
+                he.highlighted = true;
+            }
+        }
     }
 
     private void ListenForHotkeys()
@@ -19,14 +45,13 @@ public class CharacterInspectionManager : MonoBehaviour
         }
     }
 
-    private void CheckOpenMenu()
+    private void CheckOpenMenu(CharacterMono c)
     {
         if (!Input.GetMouseButtonDown(0))
         {
             return;
         }
 
-        CharacterMono c = RaycastHelper.GetCharacterUnderCursor();
         if (c == null)
         {
             return;

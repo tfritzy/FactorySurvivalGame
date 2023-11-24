@@ -15,7 +15,6 @@ public abstract class Modal : ActiveElement
         style.height = Length.Percent(100);
         style.alignItems = Align.Center;
         style.justifyContent = Justify.Center;
-        pickingMode = PickingMode.Ignore;
 
         modal = new VisualElement();
         modal.style.backgroundColor = UIManager.ColorTheme.PanelBackgroundColor;

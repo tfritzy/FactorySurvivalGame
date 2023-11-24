@@ -34,19 +34,16 @@ public static class RaycastHelper
             {
                 if (iter.gameObject.TryGetComponent<CharacterMono>(out var cm))
                 {
-                    Debug.Log("GetCharacterUnderCursor found hit");
                     return cm;
                 }
 
                 iter = iter.parent;
             }
 
-            Debug.Log("GetCharacterUnderCursor found hit, but couldn't find characterMono in tree");
             return null;
         }
         else
         {
-            Debug.Log("GetCharacterUnderCursor missed");
             return null;
         }
     }
