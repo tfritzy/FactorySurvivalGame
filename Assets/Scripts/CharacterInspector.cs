@@ -7,18 +7,26 @@ public class CharacterInspectionManager : MonoBehaviour
 
     void Update()
     {
+        ListenForHotkeys();
+        CheckOpenMenu();
+    }
+
+    private void ListenForHotkeys()
+    {
+        if (Input.GetKeyDown(KeyCode.Escape))
+        {
+            close();
+        }
+    }
+
+    private void CheckOpenMenu()
+    {
         if (!Input.GetMouseButtonDown(0))
         {
             return;
         }
 
-        if (menuOpen)
-        {
-            return;
-        }
-
         CharacterMono c = RaycastHelper.GetCharacterUnderCursor();
-        Debug.Log("Found character " + c?.gameObject?.name);
         if (c == null)
         {
             return;

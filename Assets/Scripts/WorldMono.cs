@@ -89,6 +89,9 @@ public class WorldMono : MonoBehaviour
                     {
                         SetGrassActiveForHex(point2Hex, false);
                     }
+
+                    // Laptop perf.
+                    SetGrassActiveForHex(point2Hex, false);
                 }
             }
         }
@@ -154,7 +157,7 @@ public class WorldMono : MonoBehaviour
         {
             for (int i = 0; i < 6; i++)
             {
-                ShownHexesObjects[hex][i].transform.Find("Grass").gameObject.SetActive(active);
+                ShownHexesObjects[hex][i].transform.Find("Grass").gameObject.SetActive(false && active);
             }
         }
     }

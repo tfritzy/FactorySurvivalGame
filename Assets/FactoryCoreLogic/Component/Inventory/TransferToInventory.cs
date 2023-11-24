@@ -1,16 +1,16 @@
 namespace Core
 {
-    public class TransferToConveyor : Component
+    public class TransferToInventory : Component
     {
-        public override ComponentType Type => ComponentType.TransferToConveyor;
+        public override ComponentType Type => ComponentType.TransferToInventory;
 
-        public TransferToConveyor(Entity owner) : base(owner)
+        public TransferToInventory(Entity owner) : base(owner)
         {
         }
 
         public override Schema.Component ToSchema()
         {
-            return new Schema.TransferToConveyor();
+            return new Schema.TransferToInventory();
         }
 
         private float checkCooldown = 0f;
@@ -23,9 +23,9 @@ namespace Core
             {
                 return;
             }
-            checkCooldown = .1f;
+            checkCooldown = .05f;
 
-            if (Owner.Conveyor == null || Owner.Conveyor.Next == null)
+            if (Owner.Conveyor == null)
             {
                 return;
             }
@@ -33,6 +33,20 @@ namespace Core
             if (Owner.Inventory == null)
             {
                 return;
+            }
+
+            var curr = Owner.Conveyor.Items.First;
+            float totalDist = Owner.Conveyor.GetTotalDistance();
+            while (curr != null)
+            {
+
+
+                float percent = curr.Value.ProgressMeters / totalDist;
+                if (percent > .2f && percent < .5f)
+                {
+
+                }
+                curr = curr.Next;
             }
 
             var item = Owner.Inventory.FindItem();

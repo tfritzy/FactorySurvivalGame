@@ -27,10 +27,10 @@ public class InventoryGrid : ActiveElement
 
     public InventoryGrid(Props props)
     {
-        this.onSlotMouseUp = props.onSlotMouseUp;
-        this.onSlotMouseHold = props.onSlotMouseHold;
-        this.inventory = props.inventory;
-        this.dimensions = new Point2Int(props.width, props.height);
+        onSlotMouseUp = props.onSlotMouseUp;
+        onSlotMouseHold = props.onSlotMouseHold;
+        inventory = props.inventory;
+        dimensions = new Point2Int(props.width, props.height);
 
         InitBorder(props);
         BuildGrid(props);
@@ -43,46 +43,44 @@ public class InventoryGrid : ActiveElement
             var outerBorder = new VisualElement();
             UIManager.ColorTheme.Apply3DPanelBorderColor(outerBorder, inverse: true);
             outerBorder.SetAllBorderWidth(2);
-            outerBorder.SetAllBorderRadius(10);
-            this.Add(outerBorder);
+            Add(outerBorder);
 
             var innerBorder = new VisualElement();
             UIManager.ColorTheme.Apply3DPanelBorderColor(innerBorder);
             innerBorder.SetAllBorderWidth(2);
-            innerBorder.SetAllBorderRadius(10);
             outerBorder.Add(innerBorder);
 
-            this.Content = innerBorder;
+            Content = innerBorder;
         }
         else
         {
-            this.Content = this;
+            Content = this;
         }
     }
 
     private void BuildGrid(Props props)
     {
         slots = new List<InventorySlot>(inventory.Size);
-        for (int y = 0; y < this.dimensions.y; y++)
+        for (int y = 0; y < dimensions.y; y++)
         {
             var row = new VisualElement();
             row.style.flexDirection = FlexDirection.Row;
             row.style.justifyContent = Justify.SpaceBetween;
-            this.Content.Add(row);
-            for (int x = 0; x < this.dimensions.x; x++)
+            Content.Add(row);
+            for (int x = 0; x < dimensions.x; x++)
             {
                 InventorySlot slot = new InventorySlot(new InventorySlot.Props
                 {
                     pos = new Point2Int(x, y),
-                    parentDimensions = this.dimensions,
-                    inventory = this.inventory,
-                    onMouseUp = this.onSlotMouseUp,
-                    onMouseHold = this.onSlotMouseHold,
+                    parentDimensions = dimensions,
+                    inventory = inventory,
+                    onMouseUp = onSlotMouseUp,
+                    onMouseHold = onSlotMouseHold,
                     SelfSufficientBorder = props.Gap > 0,
                     BorderWidth = props.SlotBorderWidth ?? 2,
                 });
 
-                if (x != this.dimensions.x - 1)
+                if (x != dimensions.x - 1)
                 {
                     slot.style.marginRight = props.Gap;
                 }
@@ -91,7 +89,7 @@ public class InventoryGrid : ActiveElement
                 slots.Add(slot);
             }
 
-            if (y != this.dimensions.y - 1)
+            if (y != dimensions.y - 1)
             {
                 row.style.marginBottom = props.Gap;
             }
@@ -102,7 +100,7 @@ public class InventoryGrid : ActiveElement
     {
         for (int i = 0; i < slots.Count; i++)
         {
-            slots[i].Update();
+            slots[i].Update(inventory.GetItemAt(i));
         }
     }
 }

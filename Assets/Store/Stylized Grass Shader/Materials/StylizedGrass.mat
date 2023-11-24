@@ -15,7 +15,8 @@ Material:
   - _ADVANCED_LIGHTING
   - _ENVIRONMENTREFLECTIONS_OFF
   - _SCALEMAP
-  m_InvalidKeywords: []
+  m_InvalidKeywords:
+  - _SCALEMAP_ON
   m_LightmapFlags: 4
   m_EnableInstancingVariants: 1
   m_DoubleSidedGI: 0
@@ -100,7 +101,7 @@ Material:
     - _ColorMapHeight: 1
     - _ColorMapStrength: 1
     - _Cull: 0
-    - _Cutoff: 0.5
+    - _Cutoff: 0.489
     - _Darkening: 0.487
     - _DstBlend: 0
     - _EnvironmentReflections: 0

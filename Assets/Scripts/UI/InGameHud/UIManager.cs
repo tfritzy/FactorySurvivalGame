@@ -37,21 +37,20 @@ public class UIManager : MonoBehaviour
     void Update()
     {
         inGameHud.Update();
+        characterInspector?.Update();
     }
 
     public void OpenCharacterInspector(Character character, System.Action onClose)
     {
-        Debug.Log("Opening inspection menu");
-        if (characterInspector == null)
-        {
-            characterInspector = new CharacterInspector(character, onClose);
-            root.Add(characterInspector);
-        }
+        characterInspector?.RemoveFromHierarchy();
+        characterInspector = new CharacterInspector(character, onClose);
+        root.Add(characterInspector);
         characterInspector.style.display = DisplayStyle.Flex;
     }
 
     public void CloseCharacterInspector()
     {
-        characterInspector.style.display = DisplayStyle.None;
+        characterInspector?.RemoveFromHierarchy();
+        characterInspector = null;
     }
 }

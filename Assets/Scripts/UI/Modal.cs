@@ -8,33 +8,35 @@ public abstract class Modal : ActiveElement
 
     public Modal(Action? onClose = null)
     {
-        this.style.position = Position.Absolute;
-        this.style.left = 0;
-        this.style.top = 0;
-        this.style.width = Length.Percent(100);
-        this.style.height = Length.Percent(100);
-        this.style.alignItems = Align.Center;
-        this.style.justifyContent = Justify.Center;
-        this.pickingMode = PickingMode.Ignore;
+        style.position = Position.Absolute;
+        style.left = 0;
+        style.top = 0;
+        style.width = Length.Percent(100);
+        style.height = Length.Percent(100);
+        style.alignItems = Align.Center;
+        style.justifyContent = Justify.Center;
+        pickingMode = PickingMode.Ignore;
 
-        this.modal = new VisualElement();
-        this.modal.style.backgroundColor = UIManager.ColorTheme.PanelBackgroundColor;
-        UIManager.ColorTheme.Apply3DPanelBorderColor(this.modal);
-        this.modal.SetAllBorderRadius(10);
-        this.modal.SetAllBorderWidth(1);
-        this.modal.SetAllPadding(10);
-        this.Add(this.modal);
+        modal = new VisualElement();
+        modal.style.backgroundColor = UIManager.ColorTheme.PanelBackgroundColor;
+        UIManager.ColorTheme.Apply3DPanelBorderColor(modal);
+        modal.SetAllBorderRadius(10);
+        modal.SetAllBorderWidth(1);
+        modal.SetAllPadding(10);
+        Add(modal);
 
         if (onClose != null)
         {
             var closeButton = new Button();
             closeButton.style.position = Position.Absolute;
-            closeButton.style.right = -1;
+            closeButton.style.right = -2;
             closeButton.style.top = 0;
-            closeButton.style.backgroundColor = Color.red;
+            closeButton.text = "✕";
+            closeButton.style.fontSize = 20;
+            closeButton.style.color = UIManager.ColorTheme.PrimaryText;
             closeButton.style.width = 40;
             closeButton.style.height = 40;
-            closeButton.SetAllBorderRadius(10);
+            closeButton.style.backgroundColor = Color.clear;
             closeButton.SetAllBorderWidth(0);
             closeButton.clicked += onClose;
             modal.Add(closeButton);

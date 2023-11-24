@@ -3,14 +3,15 @@ using Core;
 using UnityEngine;
 using UnityEngine.UIElements;
 
-public class InventorySlot : ActiveElement
+public class InventorySlot : VisualElement
 {
-    public const float Size = 50;
+    public const float Size = 65;
     private int index;
     private Inventory containingInventory;
     private Action<MouseUpEvent, Inventory, int> onMouseUp;
     public Action<MouseMoveEvent, Inventory, int> onMouseHold;
     private SlotItemIcon itemIcon;
+    private VisualElement Content;
 
     public class Props
     {
@@ -30,10 +31,12 @@ public class InventorySlot : ActiveElement
         this.containingInventory = props.inventory;
         this.index = props.pos.x + props.pos.y * props.parentDimensions.x;
 
-        InitBorder(props);
+        this.Content = new VisualElement();
         this.Content.style.width = Size;
         this.Content.style.height = Size;
         this.Content.style.backgroundImage = new StyleBackground(UIElements.GetElement(UIElementType.Vignette));
+        this.Add(this.Content);
+        InitBorder(props);
 
         this.RegisterCallback<MouseUpEvent>(OnMouseUp);
         this.RegisterCallback<MouseMoveEvent>(OnMouseMove);
@@ -101,9 +104,8 @@ public class InventorySlot : ActiveElement
         }
     }
 
-    public override void Update()
+    public void Update(Item item)
     {
-        var item = this.containingInventory.GetItemAt(this.index);
         this.itemIcon.Update(item);
 
         if (PlayerMono.Instance.SelectedInventory == this.containingInventory &&
