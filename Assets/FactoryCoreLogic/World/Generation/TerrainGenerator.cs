@@ -52,7 +52,7 @@ namespace Core
                 }
             }
 
-            return null;
+            return Hexes;
         }
     }
 }

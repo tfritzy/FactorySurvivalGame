@@ -17,7 +17,7 @@ public class CharacterMono : EntityMono
 
         if (((Character)Actual).IsPreview)
         {
-            SetPreviewMaterials();
+            SetPreview();
             isRenderedAsPreview = true;
         }
     }
@@ -28,26 +28,37 @@ public class CharacterMono : EntityMono
 
         if (!((Character)Actual).IsPreview && isRenderedAsPreview)
         {
-            RestoreOriginalMaterials();
+            RestoreFromPreview();
             isRenderedAsPreview = false;
         }
     }
 
     private Dictionary<GameObject, Material> originalMaterials = new Dictionary<GameObject, Material>();
-    private void SetPreviewMaterials()
+    private void SetPreview()
     {
         foreach (Renderer r in gameObject.GetComponentsInChildren<Renderer>(true))
         {
             originalMaterials.Add(r.gameObject, r.material);
             r.material = MaterialDepot.GetMaterial(MaterialDepot.Material.Preview);
         }
+
+        foreach (Collider c in GetComponentsInChildren<Collider>(includeInactive: true))
+        {
+            c.enabled = false;
+        }
     }
 
-    private void RestoreOriginalMaterials()
+    private void RestoreFromPreview()
     {
         foreach (Renderer r in gameObject.GetComponentsInChildren<Renderer>(true))
         {
-            r.material = originalMaterials[r.gameObject];
+            if (originalMaterials.ContainsKey(r.gameObject))
+                r.material = originalMaterials[r.gameObject];
+        }
+
+        foreach (Collider c in GetComponentsInChildren<Collider>(includeInactive: true))
+        {
+            c.enabled = true;
         }
     }
 }

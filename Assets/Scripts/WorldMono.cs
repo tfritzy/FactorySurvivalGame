@@ -8,7 +8,7 @@ public class WorldMono : MonoBehaviour
 {
     public World World => Context.World;
     public Context Context;
-    private RectInt ShownHexRange = new RectInt(-15, -8, 30, 24);
+    private RectInt ShownHexRange = new RectInt(-5, -5, 12, 15);
     private Dictionary<Point2Int, GameObject[]> ShownHexesObjects = new Dictionary<Point2Int, GameObject[]>();
     private Dictionary<ulong, GameObject> SpawnedCharacters = new Dictionary<ulong, GameObject>();
     private Point2Int PlayerPos = new Point2Int(-1, -1);
@@ -32,7 +32,7 @@ public class WorldMono : MonoBehaviour
         Context = new Context();
         TerrainGenerator generator = new TerrainGenerator(100, 100, 25);
         Context.SetWorld(new World(
-            new Core.Terrain(generator.GenerateFlatWorld(Context),
+            new Core.Terrain(generator.GenerateRollingHills(Context),
             Context)));
     }
 

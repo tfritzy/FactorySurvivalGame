@@ -53,17 +53,15 @@ public class CharacterInspectionManager : MonoBehaviour
 
     private void CheckOpenMenu(CharacterMono c)
     {
-        if (!Input.GetMouseButtonDown(0))
+        if (ClickLog.GetMouseButtonUp())
         {
-            return;
-        }
+            if (c == null || ((Character)c.Actual).IsPreview)
+            {
+                return;
+            }
 
-        if (c == null)
-        {
-            return;
+            UIManager.Instance.OpenCharacterInspector((Character)c.Actual, close);
         }
-
-        UIManager.Instance.OpenCharacterInspector((Character)c.Actual, close);
     }
 
     private void close()

@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+using System.Linq;
 using Core;
 using UnityEngine;
 
@@ -8,7 +10,7 @@ public class PlayerMono : MonoBehaviour
     public Player Actual;
 
     private Item? SelectedItem => SelectedInventory.GetItemAt(SelectedInventoryIndex);
-    private Building? PreviewBuilding;
+    private Dictionary<Point2Int, Building> previewBuildings = new();
 
     private static PlayerMono instance;
     public static PlayerMono Instance
@@ -34,55 +36,80 @@ public class PlayerMono : MonoBehaviour
     {
         ListenForInventoryControls();
         PreviewSelectedItem();
-        BuildPreviewBuilding();
+        BuildPreviewBuildings();
     }
 
     private void PreviewSelectedItem()
     {
         if (SelectedItem == null)
         {
+            if (previewBuildings.Count > 0)
+            {
+                ClearPreviewBuildings();
+            }
+
             return;
+        }
+
+        if (previewBuildings.Count > 0 && SelectedItem?.Builds != previewBuildings.Values.First()?.Type)
+        {
+            ClearPreviewBuildings();
         }
 
         if (SelectedItem.Builds != null)
         {
             Point3Int? hex = RaycastHelper.GetHexUnderCursor();
             if (hex == null ||
-                hex == PreviewBuilding?.GridPosition ||
+                previewBuildings.ContainsKey((Point2Int)hex) ||
                 !WorldMono.Instance.World.Terrain.IsInBounds(hex.Value))
             {
                 return;
             }
 
-            if (PreviewBuilding != null)
+            if (previewBuildings.Count > 0 && !Input.GetMouseButton(0))
             {
-                WorldMono.Instance.World.RemoveBuilding(PreviewBuilding.Id);
-                PreviewBuilding = null;
+                ClearPreviewBuildings();
             }
 
-            PreviewBuilding =
+            previewBuildings.Add(
+                (Point2Int)hex.Value,
                 Actual.BuidPreviewBuildingFromItem(
                     SelectedInventoryIndex,
-                    (Point2Int)hex.Value);
+                    (Point2Int)hex.Value));
         }
     }
 
-    private void BuildPreviewBuilding()
+    private void BuildPreviewBuildings()
     {
-        if (PreviewBuilding == null)
+        if (previewBuildings.Count == 0)
         {
             return;
         }
 
-        if (!Input.GetMouseButton(0))
+        if (ClickLog.GetMouseButtonUp())
         {
-            return;
+            foreach (Building b in previewBuildings.Values)
+            {
+                Actual.MakePreviewBuildingRealFromItem(
+                    SelectedInventoryIndex,
+                    b);
+            }
+            previewBuildings.Clear();
         }
+    }
 
-        Actual.MakePreviewBuildingRealFromItem(
-            SelectedInventoryIndex,
-            PreviewBuilding);
-        PreviewBuilding = null;
+    private void ClearPreviewBuildings()
+    {
+        foreach (Building b in previewBuildings.Values)
+        {
+            if (b == null)
+            {
+                continue;
+            }
+
+            WorldMono.Instance.World.RemoveBuilding(b.Id);
+        }
+        previewBuildings.Clear();
     }
 
     private void ListenForInventoryControls()
