@@ -6,6 +6,7 @@ public class CameraFollowPlayer : MonoBehaviour
 {
     public Transform player;
     Vector3 offset;
+    public float speed = 10f;
 
     void Start()
     {
@@ -14,6 +15,6 @@ public class CameraFollowPlayer : MonoBehaviour
 
     void Update()
     {
-        transform.position = player.position + offset;
+        transform.position = Vector3.MoveTowards(transform.position, player.position + offset, Time.deltaTime * speed);
     }
 }

@@ -28,7 +28,6 @@ public class UIManager : MonoBehaviour
     void Start()
     {
         ColorTheme = new DarkTheme();
-
         root = GetComponent<UIDocument>().rootVisualElement;
         inGameHud = new InGameHud();
         root.Add(inGameHud);

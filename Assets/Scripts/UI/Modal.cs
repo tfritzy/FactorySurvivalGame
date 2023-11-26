@@ -15,6 +15,8 @@ public abstract class Modal : ActiveElement
         style.height = Length.Percent(100);
         style.alignItems = Align.Center;
         style.justifyContent = Justify.Center;
+        this.SetAllBorderColor(UIManager.ColorTheme.PanelBackgroundColor);
+        this.SetAllBorderWidth(1);
 
         modal = new VisualElement();
         modal.style.backgroundColor = UIManager.ColorTheme.PanelBackgroundColor;
@@ -28,10 +30,10 @@ public abstract class Modal : ActiveElement
         {
             var closeButton = new Button();
             closeButton.style.position = Position.Absolute;
-            closeButton.style.right = -2;
-            closeButton.style.top = 0;
+            closeButton.style.right = 0;
+            closeButton.style.top = 2;
             closeButton.text = "✕";
-            closeButton.style.fontSize = 20;
+            closeButton.style.fontSize = 26;
             closeButton.style.color = UIManager.ColorTheme.PrimaryText;
             closeButton.style.width = 40;
             closeButton.style.height = 40;

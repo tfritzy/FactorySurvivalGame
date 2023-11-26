@@ -30,4 +30,32 @@ public static class Managers
             return _world;
         }
     }
+
+    private static Camera _mainCamera;
+    public static Camera MainCamera
+    {
+        get
+        {
+            if (_mainCamera == null)
+            {
+                _mainCamera = Camera.main;
+            }
+
+            return _mainCamera;
+        }
+    }
+
+    private static Canvas _canvas;
+    public static Canvas Canvas
+    {
+        get
+        {
+            if (_canvas == null)
+            {
+                _canvas = GameObject.Find("Canvas").GetComponent<Canvas>();
+            }
+
+            return _canvas;
+        }
+    }
 }

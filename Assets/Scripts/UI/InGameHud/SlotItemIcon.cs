@@ -5,11 +5,12 @@ using UnityEngine.UIElements;
 public class SlotItemIcon : VisualElement
 {
     private Label quantityLabel;
+    public const int SIZE = 55;
 
     public SlotItemIcon()
     {
-        this.style.width = 55;
-        this.style.height = 55;
+        this.style.width = SIZE;
+        this.style.height = SIZE;
 
         this.pickingMode = PickingMode.Ignore;
 

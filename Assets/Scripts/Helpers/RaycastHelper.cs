@@ -6,7 +6,7 @@ public static class RaycastHelper
     public static Point3Int? GetHexUnderCursor()
     {
         var hit = Physics.Raycast(
-            Camera.main.ScreenPointToRay(Input.mousePosition),
+            Managers.MainCamera.ScreenPointToRay(Input.mousePosition),
             out var hitInfo,
             100f,
             Layers.HexMask);
@@ -23,7 +23,7 @@ public static class RaycastHelper
     public static CharacterMono? GetCharacterUnderCursor()
     {
         var hit = Physics.Raycast(
-            Camera.main.ScreenPointToRay(Input.mousePosition),
+            Managers.MainCamera.ScreenPointToRay(Input.mousePosition),
             out var hitInfo,
             100f,
             Layers.CharacterMask);

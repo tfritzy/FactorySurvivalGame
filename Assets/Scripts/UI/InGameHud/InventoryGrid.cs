@@ -43,7 +43,7 @@ public class InventoryGrid : ActiveElement
             var outerBorder = new VisualElement();
             UIManager.ColorTheme.Apply3DPanelBorderColor(outerBorder, inverse: true);
             outerBorder.SetAllBorderWidth(2);
-            Add(outerBorder);
+            Content.Add(outerBorder);
 
             var innerBorder = new VisualElement();
             UIManager.ColorTheme.Apply3DPanelBorderColor(innerBorder);
@@ -65,7 +65,6 @@ public class InventoryGrid : ActiveElement
         {
             var row = new VisualElement();
             row.style.flexDirection = FlexDirection.Row;
-            row.style.justifyContent = Justify.SpaceBetween;
             Content.Add(row);
             for (int x = 0; x < dimensions.x; x++)
             {

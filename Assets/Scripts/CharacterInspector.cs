@@ -4,11 +4,11 @@ using UnityEngine;
 
 public class CharacterInspectionManager : MonoBehaviour
 {
-    private bool menuOpen = false;
+    public GameObject CharacterQuickViewPrefab;
     public HighlightProfile HighlightProfile;
     private CharacterMono highlightedObject;
 
-    void Update()
+    void LateUpdate()
     {
         CharacterMono c = RaycastHelper.GetCharacterUnderCursor();
 
@@ -57,13 +57,11 @@ public class CharacterInspectionManager : MonoBehaviour
             return;
         }
 
-        menuOpen = true;
         UIManager.Instance.OpenCharacterInspector((Character)c.Actual, close);
     }
 
     private void close()
     {
         UIManager.Instance.CloseCharacterInspector();
-        menuOpen = false;
     }
 }
