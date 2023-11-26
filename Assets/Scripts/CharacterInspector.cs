@@ -5,7 +5,6 @@ using UnityEngine;
 public class CharacterInspectionManager : MonoBehaviour
 {
     public GameObject CharacterQuickViewPrefab;
-    public HighlightProfile HighlightProfile;
     private CharacterMono highlightedObject;
 
     void LateUpdate()
@@ -23,16 +22,23 @@ public class CharacterInspectionManager : MonoBehaviour
         {
             if (highlightedObject != null)
             {
-                Destroy(highlightedObject?.gameObject.GetComponent<HighlightEffect>());
+                highlightedObject.HighlightEffect.highlighted = false;
+            }
+
+            if (c != null && ((Character)c.Actual).IsPreview)
+            {
+                highlightedObject = null;
+                return;
             }
 
             highlightedObject = c;
-
             if (c != null)
             {
-                var he = highlightedObject?.gameObject.AddComponent<HighlightEffect>();
-                he.ProfileLoad(HighlightProfile);
-                he.highlighted = true;
+                var desiredProfile = HighlightProfiles.GetHighlightProfile(HighlightProfiles.Profile.Highlighted);
+                if (c.HighlightEffect != desiredProfile)
+                    c.HighlightEffect.ProfileLoad(desiredProfile);
+
+                c.HighlightEffect.highlighted = true;
             }
         }
     }

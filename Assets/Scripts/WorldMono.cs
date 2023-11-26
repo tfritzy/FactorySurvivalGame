@@ -128,7 +128,6 @@ public class WorldMono : MonoBehaviour
 
     private void HandleUpdate(Update update)
     {
-        Debug.Log("Handling event of type: " + update.Type);
         switch (update.Type)
         {
             case UpdateType.BuildingAdded:
@@ -138,7 +137,8 @@ public class WorldMono : MonoBehaviour
                 building.transform.position = WorldConversions.HexToUnityPosition(newBuilding.GridPosition);
                 building.transform.SetParent(transform);
                 SpawnedCharacters.Add(newBuilding.Id, building);
-                building.GetComponent<EntityMono>().Setup(newBuilding);
+                var em = building.GetComponent<EntityMono>();
+                em.Setup(newBuilding);
                 SetGrassActiveForHex((Point2Int)newBuilding.GridPosition, false);
                 break;
             case UpdateType.BuildingRemoved:

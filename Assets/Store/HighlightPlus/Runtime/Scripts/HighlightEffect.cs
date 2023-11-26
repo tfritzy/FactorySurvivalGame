@@ -7,7 +7,8 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Rendering;
 
-namespace HighlightPlus {
+namespace HighlightPlus
+{
 
     public delegate bool OnObjectHighlightEvent(GameObject obj);
     public delegate bool OnRendererHighlightEvent(Renderer renderer);
@@ -19,43 +20,50 @@ namespace HighlightPlus {
     public delegate void OnTargetAnimatesEvent(ref Vector3 center, ref Quaternion rotation, ref Vector3 scale, float t);
     public delegate void FullScreenBlitMethod(CommandBuffer cmd, RenderTargetIdentifier source, RenderTargetIdentifier destination, Material material, int passIndex);
 
-    public enum NormalsOption {
+    public enum NormalsOption
+    {
         Smooth = 0,
         PreserveOriginal = 1,
         Reorient = 2
     }
 
-    public enum SeeThroughMode {
+    public enum SeeThroughMode
+    {
         WhenHighlighted = 0,
         AlwaysWhenOccluded = 1,
         Never = 2
     }
 
-    public enum SeeThroughSortingMode {
+    public enum SeeThroughSortingMode
+    {
         Default = 0,
         SortByMaterialsRenderQueue = 1,
         SortByMaterialsRenderQueueInverted = 2
     }
 
-    public enum OverlayMode {
+    public enum OverlayMode
+    {
         WhenHighlighted = 0,
         Always = 10
     }
 
-    public enum TextureUVSpace {
+    public enum TextureUVSpace
+    {
         Triplanar = 0,
         ObjectSpace = 1,
         ScreenSpace = 2
     }
 
-    public enum QualityLevel {
+    public enum QualityLevel
+    {
         Fastest = 0,
         High = 1,
         Highest = 2,
         Medium = 3
     }
 
-    public enum TargetOptions {
+    public enum TargetOptions
+    {
         Children,
         OnlyThisObject,
         RootToChildren,
@@ -64,56 +72,67 @@ namespace HighlightPlus {
         Scripting
     }
 
-    public enum Visibility {
+    public enum Visibility
+    {
         Normal,
         AlwaysOnTop,
         OnlyWhenOccluded
     }
 
-    public enum ColorStyle {
+    public enum ColorStyle
+    {
         SingleColor,
         Gradient
     }
 
-    public enum OutlineEdgeMode {
+    public enum OutlineEdgeMode
+    {
         Exterior,
         Any
     }
 
-    public enum ContourStyle {
+    public enum ContourStyle
+    {
         AroundVisibleParts,
         AroundObjectShape
     }
 
-    public enum GlowBlendMode {
+    public enum GlowBlendMode
+    {
         Additive,
         AlphaBlending
     }
 
-    public enum InnerGlowBlendMode {
+    public enum InnerGlowBlendMode
+    {
         Additive,
         AlphaBlending
     }
 
-    public enum BlurMethod {
+    public enum BlurMethod
+    {
         Gaussian,
         Kawase
     }
 
-    public enum MaskMode {
+    public enum MaskMode
+    {
         Stencil,
         IgnoreMask,
         StencilAndCutout
     }
 
-    public static class QualityLevelExtensions {
-        public static bool UsesMultipleOffsets(this QualityLevel qualityLevel) {
+    public static class QualityLevelExtensions
+    {
+        public static bool UsesMultipleOffsets(this QualityLevel qualityLevel)
+        {
             return qualityLevel == QualityLevel.Medium || qualityLevel == QualityLevel.High;
         }
     }
 
     [Serializable]
-    public struct GlowPassData {
+    public struct GlowPassData
+    {
         public float offset;
         public float alpha;
         public Color color;
@@ -121,7 +140,8 @@ namespace HighlightPlus {
 
     [ExecuteInEditMode]
     [HelpURL("https://kronnect.com/guides/highlight-plus-introduction/")]
-    public partial class HighlightEffect : MonoBehaviour {
+    public partial class HighlightEffect : MonoBehaviour
+    {
 
         /// <summary>
         /// Gets or sets the current profile. To load a profile and apply its settings at runtime, please use ProfileLoad() method.
@@ -381,7 +401,8 @@ namespace HighlightPlus {
         [Tooltip("The order by which children objects are rendered by the see-through effect")]
         public SeeThroughSortingMode seeThroughChildrenSortingMode = SeeThroughSortingMode.Default;
 
-        struct ModelMaterials {
+        struct ModelMaterials
+        {
             public bool render; // if this object can render this frame
             public Transform transform;
             public bool renderWasVisibleDuringSetup;
@@ -395,7 +416,8 @@ namespace HighlightPlus {
             public bool isCombined;
             public bool preserveOriginalMesh { get { return !isCombined && normalsOption == NormalsOption.PreserveOriginal; } }
 
-            public void Init() {
+            public void Init()
+            {
                 render = false;
                 transform = null;
                 mesh = originalMesh = null;
@@ -407,7 +429,8 @@ namespace HighlightPlus {
             }
         }
 
-        enum FadingState {
+        enum FadingState
+        {
             FadingOut = -1,
             NoFading = 0,
             FadingIn = 1
@@ -467,7 +490,8 @@ namespace HighlightPlus {
         [NonSerialized]
         public HighlightProfile previousSettings;
 
-        public void RestorePreviousHighlightEffectSettings() {
+        public void RestorePreviousHighlightEffectSettings()
+        {
             previousSettings.Load(this);
         }
 
@@ -509,7 +533,8 @@ namespace HighlightPlus {
         bool usesReversedZBuffer;
         bool usesSeeThrough;
 
-        class PerCameraOcclusionData {
+        class PerCameraOcclusionData
+        {
             public float checkLastTime = -10000;
             public int occlusionRenderFrame;
             public bool lastOcclusionTestResult;
@@ -535,11 +560,13 @@ namespace HighlightPlus {
 
         bool shouldBakeSkinnedMesh;
 
-        void OnEnable() {
+        void OnEnable()
+        {
             lastOutlineVisibility = outlineVisibility;
             debugColor = new Color(1f, 0f, 0f, 0.5f);
             blackColor = new Color(0, 0, 0, 0);
-            if (offsets == null || offsets.Length != 8) {
+            if (offsets == null || offsets.Length != 8)
+            {
                 offsets = new Vector4[] {
                     new Vector4(0,1),
                     new Vector4(1,0),
@@ -551,23 +578,29 @@ namespace HighlightPlus {
                     new Vector4 (-TAU, -TAU)
                 };
             }
-            if (corners == null || corners.Length != 8) {
+            if (corners == null || corners.Length != 8)
+            {
                 corners = new Vector4[8];
             }
             InitCommandBuffer();
-            if (quadMesh == null) {
+            if (quadMesh == null)
+            {
                 BuildQuad();
             }
-            if (cubeMesh == null) {
+            if (cubeMesh == null)
+            {
                 BuildCube();
             }
-            if (target == null) {
+            if (target == null)
+            {
                 target = transform;
             }
-            if (profileSync && profile != null) {
+            if (profileSync && profile != null)
+            {
                 profile.Load(this);
             }
-            if (glowPasses == null || glowPasses.Length == 0) {
+            if (glowPasses == null || glowPasses.Length == 0)
+            {
                 glowPasses = new GlowPassData[4];
                 glowPasses[0] = new GlowPassData() { offset = 4, alpha = 0.1f, color = new Color(0.64f, 1f, 0f, 1f) };
                 glowPasses[1] = new GlowPassData() { offset = 3, alpha = 0.2f, color = new Color(0.64f, 1f, 0f, 1f) };
@@ -578,11 +611,14 @@ namespace HighlightPlus {
             useGPUInstancing = GPUInstancing && SystemInfo.supportsInstancing;
             usesReversedZBuffer = SystemInfo.usesReversedZBuffer;
 
-            if (useGPUInstancing) {
-                if (glowPropertyBlock == null) {
+            if (useGPUInstancing)
+            {
+                if (glowPropertyBlock == null)
+                {
                     glowPropertyBlock = new MaterialPropertyBlock();
                 }
-                if (outlinePropertyBlock == null) {
+                if (outlinePropertyBlock == null)
+                {
                     outlinePropertyBlock = new MaterialPropertyBlock();
                 }
             }
@@ -590,45 +626,57 @@ namespace HighlightPlus {
             CheckGeometrySupportDependencies();
             UpdateVisibilityState();
 
-            if (!effects.Contains(this)) {
+            if (!effects.Contains(this))
+            {
                 effects.Add(this);
             }
         }
 
-        private void Start() {
+        private void Start()
+        {
             SetupMaterial();
         }
 
 
-        public void OnDidApplyAnimationProperties() {   // support for animating property based fields
+        public void OnDidApplyAnimationProperties()
+        {   // support for animating property based fields
             UpdateMaterialProperties();
         }
 
-        void OnDisable() {
+        void OnDisable()
+        {
             UpdateMaterialProperties();
-            if (effects != null) {
+            if (effects != null)
+            {
                 int k = effects.IndexOf(this);
-                if (k >= 0) {
+                if (k >= 0)
+                {
                     effects.RemoveAt(k);
                 }
             }
         }
 
 
-        void DestroyMaterial(Material mat) {
+        void DestroyMaterial(Material mat)
+        {
             if (mat != null) DestroyImmediate(mat);
         }
 
-        void DestroyMaterialArray(Material[] mm) {
+        void DestroyMaterialArray(Material[] mm)
+        {
             if (mm == null) return;
-            for (int k = 0; k < mm.Length; k++) {
+            for (int k = 0; k < mm.Length; k++)
+            {
                 DestroyMaterial(mm[k]);
             }
         }
 
-        void OnDestroy() {
-            if (rms != null) {
-                for (int k = 0; k < rms.Length; k++) {
+        void OnDestroy()
+        {
+            if (rms != null)
+            {
+                for (int k = 0; k < rms.Length; k++)
+                {
                     DestroyMaterialArray(rms[k].fxMatMask);
                     DestroyMaterialArray(rms[k].fxMatOutline);
                     DestroyMaterialArray(rms[k].fxMatGlow);
@@ -649,39 +697,51 @@ namespace HighlightPlus {
             DestroyMaterial(fxMatBlurGlow);
             DestroyMaterial(fxMatBlurOutline);
 
-            if (combinedMeshes.ContainsKey(combinedMeshesHashId)) {
+            if (combinedMeshes.ContainsKey(combinedMeshesHashId))
+            {
                 combinedMeshes.Remove(combinedMeshesHashId);
             }
 
-            foreach (Mesh instancedMesh in instancedMeshes) {
+            foreach (Mesh instancedMesh in instancedMeshes)
+            {
                 if (instancedMesh == null) continue;
                 int usageCount;
-                if (sharedMeshUsage.TryGetValue(instancedMesh, out usageCount)) {
-                    if (usageCount <= 1) {
+                if (sharedMeshUsage.TryGetValue(instancedMesh, out usageCount))
+                {
+                    if (usageCount <= 1)
+                    {
                         sharedMeshUsage.Remove(instancedMesh);
                         DestroyImmediate(instancedMesh);
-                    } else {
+                    }
+                    else
+                    {
                         sharedMeshUsage[instancedMesh] = usageCount - 1;
                     }
                 }
             }
         }
 
-        void Reset() {
+        void Reset()
+        {
             SetupMaterial();
         }
 
 
-        private void OnBecameVisible() {
+        private void OnBecameVisible()
+        {
             isVisible = true;
         }
 
-        private void OnBecameInvisible() {
-            if (rms == null || rms.Length != 1 || rms[0].transform != transform) {
+        private void OnBecameInvisible()
+        {
+            if (rms == null || rms.Length != 1 || rms[0].transform != transform)
+            {
                 // if effect group doesn't include exactly one object and this object is this same gameobject
                 // ignore this optimization
                 isVisible = true;
-            } else {
+            }
+            else
+            {
                 isVisible = false;
             }
         }
@@ -689,8 +749,10 @@ namespace HighlightPlus {
         /// <summary>
         /// Loads a profile into this effect
         /// </summary>
-        public void ProfileLoad(HighlightProfile profile) {
-            if (profile != null) {
+        public void ProfileLoad(HighlightProfile profile)
+        {
+            if (profile != null)
+            {
                 this.profile = profile;
                 profile.Load(this);
             }
@@ -699,8 +761,10 @@ namespace HighlightPlus {
         /// <summary>
         /// Reloads currently assigned profile
         /// </summary>
-        public void ProfileReload() {
-            if (profile != null) {
+        public void ProfileReload()
+        {
+            if (profile != null)
+            {
                 profile.Load(this);
             }
         }
@@ -709,8 +773,10 @@ namespace HighlightPlus {
         /// <summary>
         /// Save current settings into given profile
         /// </summary>
-        public void ProfileSaveChanges(HighlightProfile profile) {
-            if (profile != null) {
+        public void ProfileSaveChanges(HighlightProfile profile)
+        {
+            if (profile != null)
+            {
                 profile.Save(this);
             }
         }
@@ -718,25 +784,31 @@ namespace HighlightPlus {
         /// <summary>
         /// Save current settings into current profile
         /// </summary>
-        public void ProfileSaveChanges() {
-            if (profile != null) {
+        public void ProfileSaveChanges()
+        {
+            if (profile != null)
+            {
                 profile.Save(this);
             }
         }
 
 
-        public void Refresh(bool discardCachedMeshes = false) {
-            if (discardCachedMeshes) {
+        public void Refresh(bool discardCachedMeshes = false)
+        {
+            if (discardCachedMeshes)
+            {
                 RefreshCachedMeshes();
             }
-            if (enabled) {
+            if (enabled)
+            {
                 SetupMaterial();
             }
         }
 
         RenderTargetIdentifier colorAttachmentBuffer, depthAttachmentBuffer;
 
-        public CommandBuffer GetCommandBuffer(Camera cam, RenderTargetIdentifier colorAttachmentBuffer, RenderTargetIdentifier depthAttachmentBuffer, FullScreenBlitMethod fullScreenBlit, bool clearStencil) {
+        public CommandBuffer GetCommandBuffer(Camera cam, RenderTargetIdentifier colorAttachmentBuffer, RenderTargetIdentifier depthAttachmentBuffer, FullScreenBlitMethod fullScreenBlit, bool clearStencil)
+        {
             this.colorAttachmentBuffer = colorAttachmentBuffer;
             this.depthAttachmentBuffer = depthAttachmentBuffer;
             this.FullScreenBlit = fullScreenBlit;
@@ -744,50 +816,62 @@ namespace HighlightPlus {
             return cbHighlightEmpty ? null : cbHighlight;
         }
 
-        void BuildCommandBuffer(Camera cam, bool clearStencil) {
+        void BuildCommandBuffer(Camera cam, bool clearStencil)
+        {
 
-            if (colorAttachmentBuffer == 0) {
+            if (colorAttachmentBuffer == 0)
+            {
                 colorAttachmentBuffer = BuiltinRenderTextureType.CameraTarget;
             }
-            if (depthAttachmentBuffer == 0) {
+            if (depthAttachmentBuffer == 0)
+            {
                 depthAttachmentBuffer = BuiltinRenderTextureType.CameraTarget;
             }
 
             InitCommandBuffer();
 
-            if (requireUpdateMaterial) {
+            if (requireUpdateMaterial)
+            {
                 requireUpdateMaterial = false;
                 UpdateMaterialProperties();
             }
 
             bool independentFullScreenNotExecuted = true;
-            if (clearStencil) {
+            if (clearStencil)
+            {
                 ConfigureOutput();
                 cbHighlight.DrawMesh(quadMesh, Matrix4x4.identity, fxMatClearStencil, 0, 0);
                 independentFullScreenNotExecuted = false;
             }
 
             bool seeThroughReal = usesSeeThrough;
-            if (seeThroughReal) {
+            if (seeThroughReal)
+            {
                 ConfigureOutput();
                 seeThroughReal = RenderSeeThroughOccluders(cbHighlight, cam);
-                if (seeThroughReal && seeThroughOccluderMask != -1) {
-                    if (seeThroughOccluderMaskAccurate) {
+                if (seeThroughReal && seeThroughOccluderMask != -1)
+                {
+                    if (seeThroughOccluderMaskAccurate)
+                    {
                         CheckOcclusionAccurate(cbHighlight, cam);
-                    } else {
+                    }
+                    else
+                    {
                         seeThroughReal = CheckOcclusion(cam);
                     }
                 }
             }
 
             bool showOverlay = hitActive || overlayMode == OverlayMode.Always;
-            if (!_highlighted && !seeThroughReal && !showOverlay) {
+            if (!_highlighted && !seeThroughReal && !showOverlay)
+            {
                 return;
             }
 
             ConfigureOutput();
 
-            if (rms == null) {
+            if (rms == null)
+            {
                 SetupMaterial();
                 if (rms == null) return;
             }
@@ -796,9 +880,12 @@ namespace HighlightPlus {
             int cullingMask = cam.cullingMask;
 
             // Ensure renderers are valid and visible (in case LODgroup has changed active renderer)
-            if (!ignoreObjectVisibility) {
-                for (int k = 0; k < rmsCount; k++) {
-                    if (rms[k].renderer != null && rms[k].renderer.isVisible != rms[k].renderWasVisibleDuringSetup) {
+            if (!ignoreObjectVisibility)
+            {
+                for (int k = 0; k < rmsCount; k++)
+                {
+                    if (rms[k].renderer != null && rms[k].renderer.isVisible != rms[k].renderWasVisibleDuringSetup)
+                    {
                         SetupMaterial();
                         break;
                     }
@@ -820,16 +907,19 @@ namespace HighlightPlus {
             float aspect = cam.aspect;
             bool somePartVisible = false;
 
-            for (int k = 0; k < rmsCount; k++) {
+            for (int k = 0; k < rmsCount; k++)
+            {
                 rms[k].render = false;
 
                 Transform t = rms[k].transform;
                 if (t == null)
                     continue;
 
-                if (rms[k].isSkinnedMesh && shouldBakeSkinnedMesh) {
+                if (rms[k].isSkinnedMesh && shouldBakeSkinnedMesh)
+                {
                     SkinnedMeshRenderer smr = (SkinnedMeshRenderer)rms[k].renderer;
-                    if (rms[k].bakedSkinnedMesh == null) {
+                    if (rms[k].bakedSkinnedMesh == null)
+                    {
                         rms[k].bakedSkinnedMesh = new Mesh();
                     }
                     smr.BakeMesh(rms[k].bakedSkinnedMesh, true);
@@ -841,7 +931,8 @@ namespace HighlightPlus {
                 if (mesh == null)
                     continue;
 
-                if (!ignoreObjectVisibility) {
+                if (!ignoreObjectVisibility)
+                {
                     int layer = t.gameObject.layer;
                     if (((1 << layer) & cullingMask) == 0)
                         continue;
@@ -852,39 +943,57 @@ namespace HighlightPlus {
                 rms[k].render = true;
                 somePartVisible = true;
 
-                if (rms[k].isCombined) {
+                if (rms[k].isCombined)
+                {
                     rms[k].renderingMatrix = t.localToWorldMatrix;
                 }
 
-                if (outlineIndependent) {
-                    if (useSmoothBlend) {
-                        if (independentFullScreenNotExecuted) {
+                if (outlineIndependent)
+                {
+                    if (useSmoothBlend)
+                    {
+                        if (independentFullScreenNotExecuted)
+                        {
                             independentFullScreenNotExecuted = false;
                             cbHighlight.DrawMesh(quadMesh, Matrix4x4.identity, fxMatClearStencil, 0, 0);
                         }
-                    } else if (outline > 0 || glow > 0) {
+                    }
+                    else if (outline > 0 || glow > 0)
+                    {
                         float width = outlineWidth;
-                        if (glow > 0) {
+                        if (glow > 0)
+                        {
                             width = Mathf.Max(width, glowWidth);
                         }
-                        for (int l = 0; l < mesh.subMeshCount; l++) {
+                        for (int l = 0; l < mesh.subMeshCount; l++)
+                        {
                             if (((1 << l) & subMeshMask) == 0) continue;
-                            if (outlineQuality.UsesMultipleOffsets()) {
-                                for (int o = outlineOffsetsMin; o <= outlineOffsetsMax; o++) {
+                            if (outlineQuality.UsesMultipleOffsets())
+                            {
+                                for (int o = outlineOffsetsMin; o <= outlineOffsetsMax; o++)
+                                {
                                     Vector4 direction = offsets[o] * (width / 100f);
                                     direction.y *= aspect;
                                     cbHighlight.SetGlobalVector(ShaderParams.OutlineDirection, direction);
-                                    if (rms[k].isCombined) {
+                                    if (rms[k].isCombined)
+                                    {
                                         cbHighlight.DrawMesh(rms[k].mesh, rms[k].renderingMatrix, rms[k].fxMatOutline[l], l, 1);
-                                    } else {
+                                    }
+                                    else
+                                    {
                                         cbHighlight.DrawRenderer(rms[k].renderer, rms[k].fxMatOutline[l], l, 1);
                                     }
                                 }
-                            } else {
+                            }
+                            else
+                            {
                                 cbHighlight.SetGlobalVector(ShaderParams.OutlineDirection, Vector4.zero);
-                                if (rms[k].isCombined) {
+                                if (rms[k].isCombined)
+                                {
                                     cbHighlight.DrawMesh(rms[k].mesh, rms[k].renderingMatrix, rms[k].fxMatOutline[l], l, 1);
-                                } else {
+                                }
+                                else
+                                {
                                     cbHighlight.DrawRenderer(rms[k].renderer, rms[k].fxMatOutline[l], l, 1);
                                 }
                             }
@@ -896,9 +1005,12 @@ namespace HighlightPlus {
 
             bool renderMaskOnTop = _highlighted && ((outline > 0 && smoothOutlineVisibility != Visibility.Normal) || (glow > 0 && smoothGlowVisibility != Visibility.Normal) || (innerGlow > 0 && innerGlowVisibility != Visibility.Normal));
             renderMaskOnTop = renderMaskOnTop | (useSmoothBlend && outlineContourStyle == ContourStyle.AroundObjectShape);
-            if (maskRequired) {
-                for (int k = 0; k < rmsCount; k++) {
-                    if (rms[k].render) {
+            if (maskRequired)
+            {
+                for (int k = 0; k < rmsCount; k++)
+                {
+                    if (rms[k].render)
+                    {
                         RenderMask(k, rms[k].mesh, renderMaskOnTop);
                     }
                 }
@@ -907,23 +1019,31 @@ namespace HighlightPlus {
             // Compute tweening
             float fadeGroup = 1f;
             float fade = 1f;
-            if (fading != FadingState.NoFading) {
-                if (fading == FadingState.FadingIn) {
-                    if (fadeInDuration > 0) {
+            if (fading != FadingState.NoFading)
+            {
+                if (fading == FadingState.FadingIn)
+                {
+                    if (fadeInDuration > 0)
+                    {
                         fadeGroup = (now - fadeStartTime) / fadeInDuration;
-                        if (fadeGroup > 1f) {
+                        if (fadeGroup > 1f)
+                        {
                             fadeGroup = 1f;
                             fading = FadingState.NoFading;
                         }
                     }
-                } else if (fadeOutDuration > 0) {
+                }
+                else if (fadeOutDuration > 0)
+                {
                     fadeGroup = 1f - (now - fadeStartTime) / fadeOutDuration;
-                    if (fadeGroup < 0f) {
+                    if (fadeGroup < 0f)
+                    {
                         fadeGroup = 0f;
                         fading = FadingState.NoFading;
                         _highlighted = false;
                         requireUpdateMaterial = true;
-                        if (OnObjectHighlightEnd != null) {
+                        if (OnObjectHighlightEnd != null)
+                        {
                             OnObjectHighlightEnd(gameObject);
                         }
                         SendMessage("HighlightEnd", null, SendMessageOptions.DontRequireReceiver);
@@ -931,9 +1051,12 @@ namespace HighlightPlus {
                 }
             }
 
-            if (glowQuality == QualityLevel.High) {
+            if (glowQuality == QualityLevel.High)
+            {
                 glowReal *= 0.25f;
-            } else if (glowQuality == QualityLevel.Medium) {
+            }
+            else if (glowQuality == QualityLevel.Medium)
+            {
                 glowReal *= 0.5f;
             }
 
@@ -941,20 +1064,23 @@ namespace HighlightPlus {
             bool usesSeeThroughBorder = (seeThroughBorder * seeThroughBorderWidth) > 0;
 
             // Add mesh effects
-            for (int k = 0; k < rmsCount; k++) {
+            for (int k = 0; k < rmsCount; k++)
+            {
                 if (!rms[k].render)
                     continue;
                 Mesh mesh = rms[k].mesh;
 
                 fade = fadeGroup;
                 // Distance fade
-                if (cameraDistanceFade) {
+                if (cameraDistanceFade)
+                {
                     fade *= ComputeCameraDistanceFade(rms[k].transform.position, cam.transform);
                 }
                 cbHighlight.SetGlobalFloat(ShaderParams.FadeFactor, fade);
 
 
-                if (_highlighted || showOverlay) {
+                if (_highlighted || showOverlay)
+                {
                     // Hit FX
                     Color overlayColor = this.overlayColor;
                     float overlayMinIntensity = this.overlayMinIntensity;
@@ -963,19 +1089,26 @@ namespace HighlightPlus {
                     Color innerGlowColorA = this.innerGlowColor;
                     float innerGlow = this.innerGlow;
 
-                    if (hitActive) {
+                    if (hitActive)
+                    {
                         overlayColor.a = _highlighted ? overlay : 0;
                         innerGlowColorA.a = _highlighted ? innerGlow : 0;
                         float t = hitFadeOutDuration > 0 ? (now - hitStartTime) / hitFadeOutDuration : 1f;
-                        if (t >= 1f) {
+                        if (t >= 1f)
+                        {
                             hitActive = false;
-                        } else {
-                            if (hitFxMode == HitFxMode.InnerGlow) {
+                        }
+                        else
+                        {
+                            if (hitFxMode == HitFxMode.InnerGlow)
+                            {
                                 bool lerpToCurrentInnerGlow = _highlighted && innerGlow > 0;
                                 innerGlowColorA = lerpToCurrentInnerGlow ? Color.Lerp(hitColor, innerGlowColor, t) : hitColor;
                                 innerGlowColorA.a = lerpToCurrentInnerGlow ? Mathf.Lerp(1f - t, innerGlow, t) : 1f - t;
                                 innerGlowColorA.a *= hitInitialIntensity;
-                            } else {
+                            }
+                            else
+                            {
                                 bool lerpToCurrentOverlay = _highlighted && overlay > 0;
                                 overlayColor = lerpToCurrentOverlay ? Color.Lerp(hitColor, overlayColor, t) : hitColor;
                                 overlayColor.a = lerpToCurrentOverlay ? Mathf.Lerp(1f - t, overlay, t) : 1f - t;
@@ -984,39 +1117,53 @@ namespace HighlightPlus {
                                 overlayBlending = 0;
                             }
                         }
-                    } else {
+                    }
+                    else
+                    {
                         overlayColor.a = overlay * fade;
                         innerGlowColorA.a = innerGlow * fade;
                     }
 
-                    for (int l = 0; l < mesh.subMeshCount; l++) {
+                    for (int l = 0; l < mesh.subMeshCount; l++)
+                    {
                         if (((1 << l) & subMeshMask) == 0) continue;
 
                         // Overlay
-                        if (overlayColor.a > 0) {
+                        if (overlayColor.a > 0)
+                        {
                             Material fxMat = rms[k].fxMatOverlay[l];
                             fxMat.SetColor(ShaderParams.OverlayColor, overlayColor);
                             fxMat.SetVector(ShaderParams.OverlayData, new Vector4(overlayAnimationSpeed, overlayMinIntensity, overlayBlending, overlayTextureScale));
-                            if (hitActive && hitFxMode == HitFxMode.LocalHit) {
+                            if (hitActive && hitFxMode == HitFxMode.LocalHit)
+                            {
                                 fxMat.SetVector(ShaderParams.OverlayHitPosData, new Vector4(hitPosition.x, hitPosition.y, hitPosition.z, hitRadius));
                                 fxMat.SetFloat(ShaderParams.OverlayHitStartTime, hitStartTime);
-                            } else {
+                            }
+                            else
+                            {
                                 fxMat.SetVector(ShaderParams.OverlayHitPosData, Vector4.zero);
                             }
-                            if (rms[k].isCombined) {
+                            if (rms[k].isCombined)
+                            {
                                 cbHighlight.DrawMesh(rms[k].mesh, rms[k].renderingMatrix, rms[k].fxMatOverlay[l], l);
-                            } else {
+                            }
+                            else
+                            {
                                 cbHighlight.DrawRenderer(rms[k].renderer, rms[k].fxMatOverlay[l], l);
                             }
                         }
 
 
                         // Inner Glow
-                        if (innerGlowColorA.a > 0) {
+                        if (innerGlowColorA.a > 0)
+                        {
                             rms[k].fxMatInnerGlow[l].SetColor(ShaderParams.InnerGlowColor, innerGlowColorA);
-                            if (rms[k].isCombined) {
+                            if (rms[k].isCombined)
+                            {
                                 cbHighlight.DrawMesh(rms[k].mesh, rms[k].renderingMatrix, rms[k].fxMatInnerGlow[l], l);
-                            } else {
+                            }
+                            else
+                            {
                                 cbHighlight.DrawRenderer(rms[k].renderer, rms[k].fxMatInnerGlow[l], l);
                             }
                         }
@@ -1028,73 +1175,100 @@ namespace HighlightPlus {
 
                 bool allowGPUInstancing = useGPUInstancing && !rms[k].isSkinnedMesh;
 
-                for (int l = 0; l < mesh.subMeshCount; l++) {
+                for (int l = 0; l < mesh.subMeshCount; l++)
+                {
                     if (((1 << l) & subMeshMask) == 0) continue;
 
                     // Glow
-                    if (glow > 0 && glowQuality != QualityLevel.Highest) {
+                    if (glow > 0 && glowQuality != QualityLevel.Highest)
+                    {
                         matDataGlow.Clear();
                         matDataColor.Clear();
                         matDataDirection.Clear();
-                        for (int glowPass = 0; glowPass < glowPasses.Length; glowPass++) {
-                            if (glowQuality.UsesMultipleOffsets()) {
-                                for (int o = glowOffsetsMin; o <= glowOffsetsMax; o++) {
+                        for (int glowPass = 0; glowPass < glowPasses.Length; glowPass++)
+                        {
+                            if (glowQuality.UsesMultipleOffsets())
+                            {
+                                for (int o = glowOffsetsMin; o <= glowOffsetsMax; o++)
+                                {
                                     Vector4 direction = offsets[o];
                                     direction.y *= aspect;
                                     Color dataColor = glowPasses[glowPass].color;
                                     Vector4 dataGlow = new Vector4(fade * glowReal * glowPasses[glowPass].alpha, glowPasses[glowPass].offset * glowWidth / 100f, glowMagicNumber1, glowMagicNumber2);
-                                    if (allowGPUInstancing) {
+                                    if (allowGPUInstancing)
+                                    {
                                         matDataDirection.Add(direction);
                                         matDataGlow.Add(dataGlow);
                                         matDataColor.Add(new Vector4(dataColor.r, dataColor.g, dataColor.b, dataColor.a));
-                                    } else {
+                                    }
+                                    else
+                                    {
                                         cbHighlight.SetGlobalVector(ShaderParams.GlowDirection, direction);
                                         cbHighlight.SetGlobalColor(ShaderParams.GlowColor, dataColor);
                                         cbHighlight.SetGlobalVector(ShaderParams.Glow, dataGlow);
-                                        if (rms[k].isCombined) {
+                                        if (rms[k].isCombined)
+                                        {
                                             cbHighlight.DrawMesh(rms[k].mesh, rms[k].renderingMatrix, rms[k].fxMatGlow[l], l);
-                                        } else {
+                                        }
+                                        else
+                                        {
                                             cbHighlight.DrawRenderer(rms[k].renderer, rms[k].fxMatGlow[l], l);
                                         }
                                     }
                                 }
-                            } else {
+                            }
+                            else
+                            {
                                 Vector4 dataGlow = new Vector4(fade * glowReal * glowPasses[glowPass].alpha, glowPasses[glowPass].offset * glowWidth / 100f, glowMagicNumber1, glowMagicNumber2);
                                 Color dataColor = glowPasses[glowPass].color;
-                                if (allowGPUInstancing) {
+                                if (allowGPUInstancing)
+                                {
                                     matDataDirection.Add(Vector4.zero);
                                     matDataGlow.Add(dataGlow);
                                     matDataColor.Add(new Vector4(dataColor.r, dataColor.g, dataColor.b, dataColor.a));
-                                } else {
+                                }
+                                else
+                                {
                                     int matIndex = glowPass * 8;
                                     cbHighlight.SetGlobalColor(ShaderParams.GlowColor, dataColor);
                                     cbHighlight.SetGlobalVector(ShaderParams.Glow, dataGlow);
                                     cbHighlight.SetGlobalVector(ShaderParams.GlowDirection, Vector4.zero);
-                                    if (rms[k].isCombined) {
+                                    if (rms[k].isCombined)
+                                    {
                                         cbHighlight.DrawMesh(rms[k].mesh, rms[k].renderingMatrix, rms[k].fxMatGlow[l], l);
-                                    } else {
+                                    }
+                                    else
+                                    {
                                         cbHighlight.DrawRenderer(rms[k].renderer, rms[k].fxMatGlow[l], l);
                                     }
                                 }
                             }
                         }
-                        if (allowGPUInstancing) {
+                        if (allowGPUInstancing)
+                        {
                             int instanceCount = matDataDirection.Count;
-                            if (instanceCount > 0) {
+                            if (instanceCount > 0)
+                            {
                                 glowPropertyBlock.Clear();
                                 glowPropertyBlock.SetVectorArray(ShaderParams.GlowDirection, matDataDirection);
                                 glowPropertyBlock.SetVectorArray(ShaderParams.GlowColor, matDataColor);
                                 glowPropertyBlock.SetVectorArray(ShaderParams.Glow, matDataGlow);
-                                if (matrices == null || matrices.Length < instanceCount) {
+                                if (matrices == null || matrices.Length < instanceCount)
+                                {
                                     matrices = new Matrix4x4[instanceCount];
                                 }
-                                if (rms[k].isCombined) {
-                                    for (int m = 0; m < instanceCount; m++) {
+                                if (rms[k].isCombined)
+                                {
+                                    for (int m = 0; m < instanceCount; m++)
+                                    {
                                         matrices[m] = rms[k].renderingMatrix;
                                     }
-                                } else {
+                                }
+                                else
+                                {
                                     Matrix4x4 objectToWorld = rms[k].transform.localToWorldMatrix;
-                                    for (int m = 0; m < instanceCount; m++) {
+                                    for (int m = 0; m < instanceCount; m++)
+                                    {
                                         matrices[m] = objectToWorld;
                                     }
                                 }
@@ -1104,60 +1278,85 @@ namespace HighlightPlus {
                     }
 
                     // Outline
-                    if (outline > 0 && outlineQuality != QualityLevel.Highest) {
+                    if (outline > 0 && outlineQuality != QualityLevel.Highest)
+                    {
                         Color outlineColor = this.outlineColor;
-                        if (outlineColorStyle == ColorStyle.Gradient) {
+                        if (outlineColorStyle == ColorStyle.Gradient)
+                        {
                             outlineColor.a *= outline * fade;
                             Bounds bounds = outlineGradientInLocalSpace ? mesh.bounds : rms[k].renderer.bounds;
                             cbHighlight.SetGlobalVector(ShaderParams.OutlineVertexData, new Vector4(bounds.min.y, bounds.size.y + 0.0001f, 0, 0));
-                        } else {
+                        }
+                        else
+                        {
                             outlineColor.a = outline * fade;
                             cbHighlight.SetGlobalVector(ShaderParams.OutlineVertexData, new Vector4(-1e6f, 1f, 0, 0));
                         }
                         cbHighlight.SetGlobalColor(ShaderParams.OutlineColor, outlineColor);
-                        if (outlineQuality.UsesMultipleOffsets()) {
+                        if (outlineQuality.UsesMultipleOffsets())
+                        {
                             matDataDirection.Clear();
-                            for (int o = outlineOffsetsMin; o <= outlineOffsetsMax; o++) {
+                            for (int o = outlineOffsetsMin; o <= outlineOffsetsMax; o++)
+                            {
                                 Vector4 direction = offsets[o] * (outlineWidth / 100f);
                                 direction.y *= aspect;
-                                if (allowGPUInstancing) {
+                                if (allowGPUInstancing)
+                                {
                                     matDataDirection.Add(direction);
-                                } else {
+                                }
+                                else
+                                {
                                     cbHighlight.SetGlobalVector(ShaderParams.OutlineDirection, direction);
-                                    if (rms[k].isCombined) {
+                                    if (rms[k].isCombined)
+                                    {
                                         cbHighlight.DrawMesh(rms[k].mesh, rms[k].renderingMatrix, rms[k].fxMatOutline[l], l, 0);
-                                    } else {
+                                    }
+                                    else
+                                    {
                                         cbHighlight.DrawRenderer(rms[k].renderer, rms[k].fxMatOutline[l], l, 0);
                                     }
                                 }
                             }
-                            if (allowGPUInstancing) {
+                            if (allowGPUInstancing)
+                            {
                                 int instanceCount = matDataDirection.Count;
-                                if (instanceCount > 0) {
+                                if (instanceCount > 0)
+                                {
                                     outlinePropertyBlock.Clear();
                                     outlinePropertyBlock.SetVectorArray(ShaderParams.OutlineDirection, matDataDirection);
-                                    if (matrices == null || matrices.Length < instanceCount) {
+                                    if (matrices == null || matrices.Length < instanceCount)
+                                    {
                                         matrices = new Matrix4x4[instanceCount];
                                     }
-                                    if (rms[k].isCombined) {
-                                        for (int m = 0; m < instanceCount; m++) {
+                                    if (rms[k].isCombined)
+                                    {
+                                        for (int m = 0; m < instanceCount; m++)
+                                        {
                                             matrices[m] = rms[k].renderingMatrix;
                                         }
-                                    } else {
+                                    }
+                                    else
+                                    {
                                         Matrix4x4 objectToWorld = rms[k].transform.localToWorldMatrix;
-                                        for (int m = 0; m < instanceCount; m++) {
+                                        for (int m = 0; m < instanceCount; m++)
+                                        {
                                             matrices[m] = objectToWorld;
                                         }
                                     }
                                     cbHighlight.DrawMeshInstanced(mesh, l, rms[k].fxMatOutline[l], 0, matrices, instanceCount, outlinePropertyBlock);
                                 }
                             }
-                        } else {
+                        }
+                        else
+                        {
                             cbHighlight.SetGlobalColor(ShaderParams.OutlineColor, outlineColor);
                             cbHighlight.SetGlobalVector(ShaderParams.OutlineDirection, Vector4.zero);
-                            if (rms[k].isSkinnedMesh) {
+                            if (rms[k].isSkinnedMesh)
+                            {
                                 cbHighlight.DrawRenderer(rms[k].renderer, rms[k].fxMatOutline[l], l, 0);
-                            } else {
+                            }
+                            else
+                            {
                                 // keep this because normals may be reoriented / smoothed
                                 cbHighlight.DrawMesh(mesh, rms[k].transform.localToWorldMatrix, rms[k].fxMatOutline[l], l, 0);
                             }
@@ -1167,61 +1366,76 @@ namespace HighlightPlus {
                 }
 
                 // Target
-                if (targetFX) {
+                if (targetFX)
+                {
                     float fadeOut = 1f;
-                    if (targetFXStayDuration > 0 && Application.isPlaying) {
+                    if (targetFXStayDuration > 0 && Application.isPlaying)
+                    {
                         fadeOut = (now - targetFxStartTime);
-                        if (fadeOut >= targetFXStayDuration) {
+                        if (fadeOut >= targetFXStayDuration)
+                        {
                             fadeOut -= targetFXStayDuration;
                             fadeOut = 1f - fadeOut;
                         }
-                        if (fadeOut > 1f) {
+                        if (fadeOut > 1f)
+                        {
                             fadeOut = 1f;
                         }
                     }
                     bool usesTarget = targetFXCenter != null;
-                    if (fadeOut > 0 && !(targetEffectRendered && usesTarget)) {
+                    if (fadeOut > 0 && !(targetEffectRendered && usesTarget))
+                    {
                         targetEffectRendered = true;
                         float scaleT = 1f;
                         float time;
                         float normalizedTime = 0;
-                        if (Application.isPlaying) {
+                        if (Application.isPlaying)
+                        {
                             normalizedTime = (now - targetFxStartTime) / targetFXTransitionDuration;
-                            if (normalizedTime > 1f) {
+                            if (normalizedTime > 1f)
+                            {
                                 normalizedTime = 1f;
                             }
                             scaleT = Mathf.Sin(normalizedTime * Mathf.PI * 0.5f);
                             time = now;
-                        } else {
+                        }
+                        else
+                        {
                             time = (float)DateTime.Now.Subtract(DateTime.Today).TotalSeconds;
                         }
                         Bounds bounds = rms[k].renderer.bounds;
-                        if (!targetFXScaleToRenderBounds) {
+                        if (!targetFXScaleToRenderBounds)
+                        {
                             bounds.size = Vector3.one;
                         }
                         Vector3 scale = bounds.size;
                         float minSize = scale.x;
-                        if (scale.y < minSize) {
+                        if (scale.y < minSize)
+                        {
                             minSize = scale.y;
                         }
-                        if (scale.z < minSize) {
+                        if (scale.z < minSize)
+                        {
                             minSize = scale.z;
                         }
                         scale.x = scale.y = scale.z = minSize;
                         scale = Vector3.Lerp(scale * targetFXInitialScale, scale * targetFXEndScale, scaleT);
                         Vector3 center = usesTarget ? targetFXCenter.transform.position : bounds.center;
                         Quaternion rotation;
-                        if (targetFXAlignToGround) {
+                        if (targetFXAlignToGround)
+                        {
                             rotation = Quaternion.Euler(90, 0, 0);
                             center.y += 0.5f; // a bit of offset in case it's in contact with ground
-                            if (Physics.Raycast(center, Vector3.down, out RaycastHit groundHitInfo, targetFXGroundMaxDistance, targetFXGroundLayerMask)) {
+                            if (Physics.Raycast(center, Vector3.down, out RaycastHit groundHitInfo, targetFXGroundMaxDistance, targetFXGroundLayerMask))
+                            {
                                 center = groundHitInfo.point;
                                 center.y += 0.01f;
                                 Vector4 renderData = groundHitInfo.normal;
                                 renderData.w = targetFXFadePower;
                                 fxMatTarget.SetVector(ShaderParams.TargetFXRenderData, renderData);
                                 rotation = Quaternion.Euler(0, time * targetFXRotationSpeed, 0);
-                                if (OnTargetAnimates != null) {
+                                if (OnTargetAnimates != null)
+                                {
                                     OnTargetAnimates(ref center, ref rotation, ref scale, normalizedTime);
                                 }
                                 Matrix4x4 m = Matrix4x4.TRS(center, rotation, scale);
@@ -1230,11 +1444,14 @@ namespace HighlightPlus {
                                 fxMatTarget.color = color;
                                 cbHighlight.DrawMesh(cubeMesh, m, fxMatTarget, 0, 0);
                             }
-                        } else {
+                        }
+                        else
+                        {
                             rotation = Quaternion.LookRotation(cam.transform.position - rms[k].transform.position);
                             Quaternion animationRot = Quaternion.Euler(0, 0, time * targetFXRotationSpeed);
                             rotation *= animationRot;
-                            if (OnTargetAnimates != null) {
+                            if (OnTargetAnimates != null)
+                            {
                                 OnTargetAnimates(ref center, ref rotation, ref scale, normalizedTime);
                             }
                             Matrix4x4 m = Matrix4x4.TRS(center, rotation, scale);
@@ -1247,19 +1464,23 @@ namespace HighlightPlus {
                 }
             }
 
-            if (useSmoothBlend && _highlighted && somePartVisible) {
+            if (useSmoothBlend && _highlighted && somePartVisible)
+            {
                 Bounds smoothBounds = new Bounds();
 
                 // Prepare smooth outer glow / outline target
                 int smoothRTWidth = cam.pixelWidth;
-                if (smoothRTWidth <= 0) {
+                if (smoothRTWidth <= 0)
+                {
                     smoothRTWidth = 1;
                 }
                 int smoothRTHeight = cam.pixelHeight;
-                if (smoothRTHeight <= 0) {
+                if (smoothRTHeight <= 0)
+                {
                     smoothRTHeight = 1;
                 }
-                if (isVREnabled) {
+                if (isVREnabled)
+                {
 #if UNITY_2022_3_OR_NEWER
                     if (Application.platform == RuntimePlatform.Android) {
                         // Workaround for Quest 2 multi-pass
@@ -1271,13 +1492,15 @@ namespace HighlightPlus {
                         sourceDesc.volumeDepth = 1;
                     } else {
 #endif
-                        sourceDesc = UnityEngine.XR.XRSettings.eyeTextureDesc;
-                        smoothRTWidth = sourceDesc.width;
-                        smoothRTHeight = sourceDesc.height;
+                    sourceDesc = UnityEngine.XR.XRSettings.eyeTextureDesc;
+                    smoothRTWidth = sourceDesc.width;
+                    smoothRTHeight = sourceDesc.height;
 #if UNITY_2022_3_OR_NEWER
                     }
 #endif
-                } else {
+                }
+                else
+                {
                     sourceDesc = new RenderTextureDescriptor(smoothRTWidth, smoothRTHeight);
                     sourceDesc.volumeDepth = 1;
                 }
@@ -1291,39 +1514,51 @@ namespace HighlightPlus {
                 cbHighlight.SetRenderTarget(sourceTarget);
                 cbHighlight.ClearRenderTarget(false, true, new Color(0, 0, 0, 0));
 
-                for (int k = 0; k < rmsCount; k++) {
+                for (int k = 0; k < rmsCount; k++)
+                {
                     if (!rms[k].render)
                         continue;
-                    if (k == 0) {
+                    if (k == 0)
+                    {
                         smoothBounds = rms[k].renderer.bounds;
-                    } else {
+                    }
+                    else
+                    {
                         smoothBounds.Encapsulate(rms[k].renderer.bounds);
                     }
                     Mesh mesh = rms[k].mesh;
 
                     // Render object body for glow/outline highest quality
-                    for (int l = 0; l < mesh.subMeshCount; l++) {
+                    for (int l = 0; l < mesh.subMeshCount; l++)
+                    {
                         if (((1 << l) & subMeshMask) == 0) continue;
-                        if (l < rms[k].fxMatSolidColor.Length) {
-                            if (rms[k].isCombined) {
+                        if (l < rms[k].fxMatSolidColor.Length)
+                        {
+                            if (rms[k].isCombined)
+                            {
                                 cbHighlight.DrawMesh(rms[k].mesh, rms[k].renderingMatrix, rms[k].fxMatSolidColor[l], l);
-                            } else {
+                            }
+                            else
+                            {
                                 cbHighlight.DrawRenderer(rms[k].renderer, rms[k].fxMatSolidColor[l], l);
                             }
                         }
                     }
                 }
 
-                if (ComputeSmoothQuadMatrix(cam, smoothBounds)) {
+                if (ComputeSmoothQuadMatrix(cam, smoothBounds))
+                {
                     // Smooth Glow
-                    if (useSmoothGlow) {
+                    if (useSmoothGlow)
+                    {
                         float intensity = glow * fade;
                         fxMatComposeGlow.color = new Color(glowHQColor.r * intensity, glowHQColor.g * intensity, glowHQColor.b * intensity, glowHQColor.a * intensity);
                         SmoothGlow(smoothRTWidth / glowDownsampling, smoothRTHeight / glowDownsampling);
                     }
 
                     // Smooth Outline
-                    if (useSmoothOutline) {
+                    if (useSmoothOutline)
+                    {
                         float intensity = outline * fade;
                         fxMatComposeOutline.color = new Color(outlineColor.r, outlineColor.g, outlineColor.b, outlineColor.a * intensity * 10f);
                         SmoothOutline(smoothRTWidth / outlineDownsampling, smoothRTHeight / outlineDownsampling);
@@ -1335,54 +1570,74 @@ namespace HighlightPlus {
             }
 
             // See-Through
-            if (seeThroughReal) {
-                if (renderMaskOnTop) {
-                    for (int k = 0; k < rmsCount; k++) {
+            if (seeThroughReal)
+            {
+                if (renderMaskOnTop)
+                {
+                    for (int k = 0; k < rmsCount; k++)
+                    {
                         if (!rms[k].render)
                             continue;
                         Mesh mesh = rms[k].mesh;
                         RenderSeeThroughClearStencil(k, mesh);
                     }
-                    for (int k = 0; k < rmsCount; k++) {
+                    for (int k = 0; k < rmsCount; k++)
+                    {
                         if (!rms[k].render)
                             continue;
                         Mesh mesh = rms[k].mesh;
                         RenderSeeThroughMask(k, mesh);
                     }
                 }
-                for (int k = 0; k < rmsCount; k++) {
+                for (int k = 0; k < rmsCount; k++)
+                {
                     if (!rms[k].render)
                         continue;
                     Mesh mesh = rms[k].mesh;
-                    for (int l = 0; l < mesh.subMeshCount; l++) {
+                    for (int l = 0; l < mesh.subMeshCount; l++)
+                    {
                         if (((1 << l) & subMeshMask) == 0) continue;
-                        if (l < rms[k].fxMatSeeThroughInner.Length && rms[k].fxMatSeeThroughInner[l] != null) {
-                            if (rms[k].isCombined) {
+                        if (l < rms[k].fxMatSeeThroughInner.Length && rms[k].fxMatSeeThroughInner[l] != null)
+                        {
+                            if (rms[k].isCombined)
+                            {
                                 cbHighlight.DrawMesh(mesh, rms[k].renderingMatrix, rms[k].fxMatSeeThroughInner[l], l);
-                            } else {
+                            }
+                            else
+                            {
                                 cbHighlight.DrawRenderer(rms[k].renderer, rms[k].fxMatSeeThroughInner[l], l);
                             }
                         }
-                        if (usesSeeThroughBorder) {
-                            if (rms[k].isCombined) {
+                        if (usesSeeThroughBorder)
+                        {
+                            if (rms[k].isCombined)
+                            {
                                 cbHighlight.DrawMesh(mesh, rms[k].renderingMatrix, rms[k].fxMatSeeThroughBorder[l], l);
-                            } else {
+                            }
+                            else
+                            {
                                 cbHighlight.DrawRenderer(rms[k].renderer, rms[k].fxMatSeeThroughBorder[l], l);
                             }
                         }
                     }
                 }
 
-                if (seeThroughOrdered) { // Ordered for see-through
-                    for (int k = 0; k < rmsCount; k++) {
+                if (seeThroughOrdered)
+                { // Ordered for see-through
+                    for (int k = 0; k < rmsCount; k++)
+                    {
                         if (!rms[k].render)
                             continue;
                         Mesh mesh = rms[k].mesh;
-                        for (int l = 0; l < mesh.subMeshCount; l++) {
+                        for (int l = 0; l < mesh.subMeshCount; l++)
+                        {
                             if (((1 << l) & subMeshMask) == 0) continue;
-                            if (rms[k].isCombined) {
+                            if (rms[k].isCombined)
+                            {
                                 cbHighlight.DrawMesh(mesh, rms[k].renderingMatrix, fxMatClearStencil, l, 1);
-                            } else {
+                            }
+                            else
+                            {
                                 cbHighlight.DrawRenderer(rms[k].renderer, fxMatClearStencil, l, 1);
                             }
                         }
@@ -1393,44 +1648,64 @@ namespace HighlightPlus {
 
         }
 
-        void RenderMask(int k, Mesh mesh, bool renderMaskOnTop) {
-            for (int l = 0; l < mesh.subMeshCount; l++) {
+        void RenderMask(int k, Mesh mesh, bool renderMaskOnTop)
+        {
+            for (int l = 0; l < mesh.subMeshCount; l++)
+            {
                 if (((1 << l) & subMeshMask) == 0) continue;
-                if (renderMaskOnTop) {
+                if (renderMaskOnTop)
+                {
                     rms[k].fxMatMask[l].SetInt(ShaderParams.ZTest, (int)CompareFunction.Always);
-                } else {
+                }
+                else
+                {
                     rms[k].fxMatMask[l].SetInt(ShaderParams.ZTest, (int)CompareFunction.LessEqual);
                 }
-                if (rms[k].isCombined) {
+                if (rms[k].isCombined)
+                {
                     cbHighlight.DrawMesh(rms[k].mesh, rms[k].renderingMatrix, rms[k].fxMatMask[l], l, 0);
-                } else {
+                }
+                else
+                {
                     cbHighlight.DrawRenderer(rms[k].renderer, rms[k].fxMatMask[l], l, 0);
                 }
             }
         }
 
-        void RenderSeeThroughClearStencil(int k, Mesh mesh) {
-            if (rms[k].isCombined) {
-                for (int l = 0; l < mesh.subMeshCount; l++) {
+        void RenderSeeThroughClearStencil(int k, Mesh mesh)
+        {
+            if (rms[k].isCombined)
+            {
+                for (int l = 0; l < mesh.subMeshCount; l++)
+                {
                     if (((1 << l) & subMeshMask) == 0) continue;
                     cbHighlight.DrawMesh(mesh, rms[k].renderingMatrix, fxMatClearStencil, l, 1);
                 }
-            } else {
-                for (int l = 0; l < mesh.subMeshCount; l++) {
+            }
+            else
+            {
+                for (int l = 0; l < mesh.subMeshCount; l++)
+                {
                     if (((1 << l) & subMeshMask) == 0) continue;
                     cbHighlight.DrawRenderer(rms[k].renderer, fxMatClearStencil, l, 1);
                 }
             }
         }
 
-        void RenderSeeThroughMask(int k, Mesh mesh) {
-            if (rms[k].isCombined) {
-                for (int l = 0; l < mesh.subMeshCount; l++) {
+        void RenderSeeThroughMask(int k, Mesh mesh)
+        {
+            if (rms[k].isCombined)
+            {
+                for (int l = 0; l < mesh.subMeshCount; l++)
+                {
                     if (((1 << l) & subMeshMask) == 0) continue;
                     cbHighlight.DrawMesh(mesh, rms[k].renderingMatrix, rms[k].fxMatMask[l], l, 1);
                 }
-            } else {
-                for (int l = 0; l < mesh.subMeshCount; l++) {
+            }
+            else
+            {
+                for (int l = 0; l < mesh.subMeshCount; l++)
+                {
                     if (((1 << l) & subMeshMask) == 0) continue;
                     cbHighlight.DrawRenderer(rms[k].renderer, rms[k].fxMatMask[l], l, 1);
                 }
@@ -1438,16 +1713,21 @@ namespace HighlightPlus {
         }
 
 
-        void WorldToViewportPoint(ref Matrix4x4 m, ref Vector4 p, bool perspectiveProjection, float zBufferParamsZ, float zBufferParamsW) {
+        void WorldToViewportPoint(ref Matrix4x4 m, ref Vector4 p, bool perspectiveProjection, float zBufferParamsZ, float zBufferParamsW)
+        {
             p = m * p;
             p.x = (p.x / p.w + 1f) * 0.5f;
             p.y = (p.y / p.w + 1f) * 0.5f;
 
-            if (perspectiveProjection) {
+            if (perspectiveProjection)
+            {
                 p.z /= p.w;
                 p.z = 1.0f / (zBufferParamsZ * p.z + zBufferParamsW);
-            } else {
-                if (usesReversedZBuffer) {
+            }
+            else
+            {
+                if (usesReversedZBuffer)
+                {
                     p.z = 1f - p.z;
                 }
                 p.z = (zBufferParamsW - zBufferParamsZ) * p.z + zBufferParamsZ;
@@ -1455,7 +1735,8 @@ namespace HighlightPlus {
         }
 
 
-        bool ComputeSmoothQuadMatrix(Camera cam, Bounds bounds) {
+        bool ComputeSmoothQuadMatrix(Camera cam, Bounds bounds)
+        {
             // Compute bounds in screen space and enlarge for glow space
 
             Vector3 shift = cam.transform.position;
@@ -1467,7 +1748,8 @@ namespace HighlightPlus {
             return res;
         }
 
-        bool ComputeSmoothQuadMatrixOriginShifted(Camera cam, ref Bounds bounds, ref Vector3 shift) {
+        bool ComputeSmoothQuadMatrixOriginShifted(Camera cam, ref Bounds bounds, ref Vector3 shift)
+        {
             // Compute bounds in screen space and enlarge for glow space
 
             Matrix4x4 mat = GL.GetGPUProjectionMatrix(cam.projectionMatrix, false) * cam.worldToCameraMatrix;
@@ -1490,40 +1772,53 @@ namespace HighlightPlus {
 
             float x, y, z, w;
             bool isPerspectiveCamera = !cam.orthographic;
-            if (isPerspectiveCamera) {
-                if (usesReversedZBuffer) {
+            if (isPerspectiveCamera)
+            {
+                if (usesReversedZBuffer)
+                {
                     x = -1f + farClipPlane / nearClipPlane;
                     y = 1f;
                     z = x / farClipPlane;
                     w = 1f / farClipPlane;
-                } else {
+                }
+                else
+                {
                     x = 1f - farClipPlane / nearClipPlane;
                     y = farClipPlane / nearClipPlane;
                     z = x / farClipPlane;
                     w = y / farClipPlane;
                 }
-            } else {
+            }
+            else
+            {
                 z = nearClipPlane;
                 w = farClipPlane;
             }
 
-            for (int k = 0; k < 8; k++) {
+            for (int k = 0; k < 8; k++)
+            {
                 WorldToViewportPoint(ref mat, ref corners[k], isPerspectiveCamera, z, w);
-                if (corners[k].x < scrMin.x) {
+                if (corners[k].x < scrMin.x)
+                {
                     scrMin.x = corners[k].x;
                 }
-                if (corners[k].y < scrMin.y) {
+                if (corners[k].y < scrMin.y)
+                {
                     scrMin.y = corners[k].y;
                 }
-                if (corners[k].x > scrMax.x) {
+                if (corners[k].x > scrMax.x)
+                {
                     scrMax.x = corners[k].x;
                 }
-                if (corners[k].y > scrMax.y) {
+                if (corners[k].y > scrMax.y)
+                {
                     scrMax.y = corners[k].y;
                 }
-                if (corners[k].z < distanceMin) {
+                if (corners[k].z < distanceMin)
+                {
                     distanceMin = corners[k].z;
-                    if (distanceMin < nearClipPlane) {
+                    if (distanceMin < nearClipPlane)
+                    {
                         distanceMin = distanceMax = 0.01f + nearClipPlane;
                         scrMin.x = scrMin.y = 0;
                         scrMax.x = 1f;
@@ -1531,7 +1826,8 @@ namespace HighlightPlus {
                         break;
                     }
                 }
-                if (corners[k].z > distanceMax) {
+                if (corners[k].z > distanceMax)
+                {
                     distanceMax = corners[k].z;
                 }
             }
@@ -1549,22 +1845,28 @@ namespace HighlightPlus {
             scrMin.y += cam.pixelRect.yMin;
             scrMax.y += cam.pixelRect.yMin;
 
-            if (spriteMode) {
+            if (spriteMode)
+            {
                 scrMin.z = scrMax.z = (distanceMin + distanceMax) * 0.5f + nearClipPlane;
-            } else {
+            }
+            else
+            {
                 scrMin.z = scrMax.z = isVREnabled ? distanceMin : 0.05f + nearClipPlane; // small shift to avoid origin far issues
             }
 
-            if (outline > 0) {
+            if (outline > 0)
+            {
                 BuildMatrix(cam, scrMin, scrMax, (int)(10 + 20 * outlineWidth + 5 * outlineDownsampling), ref quadOutlineMatrix, ref shift);
             }
-            if (glow > 0) {
+            if (glow > 0)
+            {
                 BuildMatrix(cam, scrMin, scrMax, (int)(20 + 30 * glowWidth + 10 * glowDownsampling), ref quadGlowMatrix, ref shift);
             }
             return true;
         }
 
-        void BuildMatrix(Camera cam, Vector3 scrMin, Vector3 scrMax, int border, ref Matrix4x4 quadMatrix, ref Vector3 shift) {
+        void BuildMatrix(Camera cam, Vector3 scrMin, Vector3 scrMax, int border, ref Matrix4x4 quadMatrix, ref Vector3 shift)
+        {
 
             // Insert padding to make room for effects
             scrMin.x -= border;
@@ -1584,34 +1886,41 @@ namespace HighlightPlus {
             quadMatrix = Matrix4x4.TRS((scrMin + scrMax) * 0.5f + shift, cam.transform.rotation, new Vector3(width, height, 1f));
         }
 
-        void SmoothGlow(int rtWidth, int rtHeight) {
+        void SmoothGlow(int rtWidth, int rtHeight)
+        {
 
             Material matBlur = fxMatBlurGlow;
             RenderTextureDescriptor glowDesc = sourceDesc;
             glowDesc.depthBufferBits = 0;
 
-            if (glowBlurMethod == BlurMethod.Gaussian) {
+            if (glowBlurMethod == BlurMethod.Gaussian)
+            {
 
                 const int blurPasses = 4;
 
                 // Blur buffers
                 int bufferCount = blurPasses * 2;
-                if (mipGlowBuffers == null || mipGlowBuffers.Length != bufferCount) {
+                if (mipGlowBuffers == null || mipGlowBuffers.Length != bufferCount)
+                {
                     mipGlowBuffers = new int[bufferCount];
-                    for (int k = 0; k < bufferCount; k++) {
+                    for (int k = 0; k < bufferCount; k++)
+                    {
                         mipGlowBuffers[k] = Shader.PropertyToID("_HPSmoothGlowTemp" + k);
                     }
                     mipGlowBuffers[bufferCount - 2] = ShaderParams.GlowRT;
                 }
 
-                for (int k = 0; k < bufferCount; k++) {
+                for (int k = 0; k < bufferCount; k++)
+                {
                     float reduction = k / 2 + 2;
                     int reducedWidth = (int)(rtWidth / reduction);
                     int reducedHeight = (int)(rtHeight / reduction);
-                    if (reducedWidth <= 0) {
+                    if (reducedWidth <= 0)
+                    {
                         reducedWidth = 1;
                     }
-                    if (reducedHeight <= 0) {
+                    if (reducedHeight <= 0)
+                    {
                         reducedHeight = 1;
                     }
                     glowDesc.width = reducedWidth;
@@ -1619,38 +1928,50 @@ namespace HighlightPlus {
                     cbHighlight.GetTemporaryRT(mipGlowBuffers[k], glowDesc, FilterMode.Bilinear);
                 }
 
-                for (int k = 0; k < bufferCount - 1; k += 2) {
-                    if (k == 0) {
+                for (int k = 0; k < bufferCount - 1; k += 2)
+                {
+                    if (k == 0)
+                    {
                         FullScreenBlit(cbHighlight, sourceRT, mipGlowBuffers[k + 1], fxMatBlurGlow, 0);
-                    } else {
+                    }
+                    else
+                    {
                         FullScreenBlit(cbHighlight, mipGlowBuffers[k], mipGlowBuffers[k + 1], fxMatBlurGlow, 0);
                     }
                     FullScreenBlit(cbHighlight, mipGlowBuffers[k + 1], mipGlowBuffers[k], fxMatBlurGlow, 1);
 
-                    if (k < bufferCount - 2) {
+                    if (k < bufferCount - 2)
+                    {
                         FullScreenBlit(cbHighlight, mipGlowBuffers[k], mipGlowBuffers[k + 2], fxMatBlurGlow, 2);
                     }
                 }
-            } else {
+            }
+            else
+            {
                 const int blurPasses = 4;
 
                 int bufferCount = blurPasses;
-                if (mipGlowBuffers == null || mipGlowBuffers.Length != bufferCount) {
+                if (mipGlowBuffers == null || mipGlowBuffers.Length != bufferCount)
+                {
                     mipGlowBuffers = new int[bufferCount];
-                    for (int k = 0; k < bufferCount - 1; k++) {
+                    for (int k = 0; k < bufferCount - 1; k++)
+                    {
                         mipGlowBuffers[k] = Shader.PropertyToID("_HPSmoothGlowTemp" + k);
                     }
                     mipGlowBuffers[bufferCount - 1] = ShaderParams.GlowRT;
                 }
 
-                for (int k = 0; k < bufferCount; k++) {
+                for (int k = 0; k < bufferCount; k++)
+                {
                     float reduction = k + 2;
                     int reducedWidth = (int)(rtWidth / reduction);
                     int reducedHeight = (int)(rtHeight / reduction);
-                    if (reducedWidth <= 0) {
+                    if (reducedWidth <= 0)
+                    {
                         reducedWidth = 1;
                     }
-                    if (reducedHeight <= 0) {
+                    if (reducedHeight <= 0)
+                    {
                         reducedHeight = 1;
                     }
                     glowDesc.width = reducedWidth;
@@ -1658,20 +1979,24 @@ namespace HighlightPlus {
                     cbHighlight.GetTemporaryRT(mipGlowBuffers[k], glowDesc, FilterMode.Bilinear);
                 }
                 FullScreenBlit(cbHighlight, sourceRT, mipGlowBuffers[0], matBlur, 3);
-                for (int k = 0; k < bufferCount - 1; k++) {
+                for (int k = 0; k < bufferCount - 1; k++)
+                {
                     cbHighlight.SetGlobalFloat(ShaderParams.ResampleScale, k + 0.5f);
                     FullScreenBlit(cbHighlight, mipGlowBuffers[k], mipGlowBuffers[k + 1], matBlur, 3);
                 }
             }
         }
 
-        void SmoothOutline(int rtWidth, int rtHeight) {
+        void SmoothOutline(int rtWidth, int rtHeight)
+        {
 
             // Blur buffers
             int bufferCount = outlineBlurPasses * 2;
-            if (mipOutlineBuffers == null || mipOutlineBuffers.Length != bufferCount) {
+            if (mipOutlineBuffers == null || mipOutlineBuffers.Length != bufferCount)
+            {
                 mipOutlineBuffers = new int[bufferCount];
-                for (int k = 0; k < bufferCount; k++) {
+                for (int k = 0; k < bufferCount; k++)
+                {
                     mipOutlineBuffers[k] = Shader.PropertyToID("_HPSmoothOutlineTemp" + k);
                 }
                 mipOutlineBuffers[bufferCount - 2] = ShaderParams.OutlineRT;
@@ -1679,14 +2004,17 @@ namespace HighlightPlus {
             RenderTextureDescriptor outlineDesc = sourceDesc;
             outlineDesc.depthBufferBits = 0;
 
-            for (int k = 0; k < bufferCount; k++) {
+            for (int k = 0; k < bufferCount; k++)
+            {
                 float reduction = k / 2 + 2;
                 int reducedWidth = (int)(rtWidth / reduction);
                 int reducedHeight = (int)(rtHeight / reduction);
-                if (reducedWidth <= 0) {
+                if (reducedWidth <= 0)
+                {
                     reducedWidth = 1;
                 }
-                if (reducedHeight <= 0) {
+                if (reducedHeight <= 0)
+                {
                     reducedHeight = 1;
                 }
                 outlineDesc.width = reducedWidth;
@@ -1694,22 +2022,28 @@ namespace HighlightPlus {
                 cbHighlight.GetTemporaryRT(mipOutlineBuffers[k], outlineDesc, FilterMode.Bilinear);
             }
 
-            for (int k = 0; k < bufferCount - 1; k += 2) {
-                if (k == 0) {
+            for (int k = 0; k < bufferCount - 1; k += 2)
+            {
+                if (k == 0)
+                {
                     FullScreenBlit(cbHighlight, sourceRT, mipOutlineBuffers[k + 1], fxMatBlurOutline, 3);
-                } else {
+                }
+                else
+                {
                     FullScreenBlit(cbHighlight, mipOutlineBuffers[k], mipOutlineBuffers[k + 1], fxMatBlurOutline, 0);
                 }
                 FullScreenBlit(cbHighlight, mipOutlineBuffers[k + 1], mipOutlineBuffers[k], fxMatBlurOutline, 1);
 
-                if (k < bufferCount - 2) {
+                if (k < bufferCount - 2)
+                {
                     FullScreenBlit(cbHighlight, mipOutlineBuffers[k], mipOutlineBuffers[k + 2], fxMatBlurOutline, 2);
                 }
             }
         }
 
 
-        void ComposeSmoothBlend(Visibility smoothGlowVisibility, Visibility smoothOutlineVisibility) {
+        void ComposeSmoothBlend(Visibility smoothGlowVisibility, Visibility smoothOutlineVisibility)
+        {
 
             // Render mask on target surface
             //if (Application.platform == RuntimePlatform.OSXEditor || Application.platform == RuntimePlatform.OSXPlayer || Application.platform == RuntimePlatform.IPhonePlayer) { // TODO: RML
@@ -1719,25 +2053,31 @@ namespace HighlightPlus {
             //}
 
             bool renderSmoothGlow = glow > 0 && glowWidth > 0 && glowQuality == QualityLevel.Highest;
-            if (renderSmoothGlow) {
+            if (renderSmoothGlow)
+            {
                 fxMatComposeGlow.SetVector(ShaderParams.Flip, (isVREnabled && flipY) ? new Vector4(1, -1) : new Vector4(0, 1));
                 fxMatComposeGlow.SetInt(ShaderParams.ZTest, GetZTestValue(smoothGlowVisibility));
                 cbHighlight.DrawMesh(quadMesh, quadGlowMatrix, fxMatComposeGlow, 0, 0);
             }
             bool renderSmoothOutline = outline > 0 && outlineWidth > 0 && outlineQuality == QualityLevel.Highest;
-            if (renderSmoothOutline) {
+            if (renderSmoothOutline)
+            {
                 fxMatComposeOutline.SetVector(ShaderParams.Flip, (isVREnabled && flipY) ? new Vector4(1, -1) : new Vector4(0, 1));
                 fxMatComposeOutline.SetInt(ShaderParams.ZTest, GetZTestValue(smoothOutlineVisibility));
                 cbHighlight.DrawMesh(quadMesh, quadOutlineMatrix, fxMatComposeOutline, 0, 0);
             }
             // Release render textures
-            if (renderSmoothGlow) {
-                for (int k = 0; k < mipGlowBuffers.Length; k++) {
+            if (renderSmoothGlow)
+            {
+                for (int k = 0; k < mipGlowBuffers.Length; k++)
+                {
                     cbHighlight.ReleaseTemporaryRT(mipGlowBuffers[k]);
                 }
             }
-            if (renderSmoothOutline) {
-                for (int k = 0; k < mipOutlineBuffers.Length; k++) {
+            if (renderSmoothOutline)
+            {
+                for (int k = 0; k < mipOutlineBuffers.Length; k++)
+                {
                     cbHighlight.ReleaseTemporaryRT(mipOutlineBuffers[k]);
                 }
             }
@@ -1745,30 +2085,37 @@ namespace HighlightPlus {
             cbHighlight.ReleaseTemporaryRT(sourceRT);
         }
 
-        void InitMaterial(ref Material material, string shaderName) {
+        void InitMaterial(ref Material material, string shaderName)
+        {
             if (material != null) return;
             Shader shaderFX = Shader.Find(shaderName);
-            if (shaderFX == null) {
+            if (shaderFX == null)
+            {
                 Debug.LogError("Shader " + shaderName + " not found.");
                 return;
             }
             material = new Material(shaderFX);
         }
 
-        void Fork(Material mat, ref Material[] mats, Mesh mesh) {
+        void Fork(Material mat, ref Material[] mats, Mesh mesh)
+        {
             if (mesh == null)
                 return;
             int count = mesh.subMeshCount;
             Fork(mat, ref mats, count);
         }
 
-        void Fork(Material material, ref Material[] array, int count) {
-            if (array == null || array.Length < count) {
+        void Fork(Material material, ref Material[] array, int count)
+        {
+            if (array == null || array.Length < count)
+            {
                 DestroyMaterialArray(array);
                 array = new Material[count];
             }
-            for (int k = 0; k < count; k++) {
-                if (array[k] == null) {
+            for (int k = 0; k < count; k++)
+            {
+                if (array[k] == null)
+                {
                     array[k] = Instantiate(material);
                 }
             }
@@ -1777,15 +2124,20 @@ namespace HighlightPlus {
         /// <summary>
         /// Sets target for highlight effects
         /// </summary>
-        public void SetTarget(Transform transform) {
+        public void SetTarget(Transform transform)
+        {
             if (transform == null) return;
-            if (transform != target) {
-                if (_highlighted) {
+            if (transform != target)
+            {
+                if (_highlighted)
+                {
                     ImmediateFadeOut();
                 }
                 target = transform;
                 SetupMaterial();
-            } else {
+            }
+            else
+            {
                 UpdateVisibilityState();
             }
         }
@@ -1795,11 +2147,13 @@ namespace HighlightPlus {
         /// <summary>
         /// Sets target for highlight effects and also specify a list of renderers to be included as well
         /// </summary>
-        public void SetTargets(Transform transform, Renderer[] renderers) {
+        public void SetTargets(Transform transform, Renderer[] renderers)
+        {
             if (transform == null)
                 return;
 
-            if (_highlighted) {
+            if (_highlighted)
+            {
                 ImmediateFadeOut();
             }
 
@@ -1812,51 +2166,68 @@ namespace HighlightPlus {
         /// <summary>
         /// Start or finish highlight on the object
         /// </summary>
-        public void SetHighlighted(bool state) {
+        public void SetHighlighted(bool state)
+        {
 
-            if (!Application.isPlaying) {
+            if (!Application.isPlaying)
+            {
                 _highlighted = state;
                 return;
             }
 
             float now = GetTime();
 
-            if (fading == FadingState.NoFading) {
+            if (fading == FadingState.NoFading)
+            {
                 fadeStartTime = now;
             }
 
-            if (state && !ignore) {
-                if (_highlighted && fading == FadingState.NoFading) {
+            if (state && !ignore)
+            {
+                if (_highlighted && fading == FadingState.NoFading)
+                {
                     return;
                 }
-                if (OnObjectHighlightStart != null) {
-                    if (!OnObjectHighlightStart(gameObject)) {
+                if (OnObjectHighlightStart != null)
+                {
+                    if (!OnObjectHighlightStart(gameObject))
+                    {
                         return;
                     }
                 }
                 SendMessage("HighlightStart", null, SendMessageOptions.DontRequireReceiver);
                 highlightStartTime = targetFxStartTime = now;
-                if (fadeInDuration > 0) {
-                    if (fading == FadingState.FadingOut) {
+                if (fadeInDuration > 0)
+                {
+                    if (fading == FadingState.FadingOut)
+                    {
                         float remaining = fadeOutDuration - (now - fadeStartTime);
                         fadeStartTime = now - remaining;
                         fadeStartTime = Mathf.Min(fadeStartTime, now);
                     }
                     fading = FadingState.FadingIn;
-                } else {
+                }
+                else
+                {
                     fading = FadingState.NoFading;
                 }
                 _highlighted = true;
                 requireUpdateMaterial = true;
-            } else if (_highlighted) {
-                if (fadeOutDuration > 0) {
-                    if (fading == FadingState.FadingIn) {
+            }
+            else if (_highlighted)
+            {
+                if (fadeOutDuration > 0)
+                {
+                    if (fading == FadingState.FadingIn)
+                    {
                         float elapsed = now - fadeStartTime;
                         fadeStartTime = now + elapsed - fadeInDuration;
                         fadeStartTime = Mathf.Min(fadeStartTime, now);
                     }
                     fading = FadingState.FadingOut; // when fade out ends, highlighted will be set to false in OnRenderObject
-                } else {
+                }
+                else
+                {
                     fading = FadingState.NoFading;
                     ImmediateFadeOut();
                     requireUpdateMaterial = true;
@@ -1864,16 +2235,19 @@ namespace HighlightPlus {
             }
         }
 
-        void ImmediateFadeOut() {
+        void ImmediateFadeOut()
+        {
             fading = FadingState.NoFading;
             _highlighted = false;
-            if (OnObjectHighlightEnd != null) {
+            if (OnObjectHighlightEnd != null)
+            {
                 OnObjectHighlightEnd(gameObject);
             }
             SendMessage("HighlightEnd", null, SendMessageOptions.DontRequireReceiver);
         }
 
-        void SetupMaterial() {
+        void SetupMaterial()
+        {
 
 #if UNITY_EDITOR
             staticChildren = false;
@@ -1883,37 +2257,46 @@ namespace HighlightPlus {
                 return;
 
             Renderer[] rr = null;
-            switch (effectGroup) {
+            switch (effectGroup)
+            {
                 case TargetOptions.OnlyThisObject:
                     Renderer renderer = target.GetComponent<Renderer>();
-                    if (renderer != null && ValidRenderer(renderer)) {
+                    if (renderer != null && ValidRenderer(renderer))
+                    {
                         rr = new Renderer[1];
                         rr[0] = renderer;
                     }
                     break;
                 case TargetOptions.RootToChildren:
                     Transform root = target;
-                    while (root.parent != null) {
+                    while (root.parent != null)
+                    {
                         root = root.parent;
                     }
                     rr = FindRenderersInChildren(root);
                     break;
-                case TargetOptions.LayerInScene: {
+                case TargetOptions.LayerInScene:
+                    {
                         HighlightEffect eg = this;
-                        if (target != transform) {
+                        if (target != transform)
+                        {
                             HighlightEffect targetEffect = target.GetComponent<HighlightEffect>();
-                            if (targetEffect != null) {
+                            if (targetEffect != null)
+                            {
                                 eg = targetEffect;
                             }
                         }
                         rr = FindRenderersWithLayerInScene(eg.effectGroupLayer);
                     }
                     break;
-                case TargetOptions.LayerInChildren: {
+                case TargetOptions.LayerInChildren:
+                    {
                         HighlightEffect eg = this;
-                        if (target != transform) {
+                        if (target != transform)
+                        {
                             HighlightEffect targetEffect = target.GetComponent<HighlightEffect>();
-                            if (targetEffect != null) {
+                            if (targetEffect != null)
+                            {
                                 eg = targetEffect;
                             }
                         }
@@ -1931,38 +2314,47 @@ namespace HighlightPlus {
             SetupMaterial(rr);
         }
 
-        void SetupMaterial(Renderer[] rr) {
+        void SetupMaterial(Renderer[] rr)
+        {
 
-            if (rr == null) {
+            if (rr == null)
+            {
                 rr = new Renderer[0];
             }
-            if (rms == null || rms.Length < rr.Length) {
+            if (rms == null || rms.Length < rr.Length)
+            {
                 rms = new ModelMaterials[rr.Length];
             }
             InitCommandBuffer();
 
             spriteMode = false;
             rmsCount = 0;
-            for (int k = 0; k < rr.Length; k++) {
+            for (int k = 0; k < rr.Length; k++)
+            {
                 rms[rmsCount].Init();
                 Renderer renderer = rr[k];
                 if (renderer == null) continue;
-                if (effectGroup != TargetOptions.OnlyThisObject && !string.IsNullOrEmpty(effectNameFilter)) {
+                if (effectGroup != TargetOptions.OnlyThisObject && !string.IsNullOrEmpty(effectNameFilter))
+                {
                     if (!renderer.name.Contains(effectNameFilter)) continue;
                 }
                 rms[rmsCount].renderer = renderer;
                 rms[rmsCount].renderWasVisibleDuringSetup = renderer.isVisible;
                 sortingOffset = (renderer.bounds.size.x + renderer.bounds.size.y + renderer.bounds.size.z) % 0.0001f;
 
-                if (renderer.transform != target) {
+                if (renderer.transform != target)
+                {
                     HighlightEffect otherEffect = renderer.GetComponent<HighlightEffect>();
-                    if (otherEffect != null && otherEffect.enabled && otherEffect.ignore) {
+                    if (otherEffect != null && otherEffect.enabled && otherEffect.ignore)
+                    {
                         continue; // ignore this object
                     }
                 }
 
-                if (OnRendererHighlightStart != null) {
-                    if (!OnRendererHighlightStart(renderer)) {
+                if (OnRendererHighlightStart != null)
+                {
+                    if (!OnRendererHighlightStart(renderer))
+                    {
                         rmsCount++;
                         continue;
                     }
@@ -1973,25 +2365,35 @@ namespace HighlightPlus {
                 rms[rmsCount].isSkinnedMesh = isSkinnedMesh;
                 bool isSpriteRenderer = renderer is SpriteRenderer;
                 rms[rmsCount].normalsOption = isSkinnedMesh ? NormalsOption.PreserveOriginal : normalsOption;
-                if (isSpriteRenderer) {
+                if (isSpriteRenderer)
+                {
                     rms[rmsCount].mesh = quadMesh;
                     spriteMode = true;
-                } else if (isSkinnedMesh) {
+                }
+                else if (isSkinnedMesh)
+                {
                     // ignore cloth skinned renderers
                     rms[rmsCount].mesh = ((SkinnedMeshRenderer)renderer).sharedMesh;
-                } else if (Application.isPlaying && renderer.isPartOfStaticBatch) {
+                }
+                else if (Application.isPlaying && renderer.isPartOfStaticBatch)
+                {
                     // static batched objects need to have a mesh collider in order to use its original mesh
                     MeshCollider mc = renderer.GetComponent<MeshCollider>();
-                    if (mc != null) {
+                    if (mc != null)
+                    {
                         rms[rmsCount].mesh = mc.sharedMesh;
                     }
-                } else {
+                }
+                else
+                {
                     MeshFilter mf = renderer.GetComponent<MeshFilter>();
-                    if (mf != null) {
+                    if (mf != null)
+                    {
                         rms[rmsCount].mesh = mf.sharedMesh;
 
 #if UNITY_EDITOR
-                        if (renderer.gameObject.isStatic && renderer.GetComponent<MeshCollider>() == null) {
+                        if (renderer.gameObject.isStatic && renderer.GetComponent<MeshCollider>() == null)
+                        {
                             staticChildren = true;
                         }
 #endif
@@ -1999,7 +2401,8 @@ namespace HighlightPlus {
                     }
                 }
 
-                if (rms[rmsCount].mesh == null) {
+                if (rms[rmsCount].mesh == null)
+                {
                     continue;
                 }
 
@@ -2013,11 +2416,16 @@ namespace HighlightPlus {
                 Fork(fxMatInnerGlow, ref rms[rmsCount].fxMatInnerGlow, rms[rmsCount].mesh);
                 Fork(fxMatSolidColor, ref rms[rmsCount].fxMatSolidColor, rms[rmsCount].mesh);
                 rms[rmsCount].originalMesh = rms[rmsCount].mesh;
-                if (!rms[rmsCount].preserveOriginalMesh) {
-                    if (innerGlow > 0 || (glow > 0 && glowQuality != QualityLevel.Highest) || (outline > 0 && outlineQuality != QualityLevel.Highest)) {
-                        if (normalsOption == NormalsOption.Reorient) {
+                if (!rms[rmsCount].preserveOriginalMesh)
+                {
+                    if (innerGlow > 0 || (glow > 0 && glowQuality != QualityLevel.Highest) || (outline > 0 && outlineQuality != QualityLevel.Highest))
+                    {
+                        if (normalsOption == NormalsOption.Reorient)
+                        {
                             ReorientNormals(rmsCount);
-                        } else {
+                        }
+                        else
+                        {
                             AverageNormals(rmsCount);
                         }
                     }
@@ -2027,24 +2435,30 @@ namespace HighlightPlus {
 
 #if UNITY_EDITOR
             // Avoids command buffer issue when refreshing asset inside the Editor
-            if (!Application.isPlaying) {
+            if (!Application.isPlaying)
+            {
                 mipGlowBuffers = null;
                 mipOutlineBuffers = null;
             }
 #endif
 
-            if (spriteMode) {
+            if (spriteMode)
+            {
                 outlineIndependent = false;
                 outlineQuality = QualityLevel.Highest;
                 glowQuality = QualityLevel.Highest;
                 innerGlow = 0;
                 cullBackFaces = false;
                 seeThrough = SeeThroughMode.Never;
-                if (alphaCutOff <= 0) {
+                if (alphaCutOff <= 0)
+                {
                     alphaCutOff = 0.5f;
                 }
-            } else {
-                if (combineMeshes) {
+            }
+            else
+            {
+                if (combineMeshes)
+                {
                     CombineMeshes();
                 }
             }
@@ -2054,17 +2468,22 @@ namespace HighlightPlus {
 
         readonly List<Renderer> tempRR = new List<Renderer>();
 
-        bool ValidRenderer(Renderer r) {
+        bool ValidRenderer(Renderer r)
+        {
             return r is MeshRenderer || r is SpriteRenderer || r is SkinnedMeshRenderer;
         }
 
-        Renderer[] FindRenderersWithLayerInScene(LayerMask layer) {
+        Renderer[] FindRenderersWithLayerInScene(LayerMask layer)
+        {
             Renderer[] rr = FindObjectsOfType<Renderer>();
             tempRR.Clear();
-            for (var i = 0; i < rr.Length; i++) {
+            for (var i = 0; i < rr.Length; i++)
+            {
                 Renderer r = rr[i];
-                if (((1 << r.gameObject.layer) & layer) != 0) {
-                    if (ValidRenderer(r)) {
+                if (((1 << r.gameObject.layer) & layer) != 0)
+                {
+                    if (ValidRenderer(r))
+                    {
                         tempRR.Add(r);
                     }
                 }
@@ -2072,13 +2491,17 @@ namespace HighlightPlus {
             return tempRR.ToArray();
         }
 
-        Renderer[] FindRenderersWithLayerInChildren(LayerMask layer) {
+        Renderer[] FindRenderersWithLayerInChildren(LayerMask layer)
+        {
             Renderer[] rr = target.GetComponentsInChildren<Renderer>();
             tempRR.Clear();
-            for (var i = 0; i < rr.Length; i++) {
+            for (var i = 0; i < rr.Length; i++)
+            {
                 Renderer r = rr[i];
-                if (((1 << r.gameObject.layer) & layer) != 0) {
-                    if (ValidRenderer(r)) {
+                if (((1 << r.gameObject.layer) & layer) != 0)
+                {
+                    if (ValidRenderer(r))
+                    {
                         tempRR.Add(r);
                     }
                 }
@@ -2086,12 +2509,15 @@ namespace HighlightPlus {
             return tempRR.ToArray();
         }
 
-        Renderer[] FindRenderersInChildren(Transform parent) {
+        Renderer[] FindRenderersInChildren(Transform parent)
+        {
             tempRR.Clear();
             parent.GetComponentsInChildren(tempRR);
-            for (var i = 0; i < tempRR.Count; i++) {
+            for (var i = 0; i < tempRR.Count; i++)
+            {
                 Renderer r = tempRR[i];
-                if (!ValidRenderer(r)) {
+                if (!ValidRenderer(r))
+                {
                     tempRR.RemoveAt(i);
                     i--;
                 }
@@ -2099,7 +2525,8 @@ namespace HighlightPlus {
             return tempRR.ToArray();
         }
 
-        void CheckGeometrySupportDependencies() {
+        void CheckGeometrySupportDependencies()
+        {
             InitMaterial(ref fxMatMask, "HighlightPlus/Geometry/Mask");
             InitMaterial(ref fxMatGlowTemplate, "HighlightPlus/Geometry/Glow");
             if (fxMatGlowTemplate != null && useGPUInstancing) fxMatGlowTemplate.enableInstancing = true;
@@ -2119,8 +2546,10 @@ namespace HighlightPlus {
             InitMaterial(ref fxMatClearStencil, "HighlightPlus/ClearStencil");
         }
 
-        void InitCommandBuffer() {
-            if (cbHighlight == null) {
+        void InitCommandBuffer()
+        {
+            if (cbHighlight == null)
+            {
                 cbHighlight = new CommandBuffer();
                 cbHighlight.name = "Highlight Plus for " + name;
             }
@@ -2128,7 +2557,8 @@ namespace HighlightPlus {
         }
 
 
-        void ConfigureOutput() {
+        void ConfigureOutput()
+        {
             if (!cbHighlightEmpty) return;
             cbHighlightEmpty = false;
             cbHighlight.Clear();
@@ -2143,34 +2573,44 @@ namespace HighlightPlus {
 #endif
         }
 
-        public void UpdateVisibilityState() {
+        public void UpdateVisibilityState()
+        {
             // isVisible only accounts for cases where there's a single object managed by the highlight effect
             // and that object can receive OnBecameVisible/OnBecameInvisible. Otherwise we can't use this optimization
-            if (rms == null || rms.Length != 1 || rms[0].transform != transform || rms[0].renderer == null) {
+            if (rms == null || rms.Length != 1 || rms[0].transform != transform || rms[0].renderer == null)
+            {
                 isVisible = true;
-            } else if (rms[0].renderer != null) {
+            }
+            else if (rms[0].renderer != null)
+            {
                 isVisible = rms[0].renderer.isVisible;
             }
         }
 
-        public void UpdateMaterialProperties() {
+        public void UpdateMaterialProperties()
+        {
 
             if (rms == null)
                 return;
 
-            if (ignore) {
+            if (ignore)
+            {
                 _highlighted = false;
             }
 
             UpdateVisibilityState();
 
             maskRequired = (_highlighted && ((outline > 0 && outlineMaskMode != MaskMode.IgnoreMask) || (glow > 0 && glowMaskMode != MaskMode.IgnoreMask))) || seeThrough != SeeThroughMode.Never || (targetFX && targetFXAlignToGround);
-			usesSeeThrough = seeThroughIntensity > 0 && (seeThrough == SeeThroughMode.AlwaysWhenOccluded || (seeThrough == SeeThroughMode.WhenHighlighted && _highlighted));
+            usesSeeThrough = seeThroughIntensity > 0 && (seeThrough == SeeThroughMode.AlwaysWhenOccluded || (seeThrough == SeeThroughMode.WhenHighlighted && _highlighted));
             // Resort materials if needed
-            if (usesSeeThrough && seeThroughChildrenSortingMode != SeeThroughSortingMode.Default && rms.Length > 0) {
-                if (seeThroughChildrenSortingMode == SeeThroughSortingMode.SortByMaterialsRenderQueue) {
+            if (usesSeeThrough && seeThroughChildrenSortingMode != SeeThroughSortingMode.Default && rms.Length > 0)
+            {
+                if (seeThroughChildrenSortingMode == SeeThroughSortingMode.SortByMaterialsRenderQueue)
+                {
                     Array.Sort(rms, MaterialsRenderQueueComparer);
-                } else {
+                }
+                else
+                {
                     Array.Sort(rms, MaterialsRenderQueueInvertedComparer);
                 }
             }
@@ -2178,49 +2618,69 @@ namespace HighlightPlus {
             Color seeThroughTintColor = this.seeThroughTintColor;
             seeThroughTintColor.a = this.seeThroughTintAlpha;
 
-            if (lastOutlineVisibility != outlineVisibility) {
+            if (lastOutlineVisibility != outlineVisibility)
+            {
                 // change by scripting?
-                if (glowQuality == QualityLevel.Highest && outlineQuality == QualityLevel.Highest) {
+                if (glowQuality == QualityLevel.Highest && outlineQuality == QualityLevel.Highest)
+                {
                     glowVisibility = outlineVisibility;
                 }
                 lastOutlineVisibility = outlineVisibility;
             }
-            if (outlineWidth < 0) {
+            if (outlineWidth < 0)
+            {
                 outlineWidth = 0;
             }
-            if (outlineQuality == QualityLevel.Medium) {
+            if (outlineQuality == QualityLevel.Medium)
+            {
                 outlineOffsetsMin = 4; outlineOffsetsMax = 7;
-            } else if (outlineQuality == QualityLevel.High) {
+            }
+            else if (outlineQuality == QualityLevel.High)
+            {
                 outlineOffsetsMin = 0; outlineOffsetsMax = 7;
-            } else {
+            }
+            else
+            {
                 outlineOffsetsMin = outlineOffsetsMax = 0;
             }
-            if (glowWidth < 0) {
+            if (glowWidth < 0)
+            {
                 glowWidth = 0;
             }
-            if (glowQuality == QualityLevel.Medium) {
+            if (glowQuality == QualityLevel.Medium)
+            {
                 glowOffsetsMin = 4; glowOffsetsMax = 7;
-            } else if (glowQuality == QualityLevel.High) {
+            }
+            else if (glowQuality == QualityLevel.High)
+            {
                 glowOffsetsMin = 0; glowOffsetsMax = 7;
-            } else {
+            }
+            else
+            {
                 glowOffsetsMin = glowOffsetsMax = 0;
             }
-            if (targetFXTransitionDuration <= 0) {
+            if (targetFXTransitionDuration <= 0)
+            {
                 targetFXTransitionDuration = 0.0001f;
             }
-            if (targetFXStayDuration <= 0) {
+            if (targetFXStayDuration <= 0)
+            {
                 targetFXStayDuration = 0;
             }
-            if (targetFXFadePower <= 0) {
+            if (targetFXFadePower <= 0)
+            {
                 targetFXFadePower = 0;
             }
-            if (seeThroughDepthOffset < 0) {
+            if (seeThroughDepthOffset < 0)
+            {
                 seeThroughDepthOffset = 0;
             }
-            if (seeThroughMaxDepth < 0) {
+            if (seeThroughMaxDepth < 0)
+            {
                 seeThroughMaxDepth = 0;
             }
-            if (seeThroughBorderWidth < 0) {
+            if (seeThroughBorderWidth < 0)
+            {
                 seeThroughBorderWidth = 0;
             }
 
@@ -2228,49 +2688,68 @@ namespace HighlightPlus {
             useSmoothGlow = glow > 0 && glowWidth > 0 && glowQuality == QualityLevel.Highest;
             useSmoothOutline = outline > 0 && outlineWidth > 0 && outlineQuality == QualityLevel.Highest;
             useSmoothBlend = useSmoothGlow || useSmoothOutline;
-            if (useSmoothBlend) {
-                if (useSmoothGlow && useSmoothOutline) {
+            if (useSmoothBlend)
+            {
+                if (useSmoothGlow && useSmoothOutline)
+                {
                     outlineVisibility = glowVisibility;
                 }
                 outlineEdgeThreshold = Mathf.Clamp01(outlineEdgeThreshold);
             }
-            if (useSmoothGlow) {
+            if (useSmoothGlow)
+            {
                 fxMatComposeGlow.SetInt(ShaderParams.Cull, cullBackFaces ? (int)CullMode.Back : (int)CullMode.Off);
-                if (glowBlendMode == GlowBlendMode.Additive) {
+                if (glowBlendMode == GlowBlendMode.Additive)
+                {
                     fxMatComposeGlow.SetInt(ShaderParams.BlendSrc, (int)BlendMode.One);
                     fxMatComposeGlow.SetInt(ShaderParams.BlendDst, (int)BlendMode.One);
-                } else {
+                }
+                else
+                {
                     fxMatComposeGlow.SetInt(ShaderParams.BlendSrc, (int)BlendMode.SrcAlpha);
                     fxMatComposeGlow.SetInt(ShaderParams.BlendDst, (int)BlendMode.OneMinusSrcAlpha);
                 }
                 fxMatComposeGlow.SetColor(ShaderParams.Debug, glowBlitDebug ? debugColor : blackColor);
                 fxMatComposeGlow.SetInt(ShaderParams.GlowStencilComp, glowMaskMode != MaskMode.Stencil ? (int)CompareFunction.Always : (int)CompareFunction.NotEqual);
-                if (glowMaskMode == MaskMode.StencilAndCutout) {
+                if (glowMaskMode == MaskMode.StencilAndCutout)
+                {
                     fxMatComposeGlow.EnableKeyword(ShaderParams.SKW_MASK_CUTOUT);
-                } else {
+                }
+                else
+                {
                     fxMatComposeGlow.DisableKeyword(ShaderParams.SKW_MASK_CUTOUT);
                 }
                 fxMatBlurGlow.SetFloat(ShaderParams.BlurScale, glowWidth / glowDownsampling);
                 fxMatBlurGlow.SetFloat(ShaderParams.Speed, glowAnimationSpeed);
             }
 
-            if (useSmoothOutline) {
+            if (useSmoothOutline)
+            {
                 fxMatComposeOutline.SetInt(ShaderParams.Cull, cullBackFaces ? (int)CullMode.Back : (int)CullMode.Off);
                 fxMatComposeOutline.SetColor(ShaderParams.Debug, outlineBlitDebug ? debugColor : blackColor);
-                if (outlineEdgeMode == OutlineEdgeMode.Exterior) {
+                if (outlineEdgeMode == OutlineEdgeMode.Exterior)
+                {
                     fxMatComposeOutline.DisableKeyword(ShaderParams.SKW_ALL_EDGES);
-                } else {
+                }
+                else
+                {
                     fxMatComposeOutline.EnableKeyword(ShaderParams.SKW_ALL_EDGES);
                     outlineDownsampling = 1;
                 }
-                if (outlineEdgeMode != OutlineEdgeMode.Exterior || outlineMaskMode == MaskMode.IgnoreMask) {
+                if (outlineEdgeMode != OutlineEdgeMode.Exterior || outlineMaskMode == MaskMode.IgnoreMask)
+                {
                     fxMatComposeOutline.SetInt(ShaderParams.OutlineStencilComp, (int)CompareFunction.Always);
-                } else {
+                }
+                else
+                {
                     fxMatComposeOutline.SetInt(ShaderParams.OutlineStencilComp, (int)CompareFunction.NotEqual);
                 }
-                if (outlineMaskMode == MaskMode.StencilAndCutout) {
+                if (outlineMaskMode == MaskMode.StencilAndCutout)
+                {
                     fxMatComposeOutline.EnableKeyword(ShaderParams.SKW_MASK_CUTOUT);
-                } else {
+                }
+                else
+                {
                     fxMatComposeOutline.DisableKeyword(ShaderParams.SKW_MASK_CUTOUT);
                 }
                 float edgeWidth = outlineWidth;
@@ -2278,27 +2757,33 @@ namespace HighlightPlus {
                 fxMatBlurOutline.SetFloat(ShaderParams.BlurScale, edgeWidth / outlineDownsampling);
                 fxMatBlurOutline.SetFloat(ShaderParams.BlurScaleFirstHoriz, edgeWidth * 2f);
             }
-            if (outlineColorStyle == ColorStyle.Gradient) {
+            if (outlineColorStyle == ColorStyle.Gradient)
+            {
                 const int OUTLINE_GRADIENT_TEX_SIZE = 32;
                 bool requiresUpdate = false;
-                if (outlineGradientTex == null) {
+                if (outlineGradientTex == null)
+                {
                     outlineGradientTex = new Texture2D(OUTLINE_GRADIENT_TEX_SIZE, 1, TextureFormat.RGBA32, mipChain: false, linear: true);
                     outlineGradientTex.wrapMode = TextureWrapMode.Clamp;
                     requiresUpdate = true;
                 }
-                if (outlineGradientColors == null || outlineGradientColors.Length != OUTLINE_GRADIENT_TEX_SIZE) {
+                if (outlineGradientColors == null || outlineGradientColors.Length != OUTLINE_GRADIENT_TEX_SIZE)
+                {
                     outlineGradientColors = new Color[OUTLINE_GRADIENT_TEX_SIZE];
                     requiresUpdate = true;
                 }
-                for (int k = 0; k < OUTLINE_GRADIENT_TEX_SIZE; k++) {
+                for (int k = 0; k < OUTLINE_GRADIENT_TEX_SIZE; k++)
+                {
                     float t = (float)k / OUTLINE_GRADIENT_TEX_SIZE;
                     Color color = outlineGradient.Evaluate(t);
-                    if (color != outlineGradientColors[k]) {
+                    if (color != outlineGradientColors[k])
+                    {
                         outlineGradientColors[k] = color;
                         requiresUpdate = true;
                     }
                 }
-                if (requiresUpdate) {
+                if (requiresUpdate)
+                {
                     outlineGradientTex.SetPixels(outlineGradientColors);
                     outlineGradientTex.Apply();
                 }
@@ -2307,8 +2792,10 @@ namespace HighlightPlus {
             // Setup materials
 
             // Target
-            if (targetFX) {
-                if (targetFXTexture == null) {
+            if (targetFX)
+            {
+                if (targetFXTexture == null)
+                {
                     targetFXTexture = Resources.Load<Texture2D>("HighlightPlus/target");
                 }
                 fxMatTarget.mainTexture = targetFXTexture;
@@ -2318,8 +2805,10 @@ namespace HighlightPlus {
             // Per object
             float scaledOutlineWidth = outlineQuality.UsesMultipleOffsets() ? 0f : outlineWidth / 100f;
 
-            for (int k = 0; k < rmsCount; k++) {
-                if (rms[k].mesh != null) {
+            for (int k = 0; k < rmsCount; k++)
+            {
+                if (rms[k].mesh != null)
+                {
 
                     Renderer renderer = rms[k].renderer;
                     if (renderer == null)
@@ -2328,11 +2817,13 @@ namespace HighlightPlus {
                     renderer.GetSharedMaterials(rendererSharedMaterials);
 
                     // Per submesh
-                    for (int l = 0; l < rms[k].mesh.subMeshCount; l++) {
+                    for (int l = 0; l < rms[k].mesh.subMeshCount; l++)
+                    {
                         if (((1 << l) & subMeshMask) == 0) continue;
 
                         Material mat = null;
-                        if (l < rendererSharedMaterials.Count) {
+                        if (l < rendererSharedMaterials.Count)
+                        {
                             mat = rendererSharedMaterials[l];
                         }
                         if (mat == null)
@@ -2342,15 +2833,19 @@ namespace HighlightPlus {
                         Texture matTexture = null;
                         Vector2 matTextureOffset = Vector2.zero;
                         Vector2 matTextureScale = Vector2.one;
-                        if (mat.HasProperty(ShaderParams.MainTex)) {
+                        if (mat.HasProperty(ShaderParams.MainTex))
+                        {
                             matTexture = mat.GetTexture(ShaderParams.MainTex);
                             matTextureOffset = mat.mainTextureOffset;
                             matTextureScale = mat.mainTextureScale;
                             hasTexture = true;
-                        } else if (mat.HasProperty(ShaderParams.BaseMap)) {
+                        }
+                        else if (mat.HasProperty(ShaderParams.BaseMap))
+                        {
                             matTexture = mat.GetTexture(ShaderParams.BaseMap); // we don't use mainTexture because ShaderGraph doesn't inform that generic property correctly
                             hasTexture = true;
-                            if (mat.HasProperty(ShaderParams.BaseMapST)) {
+                            if (mat.HasProperty(ShaderParams.BaseMapST))
+                            {
                                 // mat.mainTextureOffset will raise an error in builds - we need to manually get the scale/offset from the material by its property name
                                 Vector4 baseMapST = mat.GetVector(ShaderParams.BaseMapST);
                                 matTextureScale.x = baseMapST.x;
@@ -2362,18 +2857,23 @@ namespace HighlightPlus {
                         bool useAlphaTest = alphaCutOff > 0 && hasTexture;
 
                         // Mask
-                        if (rms[k].fxMatMask != null && rms[k].fxMatMask.Length > l) {
+                        if (rms[k].fxMatMask != null && rms[k].fxMatMask.Length > l)
+                        {
                             Material fxMat = rms[k].fxMatMask[l];
-                            if (fxMat != null) {
+                            if (fxMat != null)
+                            {
                                 //if (hasTexture) {
                                 fxMat.mainTexture = matTexture;
                                 fxMat.mainTextureOffset = matTextureOffset;
                                 fxMat.mainTextureScale = matTextureScale;
                                 //}
-                                if (useAlphaTest) {
+                                if (useAlphaTest)
+                                {
                                     fxMat.SetFloat(ShaderParams.CutOff, alphaCutOff);
                                     fxMat.EnableKeyword(ShaderParams.SKW_ALPHACLIP);
-                                } else {
+                                }
+                                else
+                                {
                                     fxMat.DisableKeyword(ShaderParams.SKW_ALPHACLIP);
                                 }
                                 fxMat.SetInt(ShaderParams.Cull, cullBackFaces ? (int)CullMode.Back : (int)CullMode.Off);
@@ -2381,26 +2881,32 @@ namespace HighlightPlus {
                         }
 
                         // Outline
-                        if (rms[k].fxMatOutline != null && rms[k].fxMatOutline.Length > l) {
+                        if (rms[k].fxMatOutline != null && rms[k].fxMatOutline.Length > l)
+                        {
                             Material fxMat = rms[k].fxMatOutline[l];
-                            if (fxMat != null) {
+                            if (fxMat != null)
+                            {
                                 fxMat.SetFloat(ShaderParams.OutlineWidth, scaledOutlineWidth);
                                 fxMat.SetInt(ShaderParams.OutlineZTest, GetZTestValue(outlineVisibility));
                                 fxMat.SetInt(ShaderParams.Cull, cullBackFaces ? (int)CullMode.Back : (int)CullMode.Off);
                                 fxMat.SetFloat(ShaderParams.ConstantWidth, constantWidth ? 1.0f : 0);
                                 fxMat.SetInt(ShaderParams.OutlineStencilComp, outlineMaskMode == MaskMode.IgnoreMask ? (int)CompareFunction.Always : (int)CompareFunction.NotEqual);
-                                if (useAlphaTest) {
+                                if (useAlphaTest)
+                                {
                                     fxMat.mainTexture = matTexture;
                                     fxMat.mainTextureOffset = matTextureOffset;
                                     fxMat.mainTextureScale = matTextureScale;
                                     fxMat.SetFloat(ShaderParams.CutOff, alphaCutOff);
                                     fxMat.EnableKeyword(ShaderParams.SKW_ALPHACLIP);
-                                } else {
+                                }
+                                else
+                                {
                                     fxMat.DisableKeyword(ShaderParams.SKW_ALPHACLIP);
                                 }
                                 fxMat.DisableKeyword(ShaderParams.SKW_OUTLINE_GRADIENT_LS);
                                 fxMat.DisableKeyword(ShaderParams.SKW_OUTLINE_GRADIENT_WS);
-                                if (outlineColorStyle == ColorStyle.Gradient) {
+                                if (outlineColorStyle == ColorStyle.Gradient)
+                                {
                                     fxMat.SetTexture(ShaderParams.OutlineGradientTex, outlineGradientTex);
                                     fxMat.EnableKeyword(outlineGradientInLocalSpace ? ShaderParams.SKW_OUTLINE_GRADIENT_LS : ShaderParams.SKW_OUTLINE_GRADIENT_WS);
                                 }
@@ -2408,9 +2914,11 @@ namespace HighlightPlus {
                         }
 
                         // Glow
-                        if (rms[k].fxMatGlow != null && rms[k].fxMatGlow.Length > l) {
+                        if (rms[k].fxMatGlow != null && rms[k].fxMatGlow.Length > l)
+                        {
                             Material fxMat = rms[k].fxMatGlow[l];
-                            if (fxMat != null) {
+                            if (fxMat != null)
+                            {
                                 fxMat.SetVector(ShaderParams.Glow2, new Vector4(outline > 0 ? outlineWidth / 100f : 0, glowAnimationSpeed, glowDithering ? 0 : 1));
                                 fxMat.SetInt(ShaderParams.GlowZTest, GetZTestValue(glowVisibility));
                                 fxMat.SetInt(ShaderParams.Cull, cullBackFaces ? (int)CullMode.Back : (int)CullMode.Off);
@@ -2418,13 +2926,16 @@ namespace HighlightPlus {
                                 fxMat.SetInt(ShaderParams.GlowStencilOp, glowBlendPasses ? (int)StencilOp.Keep : (int)StencilOp.Replace);
                                 fxMat.SetInt(ShaderParams.GlowStencilComp, glowMaskMode == MaskMode.IgnoreMask ? (int)CompareFunction.Always : (int)CompareFunction.NotEqual);
 
-                                if (useAlphaTest) {
+                                if (useAlphaTest)
+                                {
                                     fxMat.mainTexture = matTexture;
                                     fxMat.mainTextureOffset = matTextureOffset;
                                     fxMat.mainTextureScale = matTextureScale;
                                     fxMat.SetFloat(ShaderParams.CutOff, alphaCutOff);
                                     fxMat.EnableKeyword(ShaderParams.SKW_ALPHACLIP);
-                                } else {
+                                }
+                                else
+                                {
                                     fxMat.DisableKeyword(ShaderParams.SKW_ALPHACLIP);
                                 }
                             }
@@ -2432,17 +2943,22 @@ namespace HighlightPlus {
 
                         // See-through
                         bool usesSeeThroughBorder = rms[k].fxMatSeeThroughBorder != null && rms[k].fxMatSeeThroughBorder.Length > l && (seeThroughBorder * seeThroughBorderWidth > 0);
-                        if (rms[k].fxMatSeeThroughInner != null && rms[k].fxMatSeeThroughInner.Length > l) {
+                        if (rms[k].fxMatSeeThroughInner != null && rms[k].fxMatSeeThroughInner.Length > l)
+                        {
                             Material fxMat = rms[k].fxMatSeeThroughInner[l];
-                            if (fxMat != null) {
+                            if (fxMat != null)
+                            {
                                 fxMat.SetFloat(ShaderParams.SeeThrough, seeThroughIntensity);
                                 fxMat.SetFloat(ShaderParams.SeeThroughNoise, seeThroughNoise);
                                 fxMat.SetColor(ShaderParams.SeeThroughTintColor, seeThroughTintColor);
-                                if (seeThroughOccluderMaskAccurate && seeThroughOccluderMask != -1) {
+                                if (seeThroughOccluderMaskAccurate && seeThroughOccluderMask != -1)
+                                {
                                     fxMat.SetInt(ShaderParams.SeeThroughStencilRef, 1);
                                     fxMat.SetInt(ShaderParams.SeeThroughStencilComp, (int)CompareFunction.Equal);
                                     fxMat.SetInt(ShaderParams.SeeThroughStencilPassOp, (int)StencilOp.Zero);
-                                } else {
+                                }
+                                else
+                                {
                                     fxMat.SetInt(ShaderParams.SeeThroughStencilRef, 2);
                                     fxMat.SetInt(ShaderParams.SeeThroughStencilComp, (int)CompareFunction.Greater);
                                     fxMat.SetInt(ShaderParams.SeeThroughStencilPassOp, (int)StencilOp.Replace);
@@ -2452,32 +2968,43 @@ namespace HighlightPlus {
                                 fxMat.mainTextureOffset = matTextureOffset;
                                 fxMat.mainTextureScale = matTextureScale;
                                 //}
-                                if (useAlphaTest) {
+                                if (useAlphaTest)
+                                {
                                     fxMat.SetFloat(ShaderParams.CutOff, alphaCutOff);
                                     fxMat.EnableKeyword(ShaderParams.SKW_ALPHACLIP);
-                                } else {
+                                }
+                                else
+                                {
                                     fxMat.DisableKeyword(ShaderParams.SKW_ALPHACLIP);
                                 }
-                                if (seeThroughDepthOffset > 0 || seeThroughMaxDepth > 0) {
+                                if (seeThroughDepthOffset > 0 || seeThroughMaxDepth > 0)
+                                {
                                     fxMat.SetFloat(ShaderParams.SeeThroughDepthOffset, seeThroughDepthOffset > 0 ? seeThroughDepthOffset : -1);
                                     fxMat.SetFloat(ShaderParams.SeeThroughMaxDepth, seeThroughMaxDepth > 0 ? seeThroughMaxDepth : 999999);
                                     fxMat.EnableKeyword(ShaderParams.SKW_DEPTH_OFFSET);
-                                } else {
+                                }
+                                else
+                                {
                                     fxMat.DisableKeyword(ShaderParams.SKW_DEPTH_OFFSET);
                                 }
-                                if (seeThroughBorderOnly) {
+                                if (seeThroughBorderOnly)
+                                {
                                     fxMat.EnableKeyword(ShaderParams.SKW_SEETHROUGH_ONLY_BORDER);
-                                } else {
+                                }
+                                else
+                                {
                                     fxMat.DisableKeyword(ShaderParams.SKW_SEETHROUGH_ONLY_BORDER);
                                 }
 
                                 fxMat.DisableKeyword(ShaderParams.SKW_TEXTURE_TRIPLANAR);
                                 fxMat.DisableKeyword(ShaderParams.SKW_TEXTURE_OBJECTSPACE);
                                 fxMat.DisableKeyword(ShaderParams.SKW_TEXTURE_SCREENSPACE);
-                                if (seeThroughTexture != null) {
+                                if (seeThroughTexture != null)
+                                {
                                     fxMat.SetTexture(ShaderParams.SeeThroughTexture, seeThroughTexture);
                                     fxMat.SetFloat(ShaderParams.SeeThroughTextureScale, seeThroughTextureScale);
-                                    switch (seeThroughTextureUVSpace) {
+                                    switch (seeThroughTextureUVSpace)
+                                    {
                                         case TextureUVSpace.ScreenSpace:
                                             fxMat.EnableKeyword(ShaderParams.SKW_TEXTURE_SCREENSPACE);
                                             break;
@@ -2494,17 +3021,22 @@ namespace HighlightPlus {
                         }
 
                         // See-through border
-                        if (usesSeeThroughBorder) {
+                        if (usesSeeThroughBorder)
+                        {
                             Material fxMat = rms[k].fxMatSeeThroughBorder[l];
-                            if (fxMat != null) {
+                            if (fxMat != null)
+                            {
                                 fxMat.SetColor(ShaderParams.SeeThroughBorderColor, new Color(seeThroughBorderColor.r, seeThroughBorderColor.g, seeThroughBorderColor.b, seeThroughBorder));
                                 fxMat.SetFloat(ShaderParams.SeeThroughBorderWidth, (seeThroughBorder * seeThroughBorderWidth) > 0 ? seeThroughBorderWidth / 100f : 0);
                                 fxMat.SetFloat(ShaderParams.SeeThroughBorderConstantWidth, constantWidth ? 1.0f : 0);
-                                if (seeThroughOccluderMaskAccurate && seeThroughOccluderMask != -1) {
+                                if (seeThroughOccluderMaskAccurate && seeThroughOccluderMask != -1)
+                                {
                                     fxMat.SetInt(ShaderParams.SeeThroughStencilRef, 1);
                                     fxMat.SetInt(ShaderParams.SeeThroughStencilComp, (int)CompareFunction.Equal);
                                     fxMat.SetInt(ShaderParams.SeeThroughStencilPassOp, (int)StencilOp.Zero);
-                                } else {
+                                }
+                                else
+                                {
                                     fxMat.SetInt(ShaderParams.SeeThroughStencilRef, 2);
                                     fxMat.SetInt(ShaderParams.SeeThroughStencilComp, (int)CompareFunction.Greater);
                                     fxMat.SetInt(ShaderParams.SeeThroughStencilPassOp, (int)StencilOp.Keep);
@@ -2514,32 +3046,41 @@ namespace HighlightPlus {
                                 fxMat.mainTextureOffset = matTextureOffset;
                                 fxMat.mainTextureScale = matTextureScale;
                                 //}
-                                if (useAlphaTest) {
+                                if (useAlphaTest)
+                                {
                                     fxMat.SetFloat(ShaderParams.CutOff, alphaCutOff);
                                     fxMat.EnableKeyword(ShaderParams.SKW_ALPHACLIP);
-                                } else {
+                                }
+                                else
+                                {
                                     fxMat.DisableKeyword(ShaderParams.SKW_ALPHACLIP);
                                 }
-                                if (seeThroughDepthOffset > 0 || seeThroughMaxDepth > 0) {
+                                if (seeThroughDepthOffset > 0 || seeThroughMaxDepth > 0)
+                                {
                                     fxMat.SetFloat(ShaderParams.SeeThroughDepthOffset, seeThroughDepthOffset > 0 ? seeThroughDepthOffset : -1);
                                     fxMat.SetFloat(ShaderParams.SeeThroughMaxDepth, seeThroughMaxDepth > 0 ? seeThroughMaxDepth : 999999);
                                     fxMat.EnableKeyword(ShaderParams.SKW_DEPTH_OFFSET);
-                                } else {
+                                }
+                                else
+                                {
                                     fxMat.DisableKeyword(ShaderParams.SKW_DEPTH_OFFSET);
                                 }
                             }
                         }
 
                         // Overlay
-                        if (rms[k].fxMatOverlay != null && rms[k].fxMatOverlay.Length > l) {
+                        if (rms[k].fxMatOverlay != null && rms[k].fxMatOverlay.Length > l)
+                        {
                             Material fxMat = rms[k].fxMatOverlay[l];
-                            if (fxMat != null) {
+                            if (fxMat != null)
+                            {
                                 //if (hasTexture) {
                                 fxMat.mainTexture = matTexture;
                                 fxMat.mainTextureOffset = matTextureOffset;
                                 fxMat.mainTextureScale = matTextureScale;
                                 //}
-                                if (mat.HasProperty(ShaderParams.Color)) {
+                                if (mat.HasProperty(ShaderParams.Color))
+                                {
                                     fxMat.SetColor(ShaderParams.OverlayBackColor, mat.GetColor(ShaderParams.Color));
                                 }
                                 fxMat.SetInt(ShaderParams.Cull, cullBackFaces ? (int)CullMode.Back : (int)CullMode.Off);
@@ -2547,9 +3088,11 @@ namespace HighlightPlus {
                                 fxMat.DisableKeyword(ShaderParams.SKW_TEXTURE_TRIPLANAR);
                                 fxMat.DisableKeyword(ShaderParams.SKW_TEXTURE_OBJECTSPACE);
                                 fxMat.DisableKeyword(ShaderParams.SKW_TEXTURE_SCREENSPACE);
-                                if (overlayTexture != null) {
+                                if (overlayTexture != null)
+                                {
                                     fxMat.SetTexture(ShaderParams.OverlayTexture, overlayTexture);
-                                    switch (overlayTextureUVSpace) {
+                                    switch (overlayTextureUVSpace)
+                                    {
                                         case TextureUVSpace.ScreenSpace:
                                             fxMat.EnableKeyword(ShaderParams.SKW_TEXTURE_SCREENSPACE);
                                             break;
@@ -2562,19 +3105,24 @@ namespace HighlightPlus {
                                     }
                                 }
 
-                                if (useAlphaTest) {
+                                if (useAlphaTest)
+                                {
                                     fxMat.SetFloat(ShaderParams.CutOff, alphaCutOff);
                                     fxMat.EnableKeyword(ShaderParams.SKW_ALPHACLIP);
-                                } else {
+                                }
+                                else
+                                {
                                     fxMat.DisableKeyword(ShaderParams.SKW_ALPHACLIP);
                                 }
                             }
                         }
 
                         // Inner Glow
-                        if (rms[k].fxMatInnerGlow != null && rms[k].fxMatInnerGlow.Length > l) {
+                        if (rms[k].fxMatInnerGlow != null && rms[k].fxMatInnerGlow.Length > l)
+                        {
                             Material fxMat = rms[k].fxMatInnerGlow[l];
-                            if (fxMat != null) {
+                            if (fxMat != null)
+                            {
                                 //if (hasTexture) {
                                 fxMat.mainTexture = matTexture;
                                 fxMat.mainTextureOffset = matTextureOffset;
@@ -2584,19 +3132,24 @@ namespace HighlightPlus {
                                 fxMat.SetInt(ShaderParams.InnerGlowZTest, GetZTestValue(innerGlowVisibility));
                                 fxMat.SetInt(ShaderParams.Cull, cullBackFaces ? (int)CullMode.Back : (int)CullMode.Off);
                                 fxMat.SetInt(ShaderParams.InnerGlowBlendMode, innerGlowBlendMode == InnerGlowBlendMode.Additive ? 1 : 10);
-                                if (useAlphaTest) {
+                                if (useAlphaTest)
+                                {
                                     fxMat.SetFloat(ShaderParams.CutOff, alphaCutOff);
                                     fxMat.EnableKeyword(ShaderParams.SKW_ALPHACLIP);
-                                } else {
+                                }
+                                else
+                                {
                                     fxMat.DisableKeyword(ShaderParams.SKW_ALPHACLIP);
                                 }
                             }
                         }
 
                         // Solid Color for smooth glow
-                        if (rms[k].fxMatSolidColor != null && rms[k].fxMatSolidColor.Length > l) {
+                        if (rms[k].fxMatSolidColor != null && rms[k].fxMatSolidColor.Length > l)
+                        {
                             Material fxMat = rms[k].fxMatSolidColor[l];
-                            if (fxMat != null) {
+                            if (fxMat != null)
+                            {
                                 fxMat.color = glowHQColor;
                                 fxMat.SetInt(ShaderParams.Cull, cullBackFaces ? (int)CullMode.Back : (int)CullMode.Off);
                                 fxMat.SetFloat(ShaderParams.OutlineEdgeThreshold, outlineEdgeThreshold);
@@ -2607,26 +3160,37 @@ namespace HighlightPlus {
                                 //}
                                 //                                if (!Application.isMobilePlatform) { // TODO: currently this does not work with URP on Android
 
-                                if ((glow > 0 && glowQuality == QualityLevel.Highest && glowVisibility == Visibility.Normal) || (outline > 0 && outlineQuality == QualityLevel.Highest && outlineVisibility == Visibility.Normal)) {
+                                if ((glow > 0 && glowQuality == QualityLevel.Highest && glowVisibility == Visibility.Normal) || (outline > 0 && outlineQuality == QualityLevel.Highest && outlineVisibility == Visibility.Normal))
+                                {
                                     fxMat.DisableKeyword(ShaderParams.SKW_DEPTHCLIP_INV);
                                     fxMat.EnableKeyword(ShaderParams.SKW_DEPTHCLIP);
-                                } else if ((glow > 0 && glowQuality == QualityLevel.Highest && glowVisibility == Visibility.OnlyWhenOccluded) || (outline > 0 && outlineQuality == QualityLevel.Highest && outlineVisibility == Visibility.OnlyWhenOccluded)) {
+                                }
+                                else if ((glow > 0 && glowQuality == QualityLevel.Highest && glowVisibility == Visibility.OnlyWhenOccluded) || (outline > 0 && outlineQuality == QualityLevel.Highest && outlineVisibility == Visibility.OnlyWhenOccluded))
+                                {
                                     fxMat.DisableKeyword(ShaderParams.SKW_DEPTHCLIP);
                                     fxMat.EnableKeyword(ShaderParams.SKW_DEPTHCLIP_INV);
-                                } else {
+                                }
+                                else
+                                {
                                     fxMat.DisableKeyword(ShaderParams.SKW_DEPTHCLIP);
                                     fxMat.DisableKeyword(ShaderParams.SKW_DEPTHCLIP_INV);
                                 }
                                 //}
-                                if (useAlphaTest) {
+                                if (useAlphaTest)
+                                {
                                     fxMat.SetFloat(ShaderParams.CutOff, alphaCutOff);
                                     fxMat.EnableKeyword(ShaderParams.SKW_ALPHACLIP);
-                                } else {
+                                }
+                                else
+                                {
                                     fxMat.DisableKeyword(ShaderParams.SKW_ALPHACLIP);
                                 }
-                                if (outlineEdgeMode == OutlineEdgeMode.Any) {
+                                if (outlineEdgeMode == OutlineEdgeMode.Any)
+                                {
                                     fxMat.EnableKeyword(ShaderParams.SKW_ALL_EDGES);
-                                } else {
+                                }
+                                else
+                                {
                                     fxMat.DisableKeyword(ShaderParams.SKW_ALL_EDGES);
                                 }
                             }
@@ -2636,7 +3200,8 @@ namespace HighlightPlus {
             }
         }
 
-        int MaterialsRenderQueueComparer(ModelMaterials m1, ModelMaterials m2) {
+        int MaterialsRenderQueueComparer(ModelMaterials m1, ModelMaterials m2)
+        {
             Material mat1 = m1.renderer != null ? m1.renderer.sharedMaterial : null;
             Material mat2 = m2.renderer != null ? m2.renderer.sharedMaterial : null;
             int mq1 = mat1 != null ? mat1.renderQueue : 0;
@@ -2644,7 +3209,8 @@ namespace HighlightPlus {
             return mq1.CompareTo(mq2);
         }
 
-        int MaterialsRenderQueueInvertedComparer(ModelMaterials m1, ModelMaterials m2) {
+        int MaterialsRenderQueueInvertedComparer(ModelMaterials m1, ModelMaterials m2)
+        {
             Material mat1 = m1.renderer != null ? m1.renderer.sharedMaterial : null;
             Material mat2 = m2.renderer != null ? m2.renderer.sharedMaterial : null;
             int mq1 = mat1 != null ? mat1.renderQueue : 0;
@@ -2652,20 +3218,25 @@ namespace HighlightPlus {
             return mq2.CompareTo(mq1);
         }
 
-        float ComputeCameraDistanceFade(Vector3 position, Transform cameraTransform) {
+        float ComputeCameraDistanceFade(Vector3 position, Transform cameraTransform)
+        {
             Vector3 heading = position - cameraTransform.position;
             float distance = Vector3.Dot(heading, cameraTransform.forward);
-            if (distance < cameraDistanceFadeNear) {
+            if (distance < cameraDistanceFadeNear)
+            {
                 return 1f - Mathf.Min(1f, cameraDistanceFadeNear - distance);
             }
-            if (distance > cameraDistanceFadeFar) {
+            if (distance > cameraDistanceFadeFar)
+            {
                 return 1f - Mathf.Min(1f, distance - cameraDistanceFadeFar);
             }
             return 1f;
         }
 
-        int GetZTestValue(Visibility param) {
-            switch (param) {
+        int GetZTestValue(Visibility param)
+        {
+            switch (param)
+            {
                 case Visibility.AlwaysOnTop:
                     return (int)CompareFunction.Always;
                 case Visibility.OnlyWhenOccluded:
@@ -2675,7 +3246,8 @@ namespace HighlightPlus {
             }
         }
 
-        void BuildQuad() {
+        void BuildQuad()
+        {
             quadMesh = new Mesh();
 
             // Setup vertices
@@ -2699,7 +3271,8 @@ namespace HighlightPlus {
 
             // Setup normals
             Vector3[] newNormals = new Vector3[newVertices.Length];
-            for (int i = 0; i < newNormals.Length; i++) {
+            for (int i = 0; i < newNormals.Length; i++)
+            {
                 newNormals[i] = Vector3.forward;
             }
 
@@ -2712,7 +3285,8 @@ namespace HighlightPlus {
             quadMesh.RecalculateBounds();
         }
 
-        void BuildCube() {
+        void BuildCube()
+        {
             cubeMesh = Resources.GetBuiltinResource<Mesh>("Cube.fbx");
         }
 
@@ -2720,8 +3294,10 @@ namespace HighlightPlus {
         /// <summary>
         /// Returns true if a given transform is included in this effect
         /// </summary>
-        public bool Includes(Transform transform) {
-            for (int k = 0; k < rmsCount; k++) {
+        public bool Includes(Transform transform)
+        {
+            for (int k = 0; k < rmsCount; k++)
+            {
                 if (rms[k].transform == transform) return true;
             }
             return false;
@@ -2730,9 +3306,12 @@ namespace HighlightPlus {
         /// <summary>
         /// Updates profile glow color
         /// </summary>
-        public void SetGlowColor(Color color) {
-            if (glowPasses != null) {
-                for (int k = 0; k < glowPasses.Length; k++) {
+        public void SetGlowColor(Color color)
+        {
+            if (glowPasses != null)
+            {
+                for (int k = 0; k < glowPasses.Length; k++)
+                {
                     glowPasses[k].color = color;
                 }
             }
@@ -2761,60 +3340,78 @@ namespace HighlightPlus {
         static readonly Dictionary<Mesh, int> sharedMeshUsage = new Dictionary<Mesh, int>();
         readonly List<Mesh> instancedMeshes = new List<Mesh>();
 
-        void AverageNormals(int objIndex) {
+        void AverageNormals(int objIndex)
+        {
             if (rms == null || objIndex >= rms.Length) return;
             Mesh mesh = rms[objIndex].mesh;
 
             Mesh newMesh;
             int hashCode = mesh.GetHashCode();
-            if (!smoothMeshes.TryGetValue(hashCode, out newMesh) || newMesh == null) {
+            if (!smoothMeshes.TryGetValue(hashCode, out newMesh) || newMesh == null)
+            {
                 if (!mesh.isReadable) return;
-                if (normals == null) {
+                if (normals == null)
+                {
                     normals = new List<Vector3>();
-                } else {
+                }
+                else
+                {
                     normals.Clear();
                 }
                 mesh.GetNormals(normals);
                 int normalsCount = normals.Count;
                 if (normalsCount == 0)
                     return;
-                if (vertices == null) {
+                if (vertices == null)
+                {
                     vertices = new List<Vector3>();
-                } else {
+                }
+                else
+                {
                     vertices.Clear();
                 }
                 mesh.GetVertices(vertices);
                 int vertexCount = vertices.Count;
-                if (normalsCount < vertexCount) {
+                if (normalsCount < vertexCount)
+                {
                     vertexCount = normalsCount;
                 }
-                if (newNormals == null || newNormals.Length < vertexCount) {
+                if (newNormals == null || newNormals.Length < vertexCount)
+                {
                     newNormals = new Vector3[vertexCount];
-                } else {
+                }
+                else
+                {
                     Vector3 zero = Vector3.zero;
-                    for (int k = 0; k < vertexCount; k++) {
+                    for (int k = 0; k < vertexCount; k++)
+                    {
                         newNormals[k] = zero;
                     }
                 }
-                if (matches == null || matches.Length < vertexCount) {
+                if (matches == null || matches.Length < vertexCount)
+                {
                     matches = new int[vertexCount];
                 }
                 // Locate overlapping vertices
                 vv.Clear();
-                for (int k = 0; k < vertexCount; k++) {
+                for (int k = 0; k < vertexCount; k++)
+                {
                     int i;
                     Vector3 v = vertices[k];
-                    if (!vv.TryGetValue(v, out i)) {
+                    if (!vv.TryGetValue(v, out i))
+                    {
                         vv[v] = i = k;
                     }
                     matches[k] = i;
                 }
                 // Average normals
-                for (int k = 0; k < vertexCount; k++) {
+                for (int k = 0; k < vertexCount; k++)
+                {
                     int match = matches[k];
                     newNormals[match] += normals[k];
                 }
-                for (int k = 0; k < vertexCount; k++) {
+                for (int k = 0; k < vertexCount; k++)
+                {
                     int match = matches[k];
                     normals[k] = newNormals[match].normalized;
                 }
@@ -2828,22 +3425,30 @@ namespace HighlightPlus {
         }
 
 
-        void ReorientNormals(int objIndex) {
+        void ReorientNormals(int objIndex)
+        {
             if (rms == null || objIndex >= rms.Length) return;
             Mesh mesh = rms[objIndex].mesh;
 
             Mesh newMesh;
             int hashCode = mesh.GetHashCode();
-            if (!reorientedMeshes.TryGetValue(hashCode, out newMesh) || newMesh == null) {
+            if (!reorientedMeshes.TryGetValue(hashCode, out newMesh) || newMesh == null)
+            {
                 if (!mesh.isReadable) return;
-                if (normals == null) {
+                if (normals == null)
+                {
                     normals = new List<Vector3>();
-                } else {
+                }
+                else
+                {
                     normals.Clear();
                 }
-                if (vertices == null) {
+                if (vertices == null)
+                {
                     vertices = new List<Vector3>();
-                } else {
+                }
+                else
+                {
                     vertices.Clear();
                 }
                 mesh.GetVertices(vertices);
@@ -2851,12 +3456,14 @@ namespace HighlightPlus {
                 if (vertexCount == 0) return;
 
                 Vector3 mid = Vector3.zero;
-                for (int k = 0; k < vertexCount; k++) {
+                for (int k = 0; k < vertexCount; k++)
+                {
                     mid += vertices[k];
                 }
                 mid /= vertexCount;
                 // Average normals
-                for (int k = 0; k < vertexCount; k++) {
+                for (int k = 0; k < vertexCount; k++)
+                {
                     normals.Add((vertices[k] - mid).normalized);
                 }
                 // Reassign normals
@@ -2869,12 +3476,14 @@ namespace HighlightPlus {
         }
 
         const int MAX_VERTEX_COUNT = 65535;
-        void CombineMeshes() {
+        void CombineMeshes()
+        {
 
             if (rmsCount <= 1) return;
 
             // Combine meshes of group into the first mesh in rms
-            if (combineInstances == null || combineInstances.Length != rmsCount) {
+            if (combineInstances == null || combineInstances.Length != rmsCount)
+            {
                 combineInstances = new CombineInstance[rmsCount];
             }
             int first = -1;
@@ -2882,20 +3491,26 @@ namespace HighlightPlus {
             combinedMeshesHashId = 0;
             int vertexCount = 0;
             Matrix4x4 im = Matrix4x4.identity;
-            for (int k = 0; k < rmsCount; k++) {
+            for (int k = 0; k < rmsCount; k++)
+            {
                 combineInstances[k].mesh = null;
-                if (!rms[k].isSkinnedMesh) {
+                if (!rms[k].isSkinnedMesh)
+                {
                     Mesh mesh = rms[k].mesh;
-                    if (mesh != null && mesh.isReadable) {
+                    if (mesh != null && mesh.isReadable)
+                    {
                         if (vertexCount + mesh.vertexCount > MAX_VERTEX_COUNT) continue;
                         vertexCount += mesh.vertexCount;
                         combineInstances[k].mesh = mesh;
                         int instanceId = rms[k].renderer.gameObject.GetInstanceID();
-                        if (first < 0) {
+                        if (first < 0)
+                        {
                             first = k;
                             combinedMeshesHashId = instanceId;
                             im = rms[k].transform.worldToLocalMatrix;
-                        } else {
+                        }
+                        else
+                        {
                             combinedMeshesHashId ^= instanceId;
                             rms[k].mesh = null;
                         }
@@ -2907,7 +3522,8 @@ namespace HighlightPlus {
             if (count < 2) return;
 
             Mesh combinedMesh;
-            if (!combinedMeshes.TryGetValue(combinedMeshesHashId, out combinedMesh) || combinedMesh == null) {
+            if (!combinedMeshes.TryGetValue(combinedMeshesHashId, out combinedMesh) || combinedMesh == null)
+            {
                 combinedMesh = new Mesh();
                 combinedMesh.CombineMeshes(combineInstances, true, true);
                 combinedMeshes[combinedMeshesHashId] = combinedMesh;
@@ -2918,7 +3534,8 @@ namespace HighlightPlus {
         }
 
 
-        void IncrementeMeshUsage(Mesh mesh) {
+        void IncrementeMeshUsage(Mesh mesh)
+        {
             int usageCount;
             sharedMeshUsage.TryGetValue(mesh, out usageCount);
             usageCount++;
@@ -2929,14 +3546,18 @@ namespace HighlightPlus {
         /// <summary>
         /// Destroys any cached mesh
         /// </summary>
-        public static void ClearMeshCache() {
-            foreach (Mesh mesh in combinedMeshes.Values) {
+        public static void ClearMeshCache()
+        {
+            foreach (Mesh mesh in combinedMeshes.Values)
+            {
                 if (mesh != null) DestroyImmediate(mesh);
             }
-            foreach (Mesh mesh in smoothMeshes.Values) {
+            foreach (Mesh mesh in smoothMeshes.Values)
+            {
                 if (mesh != null) DestroyImmediate(mesh);
             }
-            foreach (Mesh mesh in reorientedMeshes.Values) {
+            foreach (Mesh mesh in reorientedMeshes.Values)
+            {
                 if (mesh != null) DestroyImmediate(mesh);
             }
         }
@@ -2944,16 +3565,21 @@ namespace HighlightPlus {
         /// <summary>
         /// Clears cached mesh only for the highlighted object
         /// </summary>
-        void RefreshCachedMeshes() {
-            if (combinedMeshes.TryGetValue(combinedMeshesHashId, out Mesh combinedMesh)) {
+        void RefreshCachedMeshes()
+        {
+            if (combinedMeshes.TryGetValue(combinedMeshesHashId, out Mesh combinedMesh))
+            {
                 DestroyImmediate(combinedMesh);
                 combinedMeshes.Remove(combinedMeshesHashId);
             }
             if (rms == null) return;
-            for (int k = 0; k < rms.Length; k++) {
+            for (int k = 0; k < rms.Length; k++)
+            {
                 Mesh mesh = rms[k].mesh;
-                if (mesh != null) {
-                    if (smoothMeshes.ContainsValue(mesh) || reorientedMeshes.ContainsValue(mesh)) {
+                if (mesh != null)
+                {
+                    if (smoothMeshes.ContainsValue(mesh) || reorientedMeshes.ContainsValue(mesh))
+                    {
                         DestroyImmediate(mesh);
                     }
                 }

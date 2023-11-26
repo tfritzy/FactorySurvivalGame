@@ -10,7 +10,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 8e9253636bf2648bd813257f451f8486, type: 3}
-  m_Name: HighlightProfile
+  m_Name: Highlighted
   m_EditorClassIdentifier: 
   effectGroup: 0
   effectGroupLayer:
@@ -37,7 +37,7 @@ MonoBehaviour:
   overlayTextureUVSpace: 0
   overlayTextureScale: 1
   overlayVisibility: 0
-  outline: 1
+  outline: 0.077
   outlineColor: {r: 1, g: 1, b: 1, a: 1}
   outlineColorStyle: 0
   outlineGradient:
@@ -130,9 +130,9 @@ MonoBehaviour:
   seeThroughOccluderCheckIndividualObjects: 0
   seeThroughDepthOffset: 0
   seeThroughMaxDepth: 0
-  seeThroughIntensity: 0.8
+  seeThroughIntensity: 4.25
   seeThroughTintAlpha: 0.5
-  seeThroughTintColor: {r: 1, g: 0, b: 0, a: 1}
+  seeThroughTintColor: {r: 1, g: 0, b: 0, a: 0.2}
   seeThroughNoise: 1
   seeThroughBorder: 0
   seeThroughBorderColor: {r: 0, g: 0, b: 0, a: 1}
