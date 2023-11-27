@@ -5,6 +5,7 @@ using UnityEngine;
 public enum UIElementType
 {
     Vignette,
+    Cursor,
 }
 
 public static class UIElements

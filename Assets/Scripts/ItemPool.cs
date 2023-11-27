@@ -19,6 +19,7 @@ public class ItemPool
             Items[type].Enqueue(itemObj);
         }
         var item = Items[type].Dequeue();
+        item.transform.SetParent(parent);
         item.SetActive(true);
         return item;
     }

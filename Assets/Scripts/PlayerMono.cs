@@ -11,6 +11,7 @@ public class PlayerMono : MonoBehaviour
 
     private Item? SelectedItem => SelectedInventory.GetItemAt(SelectedInventoryIndex);
     private Dictionary<Point2Int, Building> previewBuildings = new();
+    private BuildGrid buildGrid;
 
     private static PlayerMono instance;
     public static PlayerMono Instance
@@ -30,6 +31,10 @@ public class PlayerMono : MonoBehaviour
         Actual = new Player(WorldMono.Instance.Context, 0);
         SelectedInventory = Actual.GetComponent<ActiveItems>();
         SelectedInventoryIndex = 0;
+
+#if UNITY_EDITOR
+        Cursor.SetCursor(UIElements.GetElement(UIElementType.Cursor).texture, Vector2.zero, CursorMode.ForceSoftware);
+#endif
     }
 
     void Update()
@@ -71,6 +76,16 @@ public class PlayerMono : MonoBehaviour
                 ClearPreviewBuildings();
             }
 
+            if (buildGrid == null)
+            {
+                buildGrid = new GameObject("BuildGrid").AddComponent<BuildGrid>();
+            }
+            else
+            {
+                buildGrid.gameObject.SetActive(true);
+            }
+
+            buildGrid.SetPos(hex.Value);
             previewBuildings.Add(
                 (Point2Int)hex.Value,
                 Actual.BuidPreviewBuildingFromItem(
@@ -95,11 +110,13 @@ public class PlayerMono : MonoBehaviour
                     b);
             }
             previewBuildings.Clear();
+            buildGrid.gameObject.SetActive(false);
         }
     }
 
     private void ClearPreviewBuildings()
     {
+        buildGrid.gameObject.SetActive(false);
         foreach (Building b in previewBuildings.Values)
         {
             if (b == null)

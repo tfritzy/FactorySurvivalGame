@@ -21,7 +21,7 @@ MonoBehaviour:
     m_Value: 1
   intensity:
     m_OverrideState: 1
-    m_Value: 0.7
+    m_Value: 0.23
   scatter:
     m_OverrideState: 0
     m_Value: 0.664
@@ -125,17 +125,17 @@ MonoBehaviour:
     m_OverrideState: 0
     m_Value: 1
   distanceFade:
-    m_OverrideState: 0
+    m_OverrideState: 1
     m_Value: 0
   curvaturePixelRadius:
-    m_OverrideState: 0
-    m_Value: 0
+    m_OverrideState: 1
+    m_Value: 2
   curvatureBrights:
-    m_OverrideState: 0
-    m_Value: 3.28
+    m_OverrideState: 1
+    m_Value: 5
   curvatureDarks:
-    m_OverrideState: 0
-    m_Value: 3
+    m_OverrideState: 1
+    m_Value: 5
   cavitySamples:
     m_OverrideState: 0
     m_Value: 2
@@ -143,20 +143,20 @@ MonoBehaviour:
     m_OverrideState: 0
     m_Value: 1
   cavityRadius:
-    m_OverrideState: 0
-    m_Value: 0.302
+    m_OverrideState: 1
+    m_Value: 0.12
   cavityBrights:
-    m_OverrideState: 0
-    m_Value: 3.92
+    m_OverrideState: 1
+    m_Value: 1.41
   cavityDarks:
-    m_OverrideState: 0
-    m_Value: 1.79
+    m_OverrideState: 1
+    m_Value: 0
   normalsSource:
     m_OverrideState: 0
     m_Value: 1
   debugMode:
     m_OverrideState: 0
-    m_Value: 2
+    m_Value: 1
   output:
     m_OverrideState: 1
     m_Value: 1

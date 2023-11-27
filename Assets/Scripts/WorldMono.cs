@@ -9,8 +9,8 @@ public class WorldMono : MonoBehaviour
     public World World => Context.World;
     public Context Context;
     private RectInt ShownHexRange = new RectInt(-5, -5, 12, 15);
-    private Dictionary<Point2Int, GameObject[]> ShownHexesObjects = new Dictionary<Point2Int, GameObject[]>();
-    private Dictionary<ulong, GameObject> SpawnedCharacters = new Dictionary<ulong, GameObject>();
+    private Dictionary<Point2Int, List<GameObject>> ShownHexesObjects = new();
+    private Dictionary<ulong, GameObject> SpawnedCharacters = new();
     private Point2Int PlayerPos = new Point2Int(-1, -1);
     private Conveyor first;
 
@@ -66,11 +66,17 @@ public class WorldMono : MonoBehaviour
                 }
 
                 int topHeight = Context.World.Terrain.GetTopHex(new Point2Int(x, y)).z;
+                var point2Hex = new Point2Int(x, y);
+                if (ShownHexesObjects.ContainsKey(point2Hex))
+                {
+                    continue;
+                }
+                ShownHexesObjects.Add(point2Hex, new List<GameObject>(12));
+
                 for (int z = topHeight; z >= 0; z--)
                 {
                     Point3Int hex = new Point3Int(x, y, z);
-                    var point2Hex = (Point2Int)hex;
-                    if (ShownHexesObjects.ContainsKey(point2Hex) || Context.World.Terrain.GetAt(hex) == null)
+                    if (Context.World.Terrain.GetAt(hex) == null)
                     {
                         continue;
                     }
@@ -83,15 +89,12 @@ public class WorldMono : MonoBehaviour
                         hexes[i].transform.position = WorldConversions.HexToUnityPosition(hex);
                         hexes[i].transform.SetParent(transform);
                         hexes[i].transform.rotation = Quaternion.Euler(0, 60 * i, 0);
+                        ShownHexesObjects[point2Hex].Add(hexes[i]);
                     }
-                    ShownHexesObjects.Add(point2Hex, hexes);
-                    if (World.GetBuildingAt(point2Hex) != null)
+                    if (z == topHeight && World.GetBuildingAt(point2Hex) == null)
                     {
-                        SetGrassActiveForHex(point2Hex, false);
+                        SetGrassActiveForHex(point2Hex, true);
                     }
-
-                    // Laptop perf.
-                    SetGrassActiveForHex(point2Hex, false);
                 }
             }
         }
@@ -111,7 +114,7 @@ public class WorldMono : MonoBehaviour
 
         foreach (Point2Int point in toRemove)
         {
-            SetGrassActiveForHex(point, true);
+            SetGrassActiveForHex(point, false);
             for (int i = 0; i < 6; i++)
             {
                 var parsedType =

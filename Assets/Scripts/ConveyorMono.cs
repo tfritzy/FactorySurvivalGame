@@ -157,11 +157,13 @@ public class ConveyorMono : CharacterMono
             {
                 ItemPool.ReturnItem(itemBodies.First.Value.Item.Type, itemBodies.First.Value.gameObject);
                 itemBodies.RemoveFirst();
+                HighlightEffect.UpdateMaterialProperties();
             }
             else if (itemBodies.Last.Value.Item.Type != conveyor.Items.Last.Value.Item.Type)
             {
                 ItemPool.ReturnItem(itemBodies.Last.Value.Item.Type, itemBodies.Last.Value.gameObject);
                 itemBodies.RemoveLast();
+                HighlightEffect.UpdateMaterialProperties();
             }
             else
             {
@@ -175,11 +177,13 @@ public class ConveyorMono : CharacterMono
             {
                 ItemMono item = BuildItem(conveyor.Items.First.Value.Item);
                 itemBodies.AddFirst(item);
+                HighlightEffect.UpdateMaterialProperties();
             }
             else if (itemBodies.Last.Value.Item.Type != conveyor.Items.Last.Value.Item.Type)
             {
                 ItemMono item = BuildItem(conveyor.Items.Last.Value.Item);
                 itemBodies.AddLast(item);
+                HighlightEffect.UpdateMaterialProperties();
             }
             else
             {
@@ -216,6 +220,8 @@ public class ConveyorMono : CharacterMono
             ItemMono item = BuildItem(conveyorItem.Item);
             itemBodies.AddLast(item);
         }
+
+        HighlightEffect.Refresh(true);
     }
 
     private HexSide? cachedPathInputSide;

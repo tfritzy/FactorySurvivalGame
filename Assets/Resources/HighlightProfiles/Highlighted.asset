@@ -37,7 +37,7 @@ MonoBehaviour:
   overlayTextureUVSpace: 0
   overlayTextureScale: 1
   overlayVisibility: 0
-  outline: 0.077
+  outline: 1
   outlineColor: {r: 1, g: 1, b: 1, a: 1}
   outlineColorStyle: 0
   outlineGradient:
@@ -99,8 +99,8 @@ MonoBehaviour:
     alpha: 1
     color: {r: 1, g: 1, b: 1, a: 1}
   glowMaskMode: 0
-  innerGlow: 3.14
-  innerGlowWidth: 0.58
+  innerGlow: 0.4
+  innerGlowWidth: 2
   innerGlowBlendMode: 0
   innerGlowColor: {r: 1, g: 1, b: 1, a: 1}
   innerGlowVisibility: 0

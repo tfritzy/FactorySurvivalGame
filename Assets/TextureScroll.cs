@@ -5,17 +5,17 @@ using UnityEngine;
 public class TextureScroll : MonoBehaviour
 {
     public bool Reversed = false;
-    private Material material;
+    private new Renderer renderer;
+
+    void Start()
+    {
+        renderer = GetComponent<Renderer>();
+    }
 
     void Update()
     {
-        if (material == null)
-        {
-            material = GetComponent<Renderer>().material;
-        }
-
-        Vector2 offset = material.mainTextureOffset;
+        Vector2 offset = renderer.material.mainTextureOffset;
         offset.x += (Reversed ? -1 : 1) * Time.deltaTime / 10;
-        material.mainTextureOffset = offset;
+        renderer.material.mainTextureOffset = offset;
     }
 }

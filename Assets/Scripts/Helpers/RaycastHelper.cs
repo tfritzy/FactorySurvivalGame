@@ -12,7 +12,8 @@ public static class RaycastHelper
             Layers.HexMask);
         if (hit)
         {
-            return WorldConversions.UnityPositionToHex(hitInfo.point);
+            Point2Int hex = (Point2Int)WorldConversions.UnityPositionToHex(hitInfo.point);
+            return WorldMono.Instance.World.GetTopHex(hex);
         }
         else
         {
