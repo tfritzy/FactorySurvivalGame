@@ -1,0 +1,5 @@
+@import url("unity-theme://default");
+
+.fade-in {
+    opacity: 1;
+}

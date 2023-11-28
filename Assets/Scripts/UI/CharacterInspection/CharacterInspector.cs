@@ -7,9 +7,9 @@ using UnityEngine.UIElements;
 
 public class CharacterInspector : Modal
 {
-    private int seenInventoryVersion = -1;
     private int seenConveyorVersion = -1;
     private Character character;
+    private InventoryGrid inventoryGrid;
 
     private enum Section { Inventory, Conveyor }
 
@@ -59,7 +59,7 @@ public class CharacterInspector : Modal
                 sections[Section.Inventory].Add(label);
             }
 
-            var inventory = new InventoryGrid(
+            inventoryGrid = new InventoryGrid(
                  new InventoryGrid.Props
                  {
                      inventory = character.Inventory,
@@ -69,9 +69,8 @@ public class CharacterInspector : Modal
                      SlotBorderWidth = 1,
                  }
              );
-            sections[Section.Inventory].Add(inventory);
+            sections[Section.Inventory].Add(inventoryGrid);
             sections[Section.Inventory].style.marginBottom = 10f;
-            inventory.Update();
         }
     }
 
@@ -90,56 +89,60 @@ public class CharacterInspector : Modal
                 sections[Section.Conveyor].Add(label);
             }
 
-            var conveyorElements = new VisualElement();
-            conveyorElements.style.flexDirection = FlexDirection.Row;
-            conveyorElements.SetAllBorderColor(UIManager.ColorTheme.PanelBackgroundColor);
-            conveyorElements.SetAllBorderWidth(1);
-            conveyorElements.SetAllPadding(5);
+            var conveyorElements = new ScrollView(ScrollViewMode.Horizontal)
+            {
+                verticalScrollerVisibility = ScrollerVisibility.Hidden,
+                horizontalScrollerVisibility = ScrollerVisibility.Hidden,
+            };
+            if (character.Inventory != null)
+            {
+                conveyorElements.style.width = InventorySlot.Size * character.Inventory.Width;
+            }
             sections[Section.Conveyor].Add(conveyorElements);
 
+            int numPlaceholder = 4;
             int i = 0;
             foreach (var item in character.Conveyor.Items)
             {
                 var container = new VisualElement();
-                StyleConveyorItemContainer(container);
-                if (i != character.Conveyor.Items.Count - 1)
-                    container.style.marginRight = 5;
+                StyleConveyorItemContainer(container, i >= numPlaceholder - 1 && i == character.Conveyor.Items.Count - 1);
+
                 var itemElement = new SlotItemIcon();
                 itemElement.Update(item.Item);
                 container.Add(itemElement);
-                conveyorElements.Add(container);
+                container.style.backgroundColor = UIManager.ColorTheme.OccupiedInventorySlot;
+                conveyorElements.contentContainer.Add(container);
                 i += 1;
             }
 
-            for (; i < 5; i++)
+            for (; i < numPlaceholder; i++)
             {
                 var container = new VisualElement();
-                StyleConveyorItemContainer(container);
-                container.style.width = SlotItemIcon.SIZE;
-                container.style.height = SlotItemIcon.SIZE;
-                if (i != 4)
-                    container.style.marginRight = 5;
-                conveyorElements.Add(container);
+                StyleConveyorItemContainer(container, i == numPlaceholder - 1);
+                conveyorElements.contentContainer.Add(container);
             }
         }
     }
 
-    private void StyleConveyorItemContainer(VisualElement container)
+    private void StyleConveyorItemContainer(VisualElement container, bool isLast)
     {
         container.style.flexDirection = FlexDirection.Row;
         container.style.alignItems = Align.Center;
         container.style.justifyContent = Justify.Center;
-        container.style.backgroundColor = UIManager.ColorTheme.PanelForegroundColor;
+        container.style.backgroundImage = new StyleBackground(UIElements.GetElement(UIElementType.Vignette));
+        container.style.minWidth = InventorySlot.Size;
+        container.style.minHeight = InventorySlot.Size;
         container.SetAllBorderRadius(5);
+        container.SetAllBorderWidth(1);
+        container.SetAllBorderColor(UIManager.ColorTheme.PanelOutlineColorMid);
+
+        if (!isLast)
+            container.style.marginRight = 10;
     }
 
     public override void Update()
     {
-        if (character.Inventory != null && character.Inventory?.Version != seenInventoryVersion)
-        {
-            SetupInventory(character);
-            seenInventoryVersion = character.Inventory?.Version ?? -1;
-        }
+        inventoryGrid?.Update();
 
         if (character.Conveyor != null && character.Conveyor?.Version != seenConveyorVersion)
         {

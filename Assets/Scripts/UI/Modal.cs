@@ -1,4 +1,6 @@
 using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.UIElements;
 
@@ -19,12 +21,44 @@ public abstract class Modal : ActiveElement
         this.SetAllBorderWidth(1);
 
         modal = new VisualElement();
-        modal.style.backgroundColor = UIManager.ColorTheme.PanelBackgroundColor;
-        UIManager.ColorTheme.Apply3DPanelBorderColor(modal);
         modal.SetAllBorderRadius(10);
-        modal.SetAllBorderWidth(1);
-        modal.SetAllPadding(10);
+        modal.style.overflow = Overflow.Hidden;
         Add(modal);
+
+        modal.style.transitionProperty = new List<StylePropertyName> { "opacity", "translate" };
+        List<EasingFunction> easingFunctions = new()
+        {
+            new(EasingMode.EaseOut),
+            new(EasingMode.EaseOut)
+        };
+        modal.style.transitionTimingFunction = new StyleList<EasingFunction>(easingFunctions);
+
+        List<TimeValue> delays = new()
+        {
+            new(0.1f, TimeUnit.Second),
+            new(0.2f, TimeUnit.Second)
+        };
+        modal.style.transitionDuration = new StyleList<TimeValue>(delays);
+
+        modal.style.opacity = 0;
+        modal.style.translate = new StyleTranslate(new Translate(0, 25, 0));
+        var outer = modal;
+        RegisterCallback<GeometryChangedEvent>((e) =>
+        {
+            outer.style.opacity = .99f;
+            outer.style.translate = new StyleTranslate(new Translate(0, 0, 0));
+        });
+
+        var gradient = new GradientElement(
+            ColorExtensions.FromHex("#02120a"),
+            ColorExtensions.FromHex("#001f3b"));
+        modal.Add(gradient);
+        modal = gradient;
+
+        var content = new VisualElement();
+        modal.Add(content);
+        content.SetAllPadding(10);
+        modal = content;
 
         if (onClose != null)
         {

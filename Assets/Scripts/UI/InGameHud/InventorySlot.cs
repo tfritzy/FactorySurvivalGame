@@ -5,7 +5,7 @@ using UnityEngine.UIElements;
 
 public class InventorySlot : VisualElement
 {
-    public const float Size = 65;
+    public const float Size = 75;
     private int index;
     private Inventory containingInventory;
     private Action<MouseUpEvent, Inventory, int> onMouseUp;
@@ -21,7 +21,7 @@ public class InventorySlot : VisualElement
         public Action<MouseUpEvent, Inventory, int> onMouseUp;
         public Action<MouseMoveEvent, Inventory, int> onMouseHold;
         public bool SelfSufficientBorder;
-        public float BorderWidth = 2;
+        public float BorderWidth = 1;
     }
 
     public InventorySlot(Props props)
@@ -48,7 +48,7 @@ public class InventorySlot : VisualElement
         if (props.SelfSufficientBorder)
         {
             var outerBorder = new VisualElement();
-            UIManager.ColorTheme.Apply3DPanelBorderColor(outerBorder, inverse: true);
+            outerBorder.SetAllBorderColor(UIManager.ColorTheme.PanelOutlineColorMid);
             outerBorder.SetAllBorderWidth(props.BorderWidth);
             outerBorder.SetAllBorderRadius(5);
             this.Add(outerBorder);
@@ -58,27 +58,38 @@ public class InventorySlot : VisualElement
             outerBorder.Add(this.Content);
         }
 
-        this.Content.SetAllBorderWidth(props.BorderWidth);
-        UIManager.ColorTheme.Apply3DPanelBorderColor(this.Content);
+        this.Content.SetAllBorderColor(UIManager.ColorTheme.PanelOutlineColorMid);
+        this.Content.style.borderTopWidth = props.BorderWidth;
+        this.Content.style.borderLeftWidth = props.BorderWidth;
+
+        if (props.pos.x == props.parentDimensions.x - 1)
+        {
+            this.Content.style.borderRightWidth = props.BorderWidth;
+        }
+
+        if (props.pos.y == props.parentDimensions.y - 1)
+        {
+            this.Content.style.borderBottomWidth = props.BorderWidth;
+        }
 
         if (props.pos.x == 0 && props.pos.y == 0)
         {
-            this.Content.style.borderTopLeftRadius = 5;
+            this.Content.style.borderTopLeftRadius = 10;
         }
 
         if (props.pos.x == props.parentDimensions.x - 1 && props.pos.y == 0)
         {
-            this.Content.style.borderTopLeftRadius = 5;
+            this.Content.style.borderTopRightRadius = 10;
         }
 
         if (props.pos.x == 0 && props.pos.y == props.parentDimensions.y - 1)
         {
-            this.Content.style.borderBottomLeftRadius = 5;
+            this.Content.style.borderBottomLeftRadius = 10;
         }
 
         if (props.pos.x == props.parentDimensions.x - 1 && props.pos.y == props.parentDimensions.y - 1)
         {
-            this.Content.style.borderBottomRightRadius = 5;
+            this.Content.style.borderBottomRightRadius = 10;
         }
 
     }
@@ -116,10 +127,6 @@ public class InventorySlot : VisualElement
         else if (item != null)
         {
             this.Content.style.backgroundColor = UIManager.ColorTheme.OccupiedInventorySlot;
-        }
-        else
-        {
-            this.Content.style.backgroundColor = UIManager.ColorTheme.PanelBackgroundColor;
         }
     }
 }

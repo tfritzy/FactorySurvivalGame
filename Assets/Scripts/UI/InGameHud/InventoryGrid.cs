@@ -40,17 +40,11 @@ public class InventoryGrid : ActiveElement
     {
         if (!props.HideBorder)
         {
-            var outerBorder = new VisualElement();
-            UIManager.ColorTheme.Apply3DPanelBorderColor(outerBorder, inverse: true);
-            outerBorder.SetAllBorderWidth(2);
-            Content.Add(outerBorder);
-
-            var innerBorder = new VisualElement();
-            UIManager.ColorTheme.Apply3DPanelBorderColor(innerBorder);
-            innerBorder.SetAllBorderWidth(2);
-            outerBorder.Add(innerBorder);
-
-            Content = innerBorder;
+            var border = new VisualElement();
+            border.SetAllBorderColor(UIManager.ColorTheme.PanelOutlineColorMid);
+            border.SetAllBorderWidth(1);
+            Content.Add(border);
+            Content = border;
         }
         else
         {
