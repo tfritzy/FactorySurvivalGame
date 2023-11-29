@@ -8,7 +8,7 @@ public class WorldMono : MonoBehaviour
 {
     public World World => Context.World;
     public Context Context;
-    private RectInt ShownHexRange = new RectInt(-5, -5, 12, 15);
+    private RectInt ShownHexRange = new RectInt(-8, -5, 18, 15);
     private Dictionary<Point2Int, List<GameObject>> ShownHexesObjects = new();
     private Dictionary<ulong, GameObject> SpawnedCharacters = new();
     private Point2Int PlayerPos = new Point2Int(-1, -1);

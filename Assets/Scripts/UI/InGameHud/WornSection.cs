@@ -7,7 +7,6 @@ public class WornItemsSection : ActiveElement
     public WornItemsSection()
     {
         this.style.alignItems = Align.Center;
-        this.style.justifyContent = Justify.Center;
 
         this.Content = new VisualElement();
         this.Content.SetAllBorderColor(UIManager.ColorTheme.PanelOutlineColorMid);

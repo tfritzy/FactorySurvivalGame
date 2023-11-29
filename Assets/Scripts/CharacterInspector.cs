@@ -4,7 +4,6 @@ using UnityEngine;
 
 public class CharacterInspectionManager : MonoBehaviour
 {
-    public GameObject CharacterQuickViewPrefab;
     private CharacterMono highlightedObject;
 
     void LateUpdate()

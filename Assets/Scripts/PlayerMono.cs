@@ -148,6 +148,9 @@ public class PlayerMono : MonoBehaviour
             SelectedInventoryIndex += SelectedInventory.Width;
         }
 
+        // scroll wheel
+        SelectedInventoryIndex += (int)Input.mouseScrollDelta.y;
+
         if (SelectedInventoryIndex > SelectedInventory.Size)
         {
             SelectedInventoryIndex %= SelectedInventory.Size;

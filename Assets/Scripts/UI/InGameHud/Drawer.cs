@@ -11,7 +11,7 @@ public abstract class Drawer : ActiveElement
         this.Content.style.position = Position.Absolute;
         this.Content.style.right = 0;
         this.Content.style.top = 0;
-        this.Content.style.height = Length.Percent(100);
+        this.Content.style.minHeight = Length.Percent(100);
 
         this.Content.style.transitionProperty = new List<StylePropertyName> { "translate" };
         List<EasingFunction> easingFunctions = new() { new(EasingMode.EaseOut) };
@@ -27,15 +27,17 @@ public abstract class Drawer : ActiveElement
         var gradient = new GradientElement(
             UIManager.ColorTheme.PanelGradientStart,
             UIManager.ColorTheme.PanelGradientEnd);
+        gradient.style.minHeight = Length.Percent(100);
         this.Content.Add(gradient);
         this.Content = gradient;
 
         var content = new VisualElement();
+        content.style.minHeight = Length.Percent(100);
         this.Content.Add(content);
         this.Content = content;
         this.Content.SetAllPadding(10);
-        this.Content.style.borderLeftWidth = 3;
-        this.Content.style.borderLeftColor = UIManager.ColorTheme.PanelOutlineColorBright;
+        this.Content.style.borderLeftWidth = 1;
+        this.Content.style.borderLeftColor = UIManager.ColorTheme.PanelOutlineColorDark;
     }
 
     public override void Show()

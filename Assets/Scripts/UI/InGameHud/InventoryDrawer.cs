@@ -33,8 +33,7 @@ public class InventoryDrawer : Drawer
     private void InitWornSection()
     {
         this.wornItemsSection = new WornItemsSection();
-        wornItemsSection.style.height = Length.Percent(30);
-        wornItemsSection.style.marginBottom = 15;
+        wornItemsSection.style.marginBottom = 80;
         this.Content.Add(wornItemsSection);
     }
 

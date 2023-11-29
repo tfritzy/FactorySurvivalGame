@@ -48,7 +48,6 @@ public class UIManager : MonoBehaviour
 
     public void CloseCharacterInspector()
     {
-        characterInspector?.RemoveFromHierarchy();
-        characterInspector = null;
+        characterInspector?.Hide();
     }
 }

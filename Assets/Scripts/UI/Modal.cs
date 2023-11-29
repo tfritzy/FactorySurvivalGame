@@ -7,6 +7,7 @@ using UnityEngine.UIElements;
 public abstract class Modal : ActiveElement
 {
     protected VisualElement modal;
+    private VisualElement OutermostModal;
 
     public Modal(Action? onClose = null)
     {
@@ -42,11 +43,11 @@ public abstract class Modal : ActiveElement
 
         modal.style.opacity = 0;
         modal.style.translate = new StyleTranslate(new Translate(0, 25, 0));
-        var outer = modal;
+        OutermostModal = modal;
         RegisterCallback<GeometryChangedEvent>((e) =>
         {
-            outer.style.opacity = 1f;
-            outer.style.translate = new StyleTranslate(new Translate(0, 0, 0));
+            OutermostModal.style.opacity = 1f;
+            OutermostModal.style.translate = new StyleTranslate(new Translate(0, 0, 0));
         });
 
         var gradient = new GradientElement(
@@ -76,5 +77,17 @@ public abstract class Modal : ActiveElement
             closeButton.clicked += onClose;
             modal.Add(closeButton);
         }
+    }
+
+    public override void Hide()
+    {
+        OutermostModal.style.opacity = 0f;
+        OutermostModal.style.translate = new StyleTranslate(new Translate(0, 25, 0));
+    }
+
+    public override void Show()
+    {
+        OutermostModal.style.opacity = 1f;
+        OutermostModal.style.translate = new StyleTranslate(new Translate(0, 0, 0));
     }
 }

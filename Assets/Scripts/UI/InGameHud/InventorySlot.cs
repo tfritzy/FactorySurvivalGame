@@ -32,6 +32,8 @@ public class InventorySlot : VisualElement
         this.index = props.pos.x + props.pos.y * props.parentDimensions.x;
 
         this.Content = new VisualElement();
+        this.style.minWidth = Size;
+        this.style.minHeight = Size;
         this.Content.style.minWidth = Size;
         this.Content.style.minHeight = Size;
         this.Content.style.backgroundImage = new StyleBackground(UIElements.GetElement(UIElementType.Vignette));
@@ -121,6 +123,10 @@ public class InventorySlot : VisualElement
         else if (item != null)
         {
             this.Content.style.backgroundColor = UIManager.ColorTheme.OccupiedInventorySlot;
+        }
+        else
+        {
+            this.Content.style.backgroundColor = Color.clear;
         }
     }
 }
