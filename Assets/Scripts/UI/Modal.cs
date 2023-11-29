@@ -44,11 +44,6 @@ public abstract class Modal : ActiveElement
         modal.style.opacity = 0;
         modal.style.translate = new StyleTranslate(new Translate(0, 25, 0));
         OutermostModal = modal;
-        RegisterCallback<GeometryChangedEvent>((e) =>
-        {
-            OutermostModal.style.opacity = 1f;
-            OutermostModal.style.translate = new StyleTranslate(new Translate(0, 0, 0));
-        });
 
         var gradient = new GradientElement(
             UIManager.ColorTheme.PanelGradientStart,
@@ -77,6 +72,8 @@ public abstract class Modal : ActiveElement
             closeButton.clicked += onClose;
             modal.Add(closeButton);
         }
+
+        Shown = false;
     }
 
     public override void Hide()

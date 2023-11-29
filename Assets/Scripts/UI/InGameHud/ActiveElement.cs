@@ -2,7 +2,7 @@ using UnityEngine.UIElements;
 
 public abstract class ActiveElement : VisualElement
 {
-    public bool Shown { get; private set; } = true;
+    public bool Shown { get; protected set; } = true;
     public abstract void Update();
     public VisualElement Content { get; protected set; }
 

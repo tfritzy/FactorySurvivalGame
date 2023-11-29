@@ -9,6 +9,8 @@ public class BuildGrid : MonoBehaviour
     GameObject BuildGridFilledPrefab;
     private static readonly Color BuildableColor = ColorExtensions.FromHex("#19c512");
     private static readonly Color NeutralColor = ColorExtensions.FromHex("#CCCCCC");
+    private static readonly Color DistanceOne = ColorExtensions.FromHex("#CCCCCCAA");
+    private static readonly Color DistanceTwo = ColorExtensions.FromHex("#CCCCCC66");
     private static readonly Color UnbuildableColor = ColorExtensions.FromHex("#FFBA3C");
 
     private List<GameObject> RentedFilled = new();
@@ -27,28 +29,62 @@ public class BuildGrid : MonoBehaviour
     {
         ReturnAllRented();
 
-        List<Point3Int> hexes =
+        List<Point3Int> ring1 =
             GridHelpers
-                .GetHexInRange((Point2Int)pos, 2)
-                .Select(x => new Point3Int(x.x, x.y, pos.z)).ToList();
+                .GetHexRing((Point2Int)pos, 1)
+                .Select((pos) => WorldMono.Instance.World.GetTopHex(pos))
+                .ToList();
+        List<Point3Int> ring2 =
+            GridHelpers
+                .GetHexRing((Point2Int)pos, 2)
+                .Select((pos) => WorldMono.Instance.World.GetTopHex(pos))
+                .ToList();
 
-        foreach (var hex in hexes)
+        ConfigureHex(pos, 0, true);
+
+        foreach (Point3Int hex in ring1)
         {
-            GameObject hexObj;
-            bool isBuildable = WorldMono.Instance.World.GetBuildingAt((Point2Int)hex) == null;
-            if (hex != pos)
-            {
-                hexObj = !isBuildable ? GetFilled() : GetEmpty();
-                hexObj.GetComponent<Renderer>().material.color = isBuildable ? NeutralColor : UnbuildableColor;
-            }
-            else
-            {
-                hexObj = GetFilled();
-                hexObj.GetComponent<Renderer>().material.color = isBuildable ? BuildableColor : UnbuildableColor;
-            }
-
-            hexObj.transform.position = WorldConversions.HexToUnityPosition(hex);
+            ConfigureHex(hex, 1, false);
         }
+
+        foreach (Point3Int hex in ring2)
+        {
+            ConfigureHex(hex, 2, false);
+        }
+    }
+
+    private Color getNeutralColor(int distance)
+    {
+        if (distance == 0)
+        {
+            return NeutralColor;
+        }
+        else if (distance == 1)
+        {
+            return DistanceOne;
+        }
+        else
+        {
+            return DistanceTwo;
+        }
+    }
+
+    private void ConfigureHex(Point3Int pos, int distance, bool isOrigin)
+    {
+        GameObject hexObj;
+        bool isBuildable = WorldMono.Instance.World.GetBuildingAt((Point2Int)pos) == null;
+        if (!isOrigin)
+        {
+            hexObj = !isBuildable ? GetFilled() : GetEmpty();
+            hexObj.GetComponent<Renderer>().material.color = isBuildable ? getNeutralColor(distance) : UnbuildableColor;
+        }
+        else
+        {
+            hexObj = GetFilled();
+            hexObj.GetComponent<Renderer>().material.color = isBuildable ? BuildableColor : UnbuildableColor;
+        }
+
+        hexObj.transform.position = WorldConversions.HexToUnityPosition(pos);
     }
 
     private GameObject GetFilled()

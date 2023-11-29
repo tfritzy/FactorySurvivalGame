@@ -15,10 +15,10 @@ public class InGameHud : ActiveElement
 
     public InGameHud()
     {
-        this.style.width = Length.Percent(100);
-        this.style.height = Length.Percent(100);
-        this.style.alignItems = Align.Center;
-        this.style.flexDirection = FlexDirection.ColumnReverse;
+        style.width = Length.Percent(100);
+        style.height = Length.Percent(100);
+        style.alignItems = Align.Center;
+        style.flexDirection = FlexDirection.ColumnReverse;
 
         InitInventory();
         InitActionBar();
@@ -28,8 +28,8 @@ public class InGameHud : ActiveElement
 
     public override void Update()
     {
-        this.inventoryDrawer.Update();
-        this.activeItemsBar.Update();
+        inventoryDrawer.Update();
+        activeItemsBar.Update();
 
         ListenForHotkeys();
     }
@@ -38,59 +38,58 @@ public class InGameHud : ActiveElement
     {
         Player player = PlayerMono.Instance.Actual;
 
-        this.inventoryDrawer = new InventoryDrawer(new InventoryDrawer.Props
+        inventoryDrawer = new InventoryDrawer(new InventoryDrawer.Props
         {
             inventory = player.GetComponent<Inventory>(),
-            onSlotMouseUp = this.OnSlotMouseUp,
-            onSlotMouseHold = this.OnSlotMouseHold,
+            onSlotMouseUp = OnSlotMouseUp,
+            onSlotMouseHold = OnSlotMouseHold,
         });
-        this.Add(this.inventoryDrawer);
+        Add(inventoryDrawer);
     }
 
     private void InitActionBar()
     {
-        this.activeItemsBar = new ActiveItemsBar(new ActiveItemsBar.Props
+        activeItemsBar = new ActiveItemsBar(new ActiveItemsBar.Props
         {
-            onSlotMouseUp = this.OnSlotMouseUp,
-            onSlotMouseHold = this.OnSlotMouseHold,
-            onInventoryButtonClicked = () => this.inventoryDrawer.ToggleShown(),
+            onSlotMouseUp = OnSlotMouseUp,
+            onSlotMouseHold = OnSlotMouseHold,
+            onInventoryButtonClicked = () => inventoryDrawer.ToggleShown(),
             onCraftingButtonClicked = ToggleCraftingMenu,
         });
-        this.Add(this.activeItemsBar);
+        Add(activeItemsBar);
     }
 
     private void InitCraftingMenu()
     {
-        this.craftingMenu = new CraftingMenu();
-        this.Add(this.craftingMenu);
-        ToggleCraftingMenu();
+        craftingMenu = new CraftingMenu();
+        Add(craftingMenu);
     }
 
     private void ToggleCraftingMenu()
     {
-        this.craftingMenu.ToggleShown();
+        craftingMenu.ToggleShown();
 
-        if (this.inventoryDrawer.Shown != this.craftingMenu.Shown)
+        if (inventoryDrawer.Shown != craftingMenu.Shown)
         {
-            this.inventoryDrawer.ToggleShown();
+            inventoryDrawer.ToggleShown();
         }
     }
 
     private void InitHoveringSlot()
     {
-        this.hoveringSlot = new SlotItemIcon();
-        this.Add(this.hoveringSlot);
-        this.hoveringSlot.style.position = Position.Absolute;
-        this.RegisterCallback<MouseMoveEvent>(OnMouseMoveEvent);
-        this.hoveringSlot.style.display = DisplayStyle.None;
+        hoveringSlot = new SlotItemIcon();
+        Add(hoveringSlot);
+        hoveringSlot.style.position = Position.Absolute;
+        RegisterCallback<MouseMoveEvent>(OnMouseMoveEvent);
+        hoveringSlot.style.display = DisplayStyle.None;
     }
 
     private void OnMouseMoveEvent(MouseMoveEvent e)
     {
-        if (this.selectedSourceInventory != null)
+        if (selectedSourceInventory != null)
         {
-            this.hoveringSlot.style.top = e.localMousePosition.y;
-            this.hoveringSlot.style.left = e.localMousePosition.x;
+            hoveringSlot.style.top = e.localMousePosition.y;
+            hoveringSlot.style.left = e.localMousePosition.x;
         }
     }
 
@@ -103,17 +102,17 @@ public class InGameHud : ActiveElement
 
             selectedSourceInventory = inventory;
             selectedSourceIndex = index;
-            this.hoveringSlot.style.display = DisplayStyle.Flex;
-            this.hoveringSlot.style.top = evt.mousePosition.y;
-            this.hoveringSlot.style.left = evt.mousePosition.x;
-            this.hoveringSlot.Update(inventory.GetItemAt(index));
-            this.touchedByDrag = new HashSet<int>();
+            hoveringSlot.style.display = DisplayStyle.Flex;
+            hoveringSlot.style.top = evt.mousePosition.y;
+            hoveringSlot.style.left = evt.mousePosition.x;
+            hoveringSlot.Update(inventory.GetItemAt(index));
+            touchedByDrag = new HashSet<int>();
         }
         else
         {
             selectedSourceInventory.TransferIndex(inventory, selectedSourceIndex, index);
             selectedSourceInventory = null;
-            this.hoveringSlot.style.display = DisplayStyle.None;
+            hoveringSlot.style.display = DisplayStyle.None;
         }
     }
 
@@ -132,7 +131,7 @@ public class InGameHud : ActiveElement
                 if (selectedSourceInventory.GetItemAt(selectedSourceIndex) == null)
                 {
                     selectedSourceInventory = null;
-                    this.hoveringSlot.style.display = DisplayStyle.None;
+                    hoveringSlot.style.display = DisplayStyle.None;
                 }
 
                 touchedByDrag.Add(index);
@@ -144,7 +143,7 @@ public class InGameHud : ActiveElement
     {
         if (Input.GetKeyDown(KeyCode.I))
         {
-            this.inventoryDrawer.ToggleShown();
+            inventoryDrawer.ToggleShown();
         }
 
         if (Input.GetKeyDown(KeyCode.C))

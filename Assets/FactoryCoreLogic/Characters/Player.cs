@@ -24,7 +24,7 @@ namespace Core
         protected override void InitComponents()
         {
             this.SetComponent(new Inventory(this, 5, 8));
-            this.SetComponent(new ActiveItems(this, 5, 3));
+            this.SetComponent(new ActiveItems(this, 8, 2));
             this.SetComponent(new WornItems(this, 1, 5));
         }
 

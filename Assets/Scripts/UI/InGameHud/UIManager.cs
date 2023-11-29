@@ -35,7 +35,7 @@ public class UIManager : MonoBehaviour
 
     void Update()
     {
-        inGameHud.Update();
+        inGameHud?.Update();
         characterInspector?.Update();
     }
 

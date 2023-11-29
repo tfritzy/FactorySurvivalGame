@@ -18,9 +18,9 @@ public class ColorExtensions
         var g = byte.Parse(hex.Substring(2, 2), System.Globalization.NumberStyles.HexNumber);
         var b = byte.Parse(hex.Substring(4, 2), System.Globalization.NumberStyles.HexNumber);
         var a =
-            hex.Length == 8 ?
+            hex.Length > 6 ?
             byte.Parse(hex.Substring(6, 2), System.Globalization.NumberStyles.HexNumber) :
             (byte)255;
-        return new UnityEngine.Color32(r, g, b, 255);
+        return new UnityEngine.Color32(r, g, b, a);
     }
 }
