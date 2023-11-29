@@ -21,7 +21,7 @@ public abstract class Modal : ActiveElement
         this.SetAllBorderWidth(1);
 
         modal = new VisualElement();
-        modal.SetAllBorderRadius(10);
+        modal.SetAllBorderRadius(15);
         modal.style.overflow = Overflow.Hidden;
         Add(modal);
 
@@ -45,13 +45,13 @@ public abstract class Modal : ActiveElement
         var outer = modal;
         RegisterCallback<GeometryChangedEvent>((e) =>
         {
-            outer.style.opacity = .99f;
+            outer.style.opacity = 1f;
             outer.style.translate = new StyleTranslate(new Translate(0, 0, 0));
         });
 
         var gradient = new GradientElement(
-            ColorExtensions.FromHex("#02120a"),
-            ColorExtensions.FromHex("#001f3b"));
+            UIManager.ColorTheme.PanelGradientStart,
+            UIManager.ColorTheme.PanelGradientEnd);
         modal.Add(gradient);
         modal = gradient;
 

@@ -6,8 +6,6 @@ using UnityEngine.UIElements;
 public class ActiveItemsBar : ActiveElement
 {
     private InventoryGrid inventoryGrid;
-    private const int WIDTH = 10;
-    private const int HEIGHT = 3;
 
     public struct Props
     {
@@ -18,8 +16,17 @@ public class ActiveItemsBar : ActiveElement
     }
     public ActiveItemsBar(Props props)
     {
-        this.style.backgroundColor = Color.red;
-        this.style.flexDirection = FlexDirection.Row;
+        this.Content.SetAllBorderRadius(InventorySlot.BorderRadius);
+        this.Content.style.overflow = Overflow.Hidden;
+        var gradient = new GradientElement(
+            UIManager.ColorTheme.PanelGradientStart,
+            UIManager.ColorTheme.PanelGradientEnd);
+        this.Content.Add(gradient);
+        this.Content = gradient;
+
+        var content = new VisualElement();
+        this.Content.Add(content);
+        this.Content = content;
 
         // InitButtons(props);
         InitInventory(props);
@@ -28,7 +35,7 @@ public class ActiveItemsBar : ActiveElement
     private void InitButtons(Props props)
     {
         var buttonContainer = new VisualElement();
-        this.Add(buttonContainer);
+        this.Content.Add(buttonContainer);
         buttonContainer.style.height = Length.Percent(100);
 
         var craftingButton = new Button();
@@ -58,13 +65,11 @@ public class ActiveItemsBar : ActiveElement
 
         this.inventoryGrid = new InventoryGrid(new InventoryGrid.Props
         {
-            width = WIDTH,
-            height = HEIGHT,
             inventory = inventory,
             onSlotMouseUp = props.onSlotMouseUp,
             onSlotMouseHold = props.onSlotMouseHold,
         });
-        this.Add(this.inventoryGrid);
+        this.Content.Add(this.inventoryGrid);
     }
 
     public override void Update()

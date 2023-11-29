@@ -17,11 +17,21 @@ public abstract class ActiveElement : VisualElement
 
         if (Shown)
         {
-            this.style.display = DisplayStyle.Flex;
+            Show();
         }
         else
         {
-            this.style.display = DisplayStyle.None;
+            Hide();
         }
+    }
+
+    public virtual void Show()
+    {
+        this.style.display = DisplayStyle.Flex;
+    }
+
+    public virtual void Hide()
+    {
+        this.style.display = DisplayStyle.None;
     }
 }

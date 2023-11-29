@@ -6,6 +6,7 @@ using UnityEngine.UIElements;
 public class InventorySlot : VisualElement
 {
     public const float Size = 75;
+    public const float BorderRadius = 12;
     private int index;
     private Inventory containingInventory;
     private Action<MouseUpEvent, Inventory, int> onMouseUp;
@@ -21,7 +22,6 @@ public class InventorySlot : VisualElement
         public Action<MouseUpEvent, Inventory, int> onMouseUp;
         public Action<MouseMoveEvent, Inventory, int> onMouseHold;
         public bool SelfSufficientBorder;
-        public float BorderWidth = 1;
     }
 
     public InventorySlot(Props props)
@@ -32,8 +32,8 @@ public class InventorySlot : VisualElement
         this.index = props.pos.x + props.pos.y * props.parentDimensions.x;
 
         this.Content = new VisualElement();
-        this.Content.style.width = Size;
-        this.Content.style.height = Size;
+        this.Content.style.minWidth = Size;
+        this.Content.style.minHeight = Size;
         this.Content.style.backgroundImage = new StyleBackground(UIElements.GetElement(UIElementType.Vignette));
         this.Add(this.Content);
         InitBorder(props);
@@ -47,49 +47,43 @@ public class InventorySlot : VisualElement
     {
         if (props.SelfSufficientBorder)
         {
-            var outerBorder = new VisualElement();
-            outerBorder.SetAllBorderColor(UIManager.ColorTheme.PanelOutlineColorMid);
-            outerBorder.SetAllBorderWidth(props.BorderWidth);
-            outerBorder.SetAllBorderRadius(5);
-            this.Add(outerBorder);
-
-            this.Content = new VisualElement();
+            this.Content.SetAllBorderColor(UIManager.ColorTheme.PanelOutlineColorBright);
+            this.Content.SetAllBorderWidth(1);
             this.Content.SetAllBorderRadius(5);
-            outerBorder.Add(this.Content);
         }
 
-        this.Content.SetAllBorderColor(UIManager.ColorTheme.PanelOutlineColorMid);
-        this.Content.style.borderTopWidth = props.BorderWidth;
-        this.Content.style.borderLeftWidth = props.BorderWidth;
+        this.Content.SetAllBorderColor(UIManager.ColorTheme.PanelOutlineColorBright);
+        this.Content.style.borderTopWidth = 1;
+        this.Content.style.borderLeftWidth = 1;
 
         if (props.pos.x == props.parentDimensions.x - 1)
         {
-            this.Content.style.borderRightWidth = props.BorderWidth;
+            this.Content.style.borderRightWidth = 1;
         }
 
         if (props.pos.y == props.parentDimensions.y - 1)
         {
-            this.Content.style.borderBottomWidth = props.BorderWidth;
+            this.Content.style.borderBottomWidth = 1;
         }
 
         if (props.pos.x == 0 && props.pos.y == 0)
         {
-            this.Content.style.borderTopLeftRadius = 10;
+            this.Content.style.borderTopLeftRadius = BorderRadius;
         }
 
         if (props.pos.x == props.parentDimensions.x - 1 && props.pos.y == 0)
         {
-            this.Content.style.borderTopRightRadius = 10;
+            this.Content.style.borderTopRightRadius = BorderRadius;
         }
 
         if (props.pos.x == 0 && props.pos.y == props.parentDimensions.y - 1)
         {
-            this.Content.style.borderBottomLeftRadius = 10;
+            this.Content.style.borderBottomLeftRadius = BorderRadius;
         }
 
         if (props.pos.x == props.parentDimensions.x - 1 && props.pos.y == props.parentDimensions.y - 1)
         {
-            this.Content.style.borderBottomRightRadius = 10;
+            this.Content.style.borderBottomRightRadius = BorderRadius;
         }
 
     }

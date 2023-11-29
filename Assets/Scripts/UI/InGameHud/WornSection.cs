@@ -10,9 +10,9 @@ public class WornItemsSection : ActiveElement
         this.style.justifyContent = Justify.Center;
 
         this.Content = new VisualElement();
-        this.Content.SetAllBorderColor(UIManager.ColorTheme.PanelOutlineColorBright);
-        this.Content.SetAllBorderWidth(2);
-        this.Content.SetAllBorderRadius(5);
+        this.Content.SetAllBorderColor(UIManager.ColorTheme.PanelOutlineColorMid);
+        this.Content.SetAllBorderWidth(1);
+        this.Content.SetAllBorderRadius(10);
         this.Content.style.flexDirection = FlexDirection.Row;
         this.Add(this.Content);
 
@@ -24,15 +24,11 @@ public class WornItemsSection : ActiveElement
     private void InitItemsSection()
     {
         var dummy = new Dummy(Managers.World.Context, 0);
-        Inventory inventory = new Inventory(dummy, 5, 1);
+        Inventory inventory = new Inventory(dummy, 1, 4);
         var grid = new InventoryGrid(new InventoryGrid.Props
         {
-            height = 5,
-            width = 1,
             inventory = inventory,
             Gap = 10,
-            HideBorder = true,
-            SlotBorderWidth = 1,
         });
 
         var gridContainer = new VisualElement();
@@ -57,7 +53,6 @@ public class WornItemsSection : ActiveElement
         portraitBox.style.height = Length.Percent(100);
         portraitBox.style.alignItems = Align.Center;
         portraitBox.style.justifyContent = Justify.Center;
-        portraitBox.style.backgroundColor = UIManager.ColorTheme.PanelForegroundColor;
 
         this.Content.Add(portraitBox);
     }

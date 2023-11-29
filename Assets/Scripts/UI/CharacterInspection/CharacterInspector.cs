@@ -63,10 +63,7 @@ public class CharacterInspector : Modal
                  new InventoryGrid.Props
                  {
                      inventory = character.Inventory,
-                     height = character.Inventory.Height,
-                     width = character.Inventory.Width,
                      HideBorder = true,
-                     SlotBorderWidth = 1,
                  }
              );
             sections[Section.Inventory].Add(inventoryGrid);

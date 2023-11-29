@@ -34,35 +34,23 @@ public class InventoryDrawer : Drawer
     {
         this.wornItemsSection = new WornItemsSection();
         wornItemsSection.style.height = Length.Percent(30);
-        this.Add(wornItemsSection);
+        wornItemsSection.style.marginBottom = 15;
+        this.Content.Add(wornItemsSection);
     }
 
     private void InitBackpackGrid()
     {
         var backpackSection = new VisualElement();
-        backpackSection.Add(BuildButtonRow());
 
         this.inventoryGrid = new InventoryGrid(new InventoryGrid.Props
         {
-            width = 10,
-            height = 14,
             inventory = inventory,
             onSlotMouseUp = this.onSlotMouseUp,
             onSlotMouseHold = this.onSlotMouseHold
         });
 
         backpackSection.Add(this.inventoryGrid);
-        this.Add(backpackSection);
-    }
-
-    private VisualElement BuildButtonRow()
-    {
-        var buttonRow = new VisualElement();
-        var dummyButton = new Button();
-        dummyButton.text = "Dummy";
-        buttonRow.Add(dummyButton);
-        buttonRow.style.flexDirection = FlexDirection.Row;
-        return buttonRow;
+        this.Content.Add(backpackSection);
     }
 
     public override void Update()

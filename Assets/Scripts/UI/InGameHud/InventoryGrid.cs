@@ -15,14 +15,11 @@ public class InventoryGrid : ActiveElement
 
     public struct Props
     {
-        public int width;
-        public int height;
         public Inventory inventory;
         public Action<MouseUpEvent, Inventory, int> onSlotMouseUp;
         public Action<MouseMoveEvent, Inventory, int> onSlotMouseHold;
         public float Gap;
         public bool HideBorder;
-        public float? SlotBorderWidth;
     }
 
     public InventoryGrid(Props props)
@@ -30,26 +27,9 @@ public class InventoryGrid : ActiveElement
         onSlotMouseUp = props.onSlotMouseUp;
         onSlotMouseHold = props.onSlotMouseHold;
         inventory = props.inventory;
-        dimensions = new Point2Int(props.width, props.height);
+        dimensions = new Point2Int(props.inventory.Width, props.inventory.Height);
 
-        InitBorder(props);
         BuildGrid(props);
-    }
-
-    private void InitBorder(Props props)
-    {
-        if (!props.HideBorder)
-        {
-            var border = new VisualElement();
-            border.SetAllBorderColor(UIManager.ColorTheme.PanelOutlineColorMid);
-            border.SetAllBorderWidth(1);
-            Content.Add(border);
-            Content = border;
-        }
-        else
-        {
-            Content = this;
-        }
     }
 
     private void BuildGrid(Props props)
@@ -70,7 +50,6 @@ public class InventoryGrid : ActiveElement
                     onMouseUp = onSlotMouseUp,
                     onMouseHold = onSlotMouseHold,
                     SelfSufficientBorder = props.Gap > 0,
-                    BorderWidth = props.SlotBorderWidth ?? 2,
                 });
 
                 if (x != dimensions.x - 1)

@@ -23,4 +23,9 @@ public class DarkTheme : ColorTheme
     public override Color OccupiedInventorySlot => occupiedInventorySlot;
     private static Color selectedInventorySlot = ColorExtensions.FromHex("#662a2a");
     public override Color SelectedInventorySlot => selectedInventorySlot;
+
+    private static Color panelGradientStart = ColorExtensions.FromHex("#02120a");
+    public override Color PanelGradientStart => panelGradientStart;
+    private static Color panelGradientEnd = ColorExtensions.FromHex("#001529");
+    public override Color PanelGradientEnd => panelGradientEnd;
 }

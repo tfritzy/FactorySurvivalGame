@@ -23,8 +23,8 @@ namespace Core
 
         protected override void InitComponents()
         {
-            this.SetComponent(new Inventory(this, 10, 14));
-            this.SetComponent(new ActiveItems(this, 10, 3));
+            this.SetComponent(new Inventory(this, 5, 10));
+            this.SetComponent(new ActiveItems(this, 5, 3));
             this.SetComponent(new WornItems(this, 1, 5));
         }
 
