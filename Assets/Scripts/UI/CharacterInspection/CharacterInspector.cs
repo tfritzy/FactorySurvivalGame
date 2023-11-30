@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using Core;
 using Unity.Collections.LowLevel.Unsafe;
 using UnityEngine;
@@ -7,6 +8,7 @@ using UnityEngine.UIElements;
 
 public class CharacterInspector : Modal
 {
+    private readonly Label nameLabel;
     private int seenConveyorVersion = -1;
     private Character character;
     private InventoryGrid inventoryGrid;
@@ -15,11 +17,9 @@ public class CharacterInspector : Modal
 
     private Dictionary<Section, VisualElement> sections = new();
 
-    public CharacterInspector(Character character, Action onClose) : base(onClose)
+    public CharacterInspector(Action onClose) : base(onClose)
     {
-        this.character = character;
-
-        var nameLabel = new Label(character.Name);
+        nameLabel = new Label();
         nameLabel.style.color = UIManager.ColorTheme.PrimaryText;
         nameLabel.style.fontSize = 25;
         nameLabel.style.marginBottom = 10;
@@ -27,19 +27,31 @@ public class CharacterInspector : Modal
         nameLabel.style.minWidth = 200;
         modal.Add(nameLabel);
 
+        foreach (Section section in Enum.GetValues(typeof(Section)))
+        {
+            var sectionElement = new VisualElement();
+            modal.Add(sectionElement);
+            sections.Add(section, sectionElement);
+        }
+    }
+
+    public void SetCharacter(Character character)
+    {
+        this.character = character;
+        nameLabel.text = character.Name;
+
+        foreach (var section in sections.Values)
+        {
+            section.Clear();
+        }
+
         if (character.Inventory != null)
         {
-            var inventorySection = new VisualElement();
-            modal.Add(inventorySection);
-            sections.Add(Section.Inventory, inventorySection);
             SetupInventory(character);
         }
 
         if (character.Conveyor != null)
         {
-            var conveyorSection = new VisualElement();
-            modal.Add(conveyorSection);
-            sections.Add(Section.Conveyor, conveyorSection);
             SetupConveyor(character);
         }
     }
@@ -139,6 +151,11 @@ public class CharacterInspector : Modal
 
     public override void Update()
     {
+        if (character == null)
+        {
+            return;
+        }
+
         inventoryGrid?.Update();
 
         if (character.Conveyor != null && character.Conveyor?.Version != seenConveyorVersion)

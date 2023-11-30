@@ -135,7 +135,7 @@ MonoBehaviour:
     m_Value: 5
   curvatureDarks:
     m_OverrideState: 1
-    m_Value: 5
+    m_Value: 4.5
   cavitySamples:
     m_OverrideState: 0
     m_Value: 2
@@ -144,10 +144,10 @@ MonoBehaviour:
     m_Value: 1
   cavityRadius:
     m_OverrideState: 1
-    m_Value: 0.12
+    m_Value: 0.053
   cavityBrights:
     m_OverrideState: 1
-    m_Value: 1.41
+    m_Value: 5
   cavityDarks:
     m_OverrideState: 1
     m_Value: 0

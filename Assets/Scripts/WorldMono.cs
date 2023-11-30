@@ -12,7 +12,9 @@ public class WorldMono : MonoBehaviour
     private Dictionary<Point2Int, List<GameObject>> ShownHexesObjects = new();
     private Dictionary<ulong, GameObject> SpawnedCharacters = new();
     private Point2Int PlayerPos = new Point2Int(-1, -1);
-    private Conveyor first;
+
+    [Range(.25f, 2f)]
+    public float TickPercent = 1;
 
     private static WorldMono instance;
     public static WorldMono Instance
@@ -21,7 +23,7 @@ public class WorldMono : MonoBehaviour
         {
             if (instance == null)
             {
-                instance = GameObject.FindObjectOfType<WorldMono>();
+                instance = FindObjectOfType<WorldMono>();
             }
             return instance;
         }
@@ -38,7 +40,7 @@ public class WorldMono : MonoBehaviour
 
     void Update()
     {
-        Context.World.Tick(Time.deltaTime);
+        Context.World.Tick(Time.deltaTime * TickPercent);
 
         Point2Int currentPos = (Point2Int)WorldConversions.UnityPositionToHex(Managers.Player.transform.position);
         if (currentPos != PlayerPos)

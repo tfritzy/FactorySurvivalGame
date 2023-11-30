@@ -29,8 +29,12 @@ public class UIManager : MonoBehaviour
     {
         ColorTheme = new DarkTheme();
         root = GetComponent<UIDocument>().rootVisualElement;
+
         inGameHud = new InGameHud();
         root.Add(inGameHud);
+
+        characterInspector = new CharacterInspector(() => { });
+        root.Add(characterInspector);
     }
 
     void Update()
@@ -41,9 +45,8 @@ public class UIManager : MonoBehaviour
 
     public void OpenCharacterInspector(Character character, System.Action onClose)
     {
-        characterInspector?.RemoveFromHierarchy();
-        characterInspector = new CharacterInspector(character, onClose);
-        root.Add(characterInspector);
+        characterInspector.SetCharacter(character);
+        characterInspector.Show();
     }
 
     public void CloseCharacterInspector()

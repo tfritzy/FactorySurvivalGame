@@ -47,7 +47,7 @@ public class CharacterInspectionManager : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.Escape))
         {
-            close();
+            Close();
         }
     }
 
@@ -60,11 +60,11 @@ public class CharacterInspectionManager : MonoBehaviour
                 return;
             }
 
-            UIManager.Instance.OpenCharacterInspector((Character)c.Actual, close);
+            UIManager.Instance.OpenCharacterInspector((Character)c.Actual, Close);
         }
     }
 
-    private void close()
+    private void Close()
     {
         UIManager.Instance.CloseCharacterInspector();
     }
