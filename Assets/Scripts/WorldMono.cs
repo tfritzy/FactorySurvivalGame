@@ -117,11 +117,11 @@ public class WorldMono : MonoBehaviour
         foreach (Point2Int point in toRemove)
         {
             SetGrassActiveForHex(point, false);
-            for (int i = 0; i < 6; i++)
+            foreach (GameObject hex in ShownHexesObjects[point])
             {
                 var parsedType =
-                    System.Enum.Parse(typeof(TriangleSubType), ShownHexesObjects[point][i].name);
-                HexPool.ReturnTri((TriangleSubType)parsedType, ShownHexesObjects[point][i]);
+                    System.Enum.Parse(typeof(TriangleSubType), hex.name);
+                HexPool.ReturnTri((TriangleSubType)parsedType, hex);
             }
         }
 
@@ -160,9 +160,9 @@ public class WorldMono : MonoBehaviour
     {
         if (ShownHexesObjects.ContainsKey(hex))
         {
-            for (int i = 0; i < 6; i++)
+            foreach (var tri in ShownHexesObjects[hex])
             {
-                ShownHexesObjects[hex][i].transform.Find("Grass").gameObject.SetActive(false && active);
+                tri.transform.Find("Grass").gameObject.SetActive(false && active);
             }
         }
     }

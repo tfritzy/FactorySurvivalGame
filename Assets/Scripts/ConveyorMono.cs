@@ -3,7 +3,7 @@ using System.Linq;
 using Core;
 using UnityEngine;
 
-public class ConveyorMono : CharacterMono
+public class ConveyorMono : BuildingMono
 {
     public Texture2D ConveyorForwardTexture;
     public Texture2D ConveyorBackwardsTexture;
@@ -89,15 +89,15 @@ public class ConveyorMono : CharacterMono
 
     private bool? cachedCurved;
     private HexSide? cachedPrev;
-    private HexSide? cachedNext;
+    private HexSide? cachedRotation;
     public void UpdateOwnBody()
     {
         if (Actual.Conveyor.IsCurved() != cachedCurved ||
-            Actual.Conveyor.PrevSide != cachedPrev ||
-            Actual.Conveyor.NextSide != cachedNext)
+            Actual.Conveyor.PrevSide != cachedPrev
+            || owner.Rotation != cachedRotation)
         {
-            cachedNext = Actual.Conveyor.NextSide;
             cachedPrev = Actual.Conveyor.PrevSide;
+            cachedRotation = owner.Rotation;
             cachedCurved = Actual.Conveyor.IsCurved();
             if (cachedCurved.Value)
             {
@@ -105,7 +105,7 @@ public class ConveyorMono : CharacterMono
                 StraightBody.gameObject.SetActive(false);
 
                 int inSide = (int)Actual.Conveyor.PrevSide;
-                int outSide = (int)Actual.Conveyor.NextSide;
+                int outSide = (int)owner.Rotation;
                 if (outSide < 2 && inSide > 3)
                     outSide += 6;
                 if (inSide > 3 && outSide < 2)
@@ -113,8 +113,9 @@ public class ConveyorMono : CharacterMono
                 int delta = outSide - inSide;
                 bool flipped = delta != 2;
 
-                var rotation = ((int)Actual.Conveyor.PrevSide + (flipped ? 4 : 0)) * 60;
-                CurvedBody.transform.rotation = Quaternion.Euler(0, rotation, 0);
+                // var rotation = ((int)Actual.Conveyor.PrevSide + (flipped ? 4 : 0)) * 60;
+                var rotation = (flipped ? 0 : 4) * 60;
+                CurvedBody.transform.localRotation = Quaternion.Euler(0, rotation, 0);
 
                 GetComponentInChildren<TextureScroll>().Reversed = flipped;
                 CurvedBody.transform.Find("Belt").GetComponent<MeshRenderer>().material.mainTexture
@@ -124,19 +125,6 @@ public class ConveyorMono : CharacterMono
             {
                 StraightBody.gameObject.SetActive(true);
                 CurvedBody.SetActive(false);
-
-                if (Actual.Conveyor.PrevSide != null)
-                {
-                    Debug.Log("Has prev side on: " + Actual.Conveyor.PrevSide);
-                    var rotation = ((int)Actual.Conveyor.PrevSide + 3) * 60;
-                    StraightBody.transform.rotation = Quaternion.Euler(0, rotation, 0);
-                }
-                else if (Actual.Conveyor.NextSide != null)
-                {
-                    Debug.Log("Has next side on: " + Actual.Conveyor.NextSide);
-                    var rotation = (int)Actual.Conveyor.NextSide * 60;
-                    StraightBody.transform.rotation = Quaternion.Euler(0, rotation, 0);
-                }
             }
         }
     }
@@ -201,6 +189,7 @@ public class ConveyorMono : CharacterMono
     private ItemMono BuildItem(Item item)
     {
         var itemBody = ItemPool.GetItem(item.Type, this.transform);
+        itemBody.transform.rotation = Quaternion.Euler(0, item.Id % 360, 0);
         var mono = itemBody.GetComponent<ItemMono>();
         mono.SetItem(item);
         itemBody.transform.position = this.transform.position;

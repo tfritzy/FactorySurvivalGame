@@ -11,7 +11,9 @@ public class PlayerMono : MonoBehaviour
 
     private Item? SelectedItem => SelectedInventory.GetItemAt(SelectedInventoryIndex);
     private Dictionary<Point2Int, Building> previewBuildings = new();
+    private Dictionary<Point2Int, GameObject> conveyorArrows = new();
     private BuildGrid buildGrid;
+    private HexSide rotation = 0;
 
     private static PlayerMono instance;
     public static PlayerMono Instance
@@ -42,6 +44,7 @@ public class PlayerMono : MonoBehaviour
         ListenForInventoryControls();
         PreviewSelectedItem();
         BuildPreviewBuildings();
+        RotatePreviewBuilding();
     }
 
     private void PreviewSelectedItem()
@@ -86,12 +89,42 @@ public class PlayerMono : MonoBehaviour
             }
 
             buildGrid.SetPos(hex.Value);
-            previewBuildings.Add(
-                (Point2Int)hex.Value,
-                Actual.BuidPreviewBuildingFromItem(
-                    SelectedInventoryIndex,
-                    (Point2Int)hex.Value));
+            var building = Actual.BuidPreviewBuildingFromItem(
+                SelectedInventoryIndex,
+                (Point2Int)hex.Value);
+            if (building != null)
+            {
+                var actualBuilding = WorldMono.Instance.World.GetBuildingAt((Point2Int)hex.Value);
+                actualBuilding.SetRotation(rotation);
+                previewBuildings.Add((Point2Int)hex.Value, actualBuilding);
+                UpdateArrows();
+            }
         }
+    }
+
+    private void UpdateArrows()
+    {
+        ClearArrows();
+
+        foreach (Building building in previewBuildings.Values)
+        {
+            if (building.Conveyor != null)
+            {
+                var arrow = Instantiate(DecalLoader.GetDecalPrefab(DecalLoader.Decal.Arrow));
+                arrow.transform.position = WorldConversions.HexToUnityPosition(building.GridPosition);
+                arrow.transform.rotation = Quaternion.Euler(0, 60 * (int)building.Rotation, 0);
+                conveyorArrows.Add((Point2Int)building.GridPosition, arrow);
+            }
+        }
+    }
+
+    private void ClearArrows()
+    {
+        foreach (var arrow in conveyorArrows.Values)
+        {
+            Destroy(arrow);
+        }
+        conveyorArrows.Clear();
     }
 
     private void BuildPreviewBuildings()
@@ -105,12 +138,11 @@ public class PlayerMono : MonoBehaviour
         {
             foreach (Building b in previewBuildings.Values)
             {
-                Actual.MakePreviewBuildingRealFromItem(
-                    SelectedInventoryIndex,
-                    b);
+                Actual.MakePreviewBuildingRealFromItem(SelectedInventoryIndex, b);
             }
             previewBuildings.Clear();
             buildGrid.gameObject.SetActive(false);
+            ClearArrows();
         }
     }
 
@@ -127,6 +159,27 @@ public class PlayerMono : MonoBehaviour
             WorldMono.Instance.World.RemoveBuilding(b.Id);
         }
         previewBuildings.Clear();
+    }
+
+    private void RotatePreviewBuilding()
+    {
+        if (previewBuildings.Count == 0)
+        {
+            return;
+        }
+
+        if (Input.GetKeyDown(KeyCode.R) || Input.mouseScrollDelta.y > 0)
+        {
+            rotation = GridHelpers.Rotate60(rotation);
+            previewBuildings.Values.Last().SetRotation(rotation);
+            UpdateArrows();
+        }
+        else if (Input.GetKeyDown(KeyCode.E) || Input.mouseScrollDelta.y < 0)
+        {
+            rotation = GridHelpers.Rotate60(rotation, clockwise: false);
+            previewBuildings.Values.Last().SetRotation(rotation);
+            UpdateArrows();
+        }
     }
 
     private void ListenForInventoryControls()
@@ -149,7 +202,7 @@ public class PlayerMono : MonoBehaviour
         }
 
         // scroll wheel
-        SelectedInventoryIndex += (int)Input.mouseScrollDelta.y;
+        SelectedInventoryIndex -= (int)Input.mouseScrollDelta.y;
 
         if (SelectedInventoryIndex > SelectedInventory.Size)
         {

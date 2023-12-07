@@ -1,9 +1,14 @@
+using System.Collections.Generic;
+using System.Linq;
 using Core;
 using UnityEngine;
 
 public class CharacterMono : EntityMono
 {
     private bool previewMode;
+    private List<Renderer> renderers = new List<Renderer>();
+    private float birthTime;
+
     public override void Setup(Entity entity)
     {
         base.Setup(entity);
@@ -13,10 +18,15 @@ public class CharacterMono : EntityMono
             c.gameObject.layer = Layers.Character;
         }
 
+        renderers = GetComponentsInChildren<Renderer>(includeInactive: true).ToList();
+
         if (((Character)Actual).IsPreview)
         {
             SetPreview();
         };
+
+        birthTime = Time.time;
+        name = ((Character)Actual).Type + "_" + Actual.Id;
     }
 
     public override void Tick(float deltaTime)
@@ -32,16 +42,18 @@ public class CharacterMono : EntityMono
     private void SetPreview()
     {
         previewMode = true;
-        foreach (Collider c in GetComponentsInChildren<Collider>())
+        foreach (Collider c in GetComponentsInChildren<Collider>(includeInactive: true))
         {
             c.enabled = false;
         }
     }
 
+
     private void SetNonPreview()
     {
+        birthTime = Time.time;
         previewMode = false;
-        foreach (Collider c in GetComponentsInChildren<Collider>())
+        foreach (Collider c in GetComponentsInChildren<Collider>(includeInactive: true))
         {
             c.enabled = true;
         }

@@ -13,15 +13,15 @@ public class ItemPool
         }
         if (Items[type].Count == 0)
         {
-            var itemObj = GameObject.Instantiate(Models.GetItemModel(type), parent);
-            itemObj.AddComponent<ItemMono>();
-            itemObj.name = type.ToString();
-            Items[type].Enqueue(itemObj);
+            var newObj = GameObject.Instantiate(Models.GetItemModel(type), parent);
+            newObj.AddComponent<ItemMono>();
+            newObj.name = type.ToString();
+            Items[type].Enqueue(newObj);
         }
-        var item = Items[type].Dequeue();
-        item.transform.SetParent(parent);
-        item.SetActive(true);
-        return item;
+        var itemObj = Items[type].Dequeue();
+        itemObj.transform.SetParent(parent);
+        itemObj.SetActive(true);
+        return itemObj;
     }
 
     public static void ReturnItem(ItemType type, GameObject item)

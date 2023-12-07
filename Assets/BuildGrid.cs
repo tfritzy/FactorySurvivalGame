@@ -5,12 +5,10 @@ using UnityEngine;
 
 public class BuildGrid : MonoBehaviour
 {
-    GameObject BuildGridPrefab;
-    GameObject BuildGridFilledPrefab;
     private static readonly Color BuildableColor = ColorExtensions.FromHex("#19c512");
     private static readonly Color NeutralColor = ColorExtensions.FromHex("#CCCCCC");
-    private static readonly Color DistanceOne = ColorExtensions.FromHex("#CCCCCCAA");
-    private static readonly Color DistanceTwo = ColorExtensions.FromHex("#CCCCCC66");
+    private static readonly Color DistanceOne = ColorExtensions.FromHex("#CCCCCC88");
+    private static readonly Color DistanceTwo = ColorExtensions.FromHex("#CCCCCC33");
     private static readonly Color UnbuildableColor = ColorExtensions.FromHex("#FFBA3C");
 
     private List<GameObject> RentedFilled = new();
@@ -21,8 +19,6 @@ public class BuildGrid : MonoBehaviour
     void Awake()
     {
         transform.position = WorldConversions.HexToUnityPosition(Point3Int.Zero);
-        BuildGridPrefab = Resources.Load<GameObject>("Prefabs/Decals/BuildGridHex");
-        BuildGridFilledPrefab = Resources.Load<GameObject>("Prefabs/Decals/BuildGridHexFilled");
     }
 
     public void SetPos(Point3Int pos)
@@ -32,11 +28,13 @@ public class BuildGrid : MonoBehaviour
         List<Point3Int> ring1 =
             GridHelpers
                 .GetHexRing((Point2Int)pos, 1)
+                .Where((pos) => WorldMono.Instance.World.Terrain.IsInBounds(pos))
                 .Select((pos) => WorldMono.Instance.World.GetTopHex(pos))
                 .ToList();
         List<Point3Int> ring2 =
             GridHelpers
                 .GetHexRing((Point2Int)pos, 2)
+                .Where((pos) => WorldMono.Instance.World.Terrain.IsInBounds(pos))
                 .Select((pos) => WorldMono.Instance.World.GetTopHex(pos))
                 .ToList();
 
@@ -75,7 +73,7 @@ public class BuildGrid : MonoBehaviour
         bool isBuildable = WorldMono.Instance.World.GetBuildingAt((Point2Int)pos) == null;
         if (!isOrigin)
         {
-            hexObj = !isBuildable ? GetFilled() : GetEmpty();
+            hexObj = GetEmpty();
             hexObj.GetComponent<Renderer>().material.color = isBuildable ? getNeutralColor(distance) : UnbuildableColor;
         }
         else
@@ -91,7 +89,7 @@ public class BuildGrid : MonoBehaviour
     {
         if (FilledPool.Count == 0)
         {
-            FilledPool.Add(Instantiate(BuildGridFilledPrefab, transform));
+            FilledPool.Add(Instantiate(DecalLoader.GetDecalPrefab(DecalLoader.Decal.BuildGridHexFilled), transform));
         }
 
         var filled = FilledPool.Last();
@@ -105,7 +103,7 @@ public class BuildGrid : MonoBehaviour
     {
         if (EmptyPool.Count == 0)
         {
-            EmptyPool.Add(Instantiate(BuildGridPrefab, transform));
+            EmptyPool.Add(Instantiate(DecalLoader.GetDecalPrefab(DecalLoader.Decal.BuildGridHex), transform));
         }
 
         var empty = EmptyPool.Last();
