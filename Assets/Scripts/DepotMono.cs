@@ -7,6 +7,7 @@ public class DepotMono : BuildingMono
     private float targetFilledPercent = 0f;
     private int seenVersion = -1;
     private const string FilledPercent = "_FillAmount";
+    public bool ShouldAddItem;
 
     public override void Setup(Entity entity)
     {
@@ -18,6 +19,12 @@ public class DepotMono : BuildingMono
     public override void Tick(float deltaTime)
     {
         base.Tick(deltaTime);
+
+        if (ShouldAddItem)
+        {
+            Actual.Inventory.AddItem(new IronOre());
+            ShouldAddItem = false;
+        }
 
         lightRenderer.material.SetFloat(
             FilledPercent,

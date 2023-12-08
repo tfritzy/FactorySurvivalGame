@@ -13,7 +13,7 @@ public class WorldMono : MonoBehaviour
     private Dictionary<ulong, GameObject> SpawnedCharacters = new();
     private Point2Int PlayerPos = new Point2Int(-1, -1);
 
-    [Range(.25f, 2f)]
+    [Range(.25f, 4f)]
     public float TickPercent = 1;
 
     private static WorldMono instance;
