@@ -8,7 +8,7 @@ public class WorldMono : MonoBehaviour
 {
     public World World => Context.World;
     public Context Context;
-    private RectInt ShownHexRange = new RectInt(-8, -5, 18, 15);
+    private RectInt ShownHexRange = new RectInt(-10, -5, 20, 23);
     private Dictionary<Point2Int, List<GameObject>> ShownHexesObjects = new();
     private Dictionary<ulong, GameObject> SpawnedCharacters = new();
     private Point2Int PlayerPos = new Point2Int(-1, -1);
@@ -85,14 +85,26 @@ public class WorldMono : MonoBehaviour
 
                     var point = Context.World.Terrain.GetAt(hex);
                     GameObject[] hexes = new GameObject[6];
-                    for (int i = 0; i < 6; i++)
+                    bool allFull = point.All(p => p.SubType == TriangleSubType.LandFull);
+                    if (allFull)
                     {
-                        hexes[i] = HexPool.GetTri(point[i].SubType, this.transform);
-                        hexes[i].transform.position = WorldConversions.HexToUnityPosition(hex);
-                        hexes[i].transform.SetParent(transform);
-                        hexes[i].transform.rotation = Quaternion.Euler(0, 60 * i, 0);
-                        ShownHexesObjects[point2Hex].Add(hexes[i]);
+                        hexes[0] = HexPool.GetTri(TriangleSubType.LandActuallyFull, this.transform);
+                        hexes[0].transform.position = WorldConversions.HexToUnityPosition(hex);
+                        hexes[0].transform.SetParent(transform);
+                        ShownHexesObjects[point2Hex].Add(hexes[0]);
                     }
+                    else
+                    {
+                        for (int i = 0; i < 6; i++)
+                        {
+                            hexes[i] = HexPool.GetTri(point[i].SubType, this.transform);
+                            hexes[i].transform.position = WorldConversions.HexToUnityPosition(hex);
+                            hexes[i].transform.SetParent(transform);
+                            hexes[i].transform.rotation = Quaternion.Euler(0, 60 * i, 0);
+                            ShownHexesObjects[point2Hex].Add(hexes[i]);
+                        }
+                    }
+
                     if (z == topHeight && World.GetBuildingAt(point2Hex) == null)
                     {
                         SetGrassActiveForHex(point2Hex, true);
@@ -162,7 +174,7 @@ public class WorldMono : MonoBehaviour
         {
             foreach (var tri in ShownHexesObjects[hex])
             {
-                tri.transform.Find("Grass").gameObject.SetActive(false && active);
+                tri.transform.Find("Grass")?.gameObject.SetActive(active);
             }
         }
     }

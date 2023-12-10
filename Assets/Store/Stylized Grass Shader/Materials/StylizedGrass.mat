@@ -15,8 +15,7 @@ Material:
   - _ADVANCED_LIGHTING
   - _ENVIRONMENTREFLECTIONS_OFF
   - _SCALEMAP
-  m_InvalidKeywords:
-  - _SCALEMAP_ON
+  m_InvalidKeywords: []
   m_LightmapFlags: 4
   m_EnableInstancingVariants: 1
   m_DoubleSidedGI: 0
@@ -118,7 +117,7 @@ Material:
     - _NormalMapKwToggle: 0
     - _NormalSpherify: 0
     - _NormalSpherifyMask: 0
-    - _OcclusionStrength: 0.253
+    - _OcclusionStrength: 0.342
     - _PerspectiveCorrection: 0.467
     - _QueueOffset: 0
     - _ReceiveShadows: 1
@@ -139,7 +138,7 @@ Material:
     - _TranslucencyIndirect: 0
     - _TranslucencyOffset: 0
     - _TwoSided: 0
-    - _VertexDarkening: 0.515
+    - _VertexDarkening: 0.586
     - _WindAmbientStrength: 0.373
     - _WindFlutter: 0.559
     - _WindGustFreq: 3.67
@@ -159,14 +158,14 @@ Material:
     - _WorkflowMode: 1
     - _ZWrite: 1
     m_Colors:
-    - _BaseColor: {r: 0.16078432, g: 0.85882354, b: 0.5319825, a: 1}
+    - _BaseColor: {r: 0.53660136, g: 0.80784315, b: 0.48235294, a: 1}
     - _BendTint: {r: 1, g: 1, b: 1, a: 1}
     - _Color: {r: 1, g: 1, b: 1, a: 1}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
     - _FadeFar: {r: 50, g: 100, b: 0, a: 0}
     - _FadeNear: {r: 0.25, g: 0.5, b: 0, a: 0}
     - _FadeParams: {r: 50, g: 100, b: 0, a: 0}
-    - _HueVariation: {r: 0.09356822, g: 0.7830189, b: 0.4842569, a: 0.7137255}
+    - _HueVariation: {r: 0.43137255, g: 0.73333335, b: 0.4414379, a: 1}
     - _HueVariationColor: {r: 1, g: 0.5, b: 0, a: 0.1}
     - _LODDebugColor: {r: 1, g: 1, b: 1, a: 1}
     - _NormalParams: {r: 0, g: 1, b: 0, a: 0}
