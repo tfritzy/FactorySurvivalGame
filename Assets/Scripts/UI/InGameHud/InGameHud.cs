@@ -10,7 +10,7 @@ public class InGameHud : ActiveElement
     private CraftingMenu craftingMenu;
     private Inventory selectedSourceInventory;
     private int selectedSourceIndex;
-    private SlotItemIcon hoveringSlot;
+    private UiItem hoveringSlot;
     private HashSet<int> touchedByDrag = new HashSet<int>();
 
     public InGameHud()
@@ -24,14 +24,15 @@ public class InGameHud : ActiveElement
         InitActionBar();
         InitCraftingMenu();
         InitHoveringSlot();
+
+        InputManager.Instance.RegisterKeyDown(KeyCode.I, ToggleInventory);
+        InputManager.Instance.RegisterKeyDown(KeyCode.C, ToggleCraftingMenu);
     }
 
     public override void Update()
     {
         inventoryDrawer.Update();
         activeItemsBar.Update();
-
-        ListenForHotkeys();
     }
 
     private void InitInventory()
@@ -65,7 +66,7 @@ public class InGameHud : ActiveElement
         Add(craftingMenu);
     }
 
-    private void ToggleCraftingMenu()
+    public void ToggleCraftingMenu()
     {
         craftingMenu.ToggleShown();
 
@@ -75,9 +76,14 @@ public class InGameHud : ActiveElement
         }
     }
 
+    public void ToggleInventory()
+    {
+        inventoryDrawer.ToggleShown();
+    }
+
     private void InitHoveringSlot()
     {
-        hoveringSlot = new SlotItemIcon();
+        hoveringSlot = new UiItem();
         Add(hoveringSlot);
         hoveringSlot.style.position = Position.Absolute;
         RegisterCallback<MouseMoveEvent>(OnMouseMoveEvent);
@@ -136,19 +142,6 @@ public class InGameHud : ActiveElement
 
                 touchedByDrag.Add(index);
             }
-        }
-    }
-
-    private void ListenForHotkeys()
-    {
-        if (Input.GetKeyDown(KeyCode.I))
-        {
-            inventoryDrawer.ToggleShown();
-        }
-
-        if (Input.GetKeyDown(KeyCode.C))
-        {
-            ToggleCraftingMenu();
         }
     }
 }

@@ -116,7 +116,7 @@ public class CharacterInspector : Modal
                 var container = new VisualElement();
                 StyleConveyorItemContainer(container, i >= numPlaceholder - 1 && i == character.Conveyor.Items.Count - 1);
 
-                var itemElement = new SlotItemIcon();
+                var itemElement = new UiItem();
                 itemElement.Update(item.Item);
                 container.Add(itemElement);
                 container.style.backgroundColor = UIManager.ColorTheme.OccupiedInventorySlot;

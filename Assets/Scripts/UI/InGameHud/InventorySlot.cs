@@ -6,12 +6,12 @@ using UnityEngine.UIElements;
 public class InventorySlot : VisualElement
 {
     public const float Size = 75;
-    public const float BorderRadius = 12;
+    public const float BorderRadius = 8;
     private int index;
     private Inventory containingInventory;
     private Action<MouseUpEvent, Inventory, int> onMouseUp;
     public Action<MouseMoveEvent, Inventory, int> onMouseHold;
-    private SlotItemIcon itemIcon;
+    private UiItem itemIcon;
     private VisualElement Content;
 
     public class Props
@@ -36,7 +36,7 @@ public class InventorySlot : VisualElement
         this.style.minHeight = Size;
         this.Content.style.minWidth = Size;
         this.Content.style.minHeight = Size;
-        this.Content.style.backgroundImage = new StyleBackground(UIElements.GetElement(UIElementType.Vignette));
+        // this.Content.style.backgroundImage = new StyleBackground(UIElements.GetElement(UIElementType.Vignette));
         this.Add(this.Content);
         InitBorder(props);
 
@@ -92,7 +92,7 @@ public class InventorySlot : VisualElement
 
     private void InitSlotIcon()
     {
-        this.itemIcon = new SlotItemIcon();
+        this.itemIcon = new UiItem();
         this.Content.Add(this.itemIcon);
         this.Content.style.alignItems = Align.Center;
         this.Content.style.justifyContent = Justify.Center;

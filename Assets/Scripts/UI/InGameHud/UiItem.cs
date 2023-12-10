@@ -2,12 +2,13 @@ using Core;
 using UnityEngine;
 using UnityEngine.UIElements;
 
-public class SlotItemIcon : VisualElement
+public class UiItem : VisualElement
 {
     private Label quantityLabel;
     public const int SIZE = 55;
+    public Item Item { get; private set; }
 
-    public SlotItemIcon()
+    public UiItem()
     {
         this.style.width = SIZE;
         this.style.height = SIZE;
@@ -28,12 +29,20 @@ public class SlotItemIcon : VisualElement
         this.quantityLabel.style.fontSize = 20;
         this.quantityLabel.style.color = UIManager.ColorTheme.ItemSlotTextColor;
         this.quantityLabel.style.unityFontStyleAndWeight = FontStyle.Bold;
-        this.quantityLabel.style.unityTextOutlineColor = Color.black;
+        this.quantityLabel.style.unityTextOutlineColor = Color.white;
         this.quantityLabel.style.unityTextOutlineWidth = 1;
     }
 
+    private int renderedQuantity = -1;
+    private ItemType? renderedItemType = null;
     public void Update(Item item)
     {
+        if (renderedItemType == item?.Type && renderedQuantity == item?.Quantity)
+            return;
+
+        Item = item;
+        renderedItemType = item?.Type;
+        renderedQuantity = item?.Quantity ?? -1;
         if (item == null)
         {
             this.style.backgroundImage = null;
@@ -41,7 +50,6 @@ public class SlotItemIcon : VisualElement
         }
         else
         {
-            // TODO: Caching
             this.style.backgroundImage = new StyleBackground(Icons.GetIcon(item.Type));
 
             if (item.Quantity > 1)

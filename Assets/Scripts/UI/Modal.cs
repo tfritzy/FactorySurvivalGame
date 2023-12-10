@@ -11,6 +11,7 @@ public abstract class Modal : ActiveElement
 
     public Modal(Action? onClose = null)
     {
+        pickingMode = PickingMode.Ignore;
         style.position = Position.Absolute;
         style.left = 0;
         style.top = 0;
@@ -18,7 +19,7 @@ public abstract class Modal : ActiveElement
         style.height = Length.Percent(100);
         style.alignItems = Align.Center;
         style.justifyContent = Justify.Center;
-        this.SetAllBorderColor(UIManager.ColorTheme.PanelBackgroundColor);
+        this.SetAllBorderColor(UIManager.ColorTheme.PanelOutlineColorBright);
         this.SetAllBorderWidth(1);
 
         modal = new VisualElement();
@@ -73,17 +74,20 @@ public abstract class Modal : ActiveElement
             modal.Add(closeButton);
         }
 
+        Hide();
         Shown = false;
     }
 
     public override void Hide()
     {
+        this.style.display = DisplayStyle.None;
         OutermostModal.style.opacity = 0f;
         OutermostModal.style.translate = new StyleTranslate(new Translate(0, 25, 0));
     }
 
     public override void Show()
     {
+        this.style.display = DisplayStyle.Flex;
         OutermostModal.style.opacity = 1f;
         OutermostModal.style.translate = new StyleTranslate(new Translate(0, 0, 0));
     }

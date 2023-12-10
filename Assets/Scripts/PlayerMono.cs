@@ -33,6 +33,14 @@ public class PlayerMono : MonoBehaviour
         Actual = new Player(WorldMono.Instance.Context, 0);
         SelectedInventory = Actual.GetComponent<ActiveItems>();
         SelectedInventoryIndex = 0;
+        InputManager.Instance.RegisterKeyDown(KeyCode.RightArrow, () => IncrementInventoryIndex(1));
+        InputManager.Instance.RegisterKeyDown(KeyCode.LeftArrow, () => IncrementInventoryIndex(-1));
+        InputManager.Instance.RegisterKeyDown(
+            KeyCode.UpArrow,
+            () => IncrementInventoryIndex(-SelectedInventory.Width));
+        InputManager.Instance.RegisterKeyDown(
+            KeyCode.DownArrow,
+            () => IncrementInventoryIndex(SelectedInventory.Width));
 
 #if UNITY_EDITOR
         Cursor.SetCursor(UIElements.GetElement(UIElementType.Cursor).texture, Vector2.zero, CursorMode.ForceSoftware);
@@ -41,7 +49,6 @@ public class PlayerMono : MonoBehaviour
 
     void Update()
     {
-        ListenForInventoryControls();
         PreviewSelectedItem();
         BuildPreviewBuildings();
         RotatePreviewBuilding();
@@ -182,28 +189,9 @@ public class PlayerMono : MonoBehaviour
         }
     }
 
-    private void ListenForInventoryControls()
+    private void IncrementInventoryIndex(int amount)
     {
-        if (Input.GetKeyDown(KeyCode.RightArrow))
-        {
-            SelectedInventoryIndex++;
-        }
-        else if (Input.GetKeyDown(KeyCode.LeftArrow))
-        {
-            SelectedInventoryIndex--;
-        }
-        else if (Input.GetKeyDown(KeyCode.UpArrow))
-        {
-            SelectedInventoryIndex -= SelectedInventory.Width;
-        }
-        else if (Input.GetKeyDown(KeyCode.DownArrow))
-        {
-            SelectedInventoryIndex += SelectedInventory.Width;
-        }
-
-        // scroll wheel
-        SelectedInventoryIndex -= (int)Input.mouseScrollDelta.y;
-
+        SelectedInventoryIndex += amount;
         if (SelectedInventoryIndex > SelectedInventory.Size)
         {
             SelectedInventoryIndex %= SelectedInventory.Size;

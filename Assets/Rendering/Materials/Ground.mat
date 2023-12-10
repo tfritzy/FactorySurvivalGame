@@ -122,6 +122,10 @@ Material:
     - _Glossiness: 0
     - _GlossyReflections: 0
     - _Metallic: 0
+    - _Noise0Power: 0.853
+    - _Noise0Scale: 1
+    - _Noise1Power: 0.889
+    - _Noise1Scale: 100
     - _OcclusionStrength: 1
     - _Parallax: 0.005
     - _QueueControl: 0
@@ -133,6 +137,7 @@ Material:
     - _SrcBlend: 1
     - _SrcBlendAlpha: 1
     - _Surface: 0
+    - _VariationPower: 0.6
     - _WorkflowMode: 1
     - _ZWrite: 1
     m_Colors:

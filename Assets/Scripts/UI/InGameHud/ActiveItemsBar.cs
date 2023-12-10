@@ -16,6 +16,8 @@ public class ActiveItemsBar : ActiveElement
     }
     public ActiveItemsBar(Props props)
     {
+        style.marginBottom = 10;
+
         this.Content.SetAllBorderRadius(InventorySlot.BorderRadius);
         this.Content.style.overflow = Overflow.Hidden;
         var gradient = new GradientElement(
