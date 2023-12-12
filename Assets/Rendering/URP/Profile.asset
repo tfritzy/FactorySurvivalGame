@@ -48,7 +48,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   active: 1
   effectIntensity:
-    m_OverrideState: 1
+    m_OverrideState: 0
     m_Value: 1
   distanceFade:
     m_OverrideState: 0
@@ -411,6 +411,30 @@ MonoBehaviour:
   mode:
     m_OverrideState: 1
     m_Value: 2
+  neutralHDRRangeReductionMode:
+    m_OverrideState: 0
+    m_Value: 2
+  acesPreset:
+    m_OverrideState: 0
+    m_Value: 3
+  hueShiftAmount:
+    m_OverrideState: 0
+    m_Value: 0
+  detectPaperWhite:
+    m_OverrideState: 0
+    m_Value: 0
+  paperWhite:
+    m_OverrideState: 0
+    m_Value: 300
+  detectBrightnessLimits:
+    m_OverrideState: 0
+    m_Value: 1
+  minNits:
+    m_OverrideState: 0
+    m_Value: 0.005
+  maxNits:
+    m_OverrideState: 0
+    m_Value: 1000
 --- !u!114 &2187420256899543837
 MonoBehaviour:
   m_ObjectHideFlags: 3
@@ -429,13 +453,13 @@ MonoBehaviour:
     m_Value: 1
   threshold:
     m_OverrideState: 1
-    m_Value: 0.7
+    m_Value: 0.9
   intensity:
     m_OverrideState: 1
-    m_Value: 1
+    m_Value: 0.7
   scatter:
     m_OverrideState: 1
-    m_Value: 0.332
+    m_Value: 0.855
   clamp:
     m_OverrideState: 0
     m_Value: 65472

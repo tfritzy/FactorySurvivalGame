@@ -6,6 +6,7 @@ public enum UIElementType
 {
     Vignette,
     Cursor,
+    SearchIcon,
 }
 
 public static class UIElements

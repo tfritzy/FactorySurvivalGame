@@ -60,6 +60,7 @@ public class ItemSearch : VisualElement
         var scrollView = new ScrollView();
         scrollView.verticalScroller.visible = false;
         scrollView.verticalScroller.style.width = 0;
+        scrollView.mouseWheelScrollSize = 100;
         Add(scrollView);
 
         var itemContainer = new VisualElement();
