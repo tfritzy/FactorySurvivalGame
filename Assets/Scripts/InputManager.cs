@@ -52,16 +52,21 @@ public class InputManager : MonoBehaviour
 
     void Update()
     {
-        if (!hotkeysEnabled)
-        {
-            return;
-        }
-
         foreach (var key in keyDownListeners.Keys)
         {
             if (Input.GetKeyDown(key))
             {
-                keyDownListeners[key][0].Callback();
+                // Can pass -1 to always have action executed.
+                int priorityLimit = !hotkeysEnabled ? 0 : int.MaxValue;
+                for (int i = 0; i < keyDownListeners[key].Count; i++)
+                {
+                    if (keyDownListeners[key][i].Priority >= priorityLimit)
+                    {
+                        break;
+                    }
+
+                    keyDownListeners[key][i].Callback();
+                }
             }
         }
     }

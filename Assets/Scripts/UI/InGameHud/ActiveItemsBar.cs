@@ -18,13 +18,10 @@ public class ActiveItemsBar : ActiveElement
     {
         style.marginBottom = 10;
 
+        this.Content.style.backgroundColor = UIManager.ColorTheme.PanelBackgroundColor;
         this.Content.SetAllBorderRadius(InventorySlot.BorderRadius);
-        this.Content.style.overflow = Overflow.Hidden;
-        var gradient = new GradientElement(
-            UIManager.ColorTheme.PanelGradientStart,
-            UIManager.ColorTheme.PanelGradientEnd);
-        this.Content.Add(gradient);
-        this.Content = gradient;
+        this.Content.SetAllBorderWidth(1);
+        this.Content.SetAllBorderColor(UIManager.ColorTheme.PanelOutline);
 
         var content = new VisualElement();
         this.Content.Add(content);
@@ -60,12 +57,8 @@ public class ActiveItemsBar : ActiveElement
     private void InitInventory(Props props)
     {
         Inventory inventory = PlayerMono.Instance.Actual.GetComponent<ActiveItems>();
-        inventory.AddItem(new ConveyorItem(16), 1);
-        inventory.AddItem(new ConveyorItem(16), 2);
-        inventory.AddItem(new ConveyorItem(16), 3);
+
         inventory.AddItem(new ConveyorItem(16), 4);
-        inventory.AddItem(new MineshaftItem(), 5);
-        inventory.AddItem(new DepotItem(), 6);
         inventory.AddItem(new Stone(7), 10);
 
         this.inventoryGrid = new InventoryGrid(new InventoryGrid.Props

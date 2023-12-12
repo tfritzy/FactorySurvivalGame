@@ -36,7 +36,6 @@ public class InventorySlot : VisualElement
         this.style.minHeight = Size;
         this.Content.style.minWidth = Size;
         this.Content.style.minHeight = Size;
-        // this.Content.style.backgroundImage = new StyleBackground(UIElements.GetElement(UIElementType.Vignette));
         this.Add(this.Content);
         InitBorder(props);
 
@@ -49,12 +48,12 @@ public class InventorySlot : VisualElement
     {
         if (props.SelfSufficientBorder)
         {
-            this.Content.SetAllBorderColor(UIManager.ColorTheme.PanelOutlineColorBright);
+            this.Content.SetAllBorderColor(UIManager.ColorTheme.GridDivider);
             this.Content.SetAllBorderWidth(1);
             this.Content.SetAllBorderRadius(5);
         }
 
-        this.Content.SetAllBorderColor(UIManager.ColorTheme.PanelOutlineColorBright);
+        this.Content.SetAllBorderColor(UIManager.ColorTheme.GridDivider);
         this.Content.style.borderTopWidth = 1;
         this.Content.style.borderLeftWidth = 1;
 
@@ -114,13 +113,17 @@ public class InventorySlot : VisualElement
     public void Update(Item item)
     {
         this.itemIcon.Update(item);
+        SetBackground();
+    }
 
+    private void SetBackground()
+    {
         if (PlayerMono.Instance.SelectedInventory == this.containingInventory &&
             PlayerMono.Instance.SelectedInventoryIndex == this.index)
         {
             this.Content.style.backgroundColor = UIManager.ColorTheme.SelectedInventorySlot;
         }
-        else if (item != null)
+        else if (this.containingInventory.GetItemAt(this.index) != null)
         {
             this.Content.style.backgroundColor = UIManager.ColorTheme.OccupiedInventorySlot;
         }

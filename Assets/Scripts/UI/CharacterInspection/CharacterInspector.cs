@@ -143,7 +143,7 @@ public class CharacterInspector : Modal
         container.style.minHeight = InventorySlot.Size;
         container.SetAllBorderRadius(5);
         container.SetAllBorderWidth(1);
-        container.SetAllBorderColor(UIManager.ColorTheme.PanelOutlineColorMid);
+        container.SetAllBorderColor(UIManager.ColorTheme.PanelOutline);
 
         if (!isLast)
             container.style.marginRight = 10;

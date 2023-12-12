@@ -8,6 +8,7 @@ public abstract class Drawer : ActiveElement
 
     public Drawer()
     {
+        Content.style.backgroundColor = UIManager.ColorTheme.PanelBackgroundColor;
         Content.style.position = Position.Absolute;
         Content.style.right = 0;
         Content.style.top = 0;
@@ -20,20 +21,13 @@ public abstract class Drawer : ActiveElement
         Content.style.translate = new StyleTranslate(new Translate(500, 0, 0));
         OuterElement = contentContainer;
 
-        var gradient = new GradientElement(
-            UIManager.ColorTheme.PanelGradientStart,
-            UIManager.ColorTheme.PanelGradientEnd);
-        gradient.style.minHeight = Length.Percent(100);
-        Content.Add(gradient);
-        Content = gradient;
-
         var content = new VisualElement();
         content.style.minHeight = Length.Percent(100);
         Content.Add(content);
         Content = content;
         Content.SetAllPadding(10);
         Content.style.borderLeftWidth = 1;
-        Content.style.borderLeftColor = UIManager.ColorTheme.PanelOutlineColorDark;
+        Content.style.borderLeftColor = UIManager.ColorTheme.PanelOutline;
 
         Shown = false;
     }

@@ -19,12 +19,14 @@ public abstract class Modal : ActiveElement
         style.height = Length.Percent(100);
         style.alignItems = Align.Center;
         style.justifyContent = Justify.Center;
-        this.SetAllBorderColor(UIManager.ColorTheme.PanelOutlineColorBright);
-        this.SetAllBorderWidth(1);
 
         modal = new VisualElement();
         modal.SetAllBorderRadius(15);
         modal.style.overflow = Overflow.Hidden;
+        modal.style.backgroundColor = UIManager.ColorTheme.PanelBackgroundColor;
+        modal.SetAllBorderColor(UIManager.ColorTheme.PanelOutline);
+        modal.SetAllBorderWidth(1);
+
         Add(modal);
 
         modal.style.transitionProperty = new List<StylePropertyName> { "opacity", "translate" };
@@ -46,15 +48,10 @@ public abstract class Modal : ActiveElement
         modal.style.translate = new StyleTranslate(new Translate(0, 25, 0));
         OutermostModal = modal;
 
-        var gradient = new GradientElement(
-            UIManager.ColorTheme.PanelGradientStart,
-            UIManager.ColorTheme.PanelGradientEnd);
-        modal.Add(gradient);
-        modal = gradient;
-
         var content = new VisualElement();
         modal.Add(content);
         content.SetAllPadding(10);
+        content.style.paddingBottom = 0;
         modal = content;
 
         if (onClose != null)
@@ -74,12 +71,15 @@ public abstract class Modal : ActiveElement
             modal.Add(closeButton);
         }
 
+        InputManager.Instance.RegisterKeyDown(KeyCode.Escape, Hide, -1);
+
         Hide();
         Shown = false;
     }
 
     public override void Hide()
     {
+        base.Hide();
         this.style.display = DisplayStyle.None;
         OutermostModal.style.opacity = 0f;
         OutermostModal.style.translate = new StyleTranslate(new Translate(0, 25, 0));
@@ -87,6 +87,7 @@ public abstract class Modal : ActiveElement
 
     public override void Show()
     {
+        base.Show();
         this.style.display = DisplayStyle.Flex;
         OutermostModal.style.opacity = 1f;
         OutermostModal.style.translate = new StyleTranslate(new Translate(0, 0, 0));

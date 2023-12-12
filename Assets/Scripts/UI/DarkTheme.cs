@@ -12,14 +12,12 @@ public class DarkTheme : ColorTheme
     private static Color panelForegroundColor = new Color(0.95f, 0.95f, 0.95f);
     public override Color PanelForegroundColor => panelForegroundColor;
 
-    private static Color panelOutlineColorMid = new Color(0.8f, 0.8f, 0.8f);
-    private static Color panelOutlineColorBright = new Color(0.7f, 0.7f, 0.7f);
-    private static Color panelOutlineColorDark = new Color(0.9f, 0.9f, 0.9f);
-    public override Color PanelOutlineColorMid => panelOutlineColorMid;
-    public override Color PanelOutlineColorBright => panelOutlineColorBright;
-    public override Color PanelOutlineColorDark => panelOutlineColorDark;
+    private static Color panelOutline = Color.black;
+    public override Color PanelOutline => panelOutline;
+    private static Color gridDivider = new Color(.90f, .90f, .90f);
+    public override Color GridDivider => gridDivider;
 
-    private static Color occupiedInventorySlot = new Color(.75f, .75f, .75f, .075f);
+    private static Color occupiedInventorySlot = new Color(.95f, .95f, .95f);
     public override Color OccupiedInventorySlot => occupiedInventorySlot;
     private static Color selectedInventorySlot = ColorExtensions.FromHex("#b3b3ff");
     public override Color SelectedInventorySlot => selectedInventorySlot;

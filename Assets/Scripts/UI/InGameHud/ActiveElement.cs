@@ -3,7 +3,7 @@ using UnityEngine.UIElements;
 public abstract class ActiveElement : VisualElement
 {
     public bool Shown { get; protected set; } = true;
-    public abstract void Update();
+    public virtual void Update() { }
     public VisualElement Content { get; protected set; }
 
     public ActiveElement()
@@ -28,10 +28,12 @@ public abstract class ActiveElement : VisualElement
     public virtual void Show()
     {
         this.style.display = DisplayStyle.Flex;
+        Shown = true;
     }
 
     public virtual void Hide()
     {
         this.style.display = DisplayStyle.None;
+        Shown = false;
     }
 }

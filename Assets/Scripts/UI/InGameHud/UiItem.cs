@@ -8,7 +8,7 @@ public class UiItem : VisualElement
     public const int SIZE = 55;
     public Item Item { get; private set; }
 
-    public UiItem()
+    public UiItem(bool withLabel = false)
     {
         this.style.width = SIZE;
         this.style.height = SIZE;
@@ -20,17 +20,18 @@ public class UiItem : VisualElement
 
     private void InitQuantityLabel()
     {
-        this.quantityLabel = new Label();
-        this.Add(this.quantityLabel);
-        this.quantityLabel.style.position = Position.Absolute;
-        this.quantityLabel.style.right = -11;
-        this.quantityLabel.style.bottom = -11;
-        this.quantityLabel.pickingMode = PickingMode.Ignore;
-        this.quantityLabel.style.fontSize = 20;
-        this.quantityLabel.style.color = UIManager.ColorTheme.ItemSlotTextColor;
-        this.quantityLabel.style.unityFontStyleAndWeight = FontStyle.Bold;
-        this.quantityLabel.style.unityTextOutlineColor = Color.white;
-        this.quantityLabel.style.unityTextOutlineWidth = 1;
+        quantityLabel = new Label();
+        Add(quantityLabel);
+        quantityLabel.style.position = Position.Absolute;
+        quantityLabel.style.right = -11;
+        quantityLabel.style.bottom = -11;
+        quantityLabel.pickingMode = PickingMode.Ignore;
+        quantityLabel.style.fontSize = 20;
+        quantityLabel.style.color = UIManager.ColorTheme.ItemSlotTextColor;
+        quantityLabel.style.unityFontStyleAndWeight = FontStyle.Bold;
+        quantityLabel.style.unityTextOutlineColor = Color.white;
+        quantityLabel.style.unityTextOutlineWidth = 1;
+        quantityLabel.SetAllMargin(0);
     }
 
     private int renderedQuantity = -1;

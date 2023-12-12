@@ -33,6 +33,7 @@ public class InGameHud : ActiveElement
     {
         inventoryDrawer.Update();
         activeItemsBar.Update();
+        craftingMenu.Update();
     }
 
     private void InitInventory()
@@ -70,10 +71,10 @@ public class InGameHud : ActiveElement
     {
         craftingMenu.ToggleShown();
 
-        if (inventoryDrawer.Shown != craftingMenu.Shown)
-        {
-            inventoryDrawer.ToggleShown();
-        }
+        // if (inventoryDrawer.Shown != craftingMenu.Shown)
+        // {
+        //     inventoryDrawer.ToggleShown();
+        // }
     }
 
     public void ToggleInventory()

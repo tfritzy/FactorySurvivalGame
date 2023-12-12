@@ -9,7 +9,7 @@ public class WornItemsSection : ActiveElement
         this.style.alignItems = Align.Center;
 
         this.Content = new VisualElement();
-        this.Content.SetAllBorderColor(UIManager.ColorTheme.PanelOutlineColorMid);
+        this.Content.SetAllBorderColor(UIManager.ColorTheme.PanelOutline);
         this.Content.SetAllBorderWidth(1);
         this.Content.SetAllBorderRadius(10);
         this.Content.style.flexDirection = FlexDirection.Row;
@@ -41,7 +41,7 @@ public class WornItemsSection : ActiveElement
         var divider = new VisualElement();
         divider.style.width = 2;
         divider.style.height = Length.Percent(100);
-        divider.style.backgroundColor = UIManager.ColorTheme.PanelOutlineColorBright;
+        divider.style.backgroundColor = UIManager.ColorTheme.PanelOutline;
         this.Content.Add(divider);
     }
 
