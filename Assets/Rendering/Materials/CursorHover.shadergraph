@@ -2028,6 +2028,8 @@
     "m_AlphaClip": false,
     "m_CastShadows": true,
     "m_ReceiveShadows": true,
+    "m_AdditionalMotionVectorMode": 0,
+    "m_AlembicMotionVectors": false,
     "m_SupportsLODCrossFade": false,
     "m_CustomEditorGUI": "",
     "m_SupportVFX": false
@@ -5911,8 +5913,8 @@
     "m_ObjectId": "b61fac7e72b3440ea3fd8a228614de5e",
     "m_Title": "Outlines",
     "m_Position": {
-        "x": 10.0,
-        "y": 10.0
+        "x": -2596.000244140625,
+        "y": 222.0
     }
 }
 
@@ -6311,7 +6313,7 @@
     },
     "m_Name": "Branch",
     "m_DrawState": {
-        "m_Expanded": false,
+        "m_Expanded": true,
         "m_Position": {
             "serializedVersion": "2",
             "x": 124.99996185302735,

@@ -17,11 +17,12 @@ public class ItemSearch : VisualElement
         input.SetAllMargin(0);
         input.style.marginBottom = 15;
         input.style.backgroundColor = Color.clear;
+        input.textEdition.placeholder = "Search...";
         var textInput = input.Children().First();
         textInput.SetAllBorderRadius(20);
         textInput.SetAllPadding(2);
         textInput.SetAllBorderColor(Color.black);
-        textInput.style.backgroundColor = UIManager.ColorTheme.PanelForegroundColor;
+        textInput.style.backgroundColor = UIManager.ColorTheme.PanelBackgroundColor;
         textInput.style.paddingLeft = 10;
         var label = textInput.Children().First();
         label.style.color = UIManager.ColorTheme.PrimaryText;
