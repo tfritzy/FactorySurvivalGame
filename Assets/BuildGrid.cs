@@ -6,9 +6,9 @@ using UnityEngine;
 public class BuildGrid : MonoBehaviour
 {
     private static readonly Color BuildableColor = ColorExtensions.FromHex("#19c512");
-    private static readonly Color NeutralColor = ColorExtensions.FromHex("#000000");
-    private static readonly Color DistanceOne = ColorExtensions.FromHex("#00000066");
-    private static readonly Color DistanceTwo = ColorExtensions.FromHex("#00000033");
+    private static readonly Color NeutralColor = ColorExtensions.FromHex("#FFFFFF");
+    private static readonly Color DistanceOne = ColorExtensions.FromHex("#FFFFFF66");
+    private static readonly Color DistanceTwo = ColorExtensions.FromHex("#FFFFFF33");
     private static readonly Color UnbuildableColor = ColorExtensions.FromHex("#FFBA3C");
 
     private List<GameObject> RentedFilled = new();

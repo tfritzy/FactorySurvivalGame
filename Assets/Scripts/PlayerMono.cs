@@ -10,7 +10,7 @@ public class PlayerMono : MonoBehaviour
     public Player Actual;
 
     private Item? SelectedItem => SelectedInventory.GetItemAt(SelectedInventoryIndex);
-    private Dictionary<Point2Int, Building> previewBuildings = new();
+    private Building? previewBuilding;
     private Dictionary<Point2Int, GameObject> conveyorArrows = new();
     private BuildGrid buildGrid;
     private HexSide rotation = 0;
@@ -50,7 +50,7 @@ public class PlayerMono : MonoBehaviour
     void Update()
     {
         PreviewSelectedItem();
-        BuildPreviewBuildings();
+        MakePreviewBuildingReal();
         RotatePreviewBuilding();
     }
 
@@ -58,32 +58,32 @@ public class PlayerMono : MonoBehaviour
     {
         if (SelectedItem == null)
         {
-            if (previewBuildings.Count > 0)
+            if (previewBuilding != null)
             {
-                ClearPreviewBuildings();
+                ClearPreviewBuilding();
             }
 
             return;
         }
 
-        if (previewBuildings.Count > 0 && SelectedItem?.Builds != previewBuildings.Values.First()?.Type)
+        if (previewBuilding != null && SelectedItem?.Builds != previewBuilding?.Type)
         {
-            ClearPreviewBuildings();
+            ClearPreviewBuilding();
         }
 
-        if (SelectedItem.Builds != null)
+        if (SelectedItem?.Builds != null)
         {
             Point3Int? hex = RaycastHelper.GetHexUnderCursor();
             if (hex == null ||
-                previewBuildings.ContainsKey((Point2Int)hex) ||
+                previewBuilding?.GridPosition == hex ||
                 !WorldMono.Instance.World.Terrain.IsInBounds(hex.Value))
             {
                 return;
             }
 
-            if (previewBuildings.Count > 0 && !Input.GetMouseButton(0))
+            if (previewBuilding != null)
             {
-                ClearPreviewBuildings();
+                ClearPreviewBuilding();
             }
 
             if (buildGrid == null)
@@ -102,8 +102,8 @@ public class PlayerMono : MonoBehaviour
             if (building != null)
             {
                 var actualBuilding = WorldMono.Instance.World.GetBuildingAt((Point2Int)hex.Value);
-                actualBuilding.SetRotation(rotation);
-                previewBuildings.Add((Point2Int)hex.Value, actualBuilding);
+                actualBuilding?.SetRotation(rotation);
+                previewBuilding = actualBuilding;
                 UpdateArrows();
             }
         }
@@ -113,15 +113,12 @@ public class PlayerMono : MonoBehaviour
     {
         ClearArrows();
 
-        foreach (Building building in previewBuildings.Values)
+        if (previewBuilding?.Conveyor != null)
         {
-            if (building.Conveyor != null)
-            {
-                var arrow = Instantiate(DecalLoader.GetDecalPrefab(DecalLoader.Decal.Arrow));
-                arrow.transform.position = WorldConversions.HexToUnityPosition(building.GridPosition);
-                arrow.transform.rotation = Quaternion.Euler(0, 60 * (int)building.Rotation, 0);
-                conveyorArrows.Add((Point2Int)building.GridPosition, arrow);
-            }
+            var arrow = Instantiate(DecalLoader.GetDecalPrefab(DecalLoader.Decal.Arrow));
+            arrow.transform.position = WorldConversions.HexToUnityPosition(previewBuilding.GridPosition);
+            arrow.transform.rotation = Quaternion.Euler(0, 60 * (int)previewBuilding.Rotation, 0);
+            conveyorArrows.Add((Point2Int)previewBuilding.GridPosition, arrow);
         }
     }
 
@@ -134,43 +131,36 @@ public class PlayerMono : MonoBehaviour
         conveyorArrows.Clear();
     }
 
-    private void BuildPreviewBuildings()
+    private void MakePreviewBuildingReal()
     {
-        if (previewBuildings.Count == 0)
+        if (previewBuilding == null)
         {
             return;
         }
 
-        if (ClickLog.GetMouseButtonUp())
+        if (Input.GetMouseButton(0))
         {
-            foreach (Building b in previewBuildings.Values)
-            {
-                Actual.MakePreviewBuildingRealFromItem(SelectedInventoryIndex, b);
-            }
-            previewBuildings.Clear();
+            Actual.MakePreviewBuildingRealFromItem(SelectedInventoryIndex, previewBuilding);
+            previewBuilding = null;
             buildGrid.gameObject.SetActive(false);
             ClearArrows();
         }
     }
 
-    private void ClearPreviewBuildings()
+    private void ClearPreviewBuilding()
     {
-        buildGrid.gameObject.SetActive(false);
-        foreach (Building b in previewBuildings.Values)
+        if (previewBuilding != null)
         {
-            if (b == null)
-            {
-                continue;
-            }
-
-            WorldMono.Instance.World.RemoveBuilding(b.Id);
+            WorldMono.Instance.World.RemoveBuilding(previewBuilding.Id);
         }
-        previewBuildings.Clear();
+        buildGrid.gameObject.SetActive(false);
+        ClearArrows();
+        previewBuilding = null;
     }
 
     private void RotatePreviewBuilding()
     {
-        if (previewBuildings.Count == 0)
+        if (previewBuilding == null)
         {
             return;
         }
@@ -178,13 +168,13 @@ public class PlayerMono : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.R) || Input.mouseScrollDelta.y > 0)
         {
             rotation = GridHelpers.Rotate60(rotation);
-            previewBuildings.Values.Last().SetRotation(rotation);
+            previewBuilding.SetRotation(rotation);
             UpdateArrows();
         }
         else if (Input.GetKeyDown(KeyCode.E) || Input.mouseScrollDelta.y < 0)
         {
             rotation = GridHelpers.Rotate60(rotation, clockwise: false);
-            previewBuildings.Values.Last().SetRotation(rotation);
+            previewBuilding.SetRotation(rotation);
             UpdateArrows();
         }
     }
