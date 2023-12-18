@@ -4,8 +4,8 @@ using UnityEngine;
 
 public static class WorldConversions
 {
-    private const float HORIZONTAL_DIST = Constants.HEX_APOTHEM * 2;
-    private const float VERTICAL_DIST = Constants.HEX_RADIUS * 1.5f;
+    public const float HORIZONTAL_DIST = Constants.HEX_APOTHEM * 2;
+    public const float VERTICAL_DIST = Constants.HEX_RADIUS * 1.5f;
 
     public static Vector3 HexToUnityPosition(Point3Int hexPosition)
     {

@@ -21,6 +21,32 @@ public static class RaycastHelper
         }
     }
 
+    public class PointWithSide
+    {
+        public Point3Int Point;
+        public HexSide hexSide;
+    }
+    private static PointWithSide cachedPointWithSide = new PointWithSide();
+    public static PointWithSide? GetTriUnderCursor()
+    {
+        var hit = Physics.Raycast(
+            Managers.MainCamera.ScreenPointToRay(Input.mousePosition),
+            out var hitInfo,
+            100f,
+            Layers.HexMask);
+        if (hit)
+        {
+            cachedPointWithSide.Point = WorldConversions.UnityPositionToHex(hitInfo.point);
+            Debug.Log(hitInfo.point.y);
+            cachedPointWithSide.hexSide = GridHelpers.pixel_hex_side(new Point2Float(hitInfo.point.x, hitInfo.point.z));
+            return cachedPointWithSide;
+        }
+        else
+        {
+            return null;
+        }
+    }
+
     public static CharacterMono? GetCharacterUnderCursor()
     {
         var hit = Physics.Raycast(

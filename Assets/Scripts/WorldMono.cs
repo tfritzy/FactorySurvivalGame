@@ -9,7 +9,7 @@ public class WorldMono : MonoBehaviour
     public World World => Context.World;
     public Context Context;
     private RectInt ShownHexRange = new RectInt(-10, -5, 20, 23);
-    private Dictionary<Point2Int, List<GameObject>> ShownHexesObjects = new();
+    private Dictionary<Point2Int, Dictionary<Point3Int, GameObject?[]>> ShownHexesObjects = new();
     private Dictionary<ulong, GameObject> SpawnedCharacters = new();
     private Point2Int PlayerPos = new Point2Int(-1, -1);
 
@@ -73,7 +73,7 @@ public class WorldMono : MonoBehaviour
                 {
                     continue;
                 }
-                ShownHexesObjects.Add(point2Hex, new List<GameObject>(12));
+                ShownHexesObjects.Add(point2Hex, new Dictionary<Point3Int, GameObject[]>());
 
                 for (int z = topHeight; z >= 0; z--)
                 {
@@ -83,15 +83,16 @@ public class WorldMono : MonoBehaviour
                         continue;
                     }
 
-                    var point = Context.World.Terrain.GetAt(hex);
+                    Triangle?[]? point = Context.World.Terrain.GetAt(hex);
                     GameObject[] hexes = new GameObject[6];
                     bool allFull = point.All(p => p.SubType == TriangleSubType.LandFull);
+                    ShownHexesObjects[point2Hex][hex] = new GameObject[6];
                     if (allFull)
                     {
                         hexes[0] = HexPool.GetTri(TriangleSubType.LandActuallyFull, this.transform);
                         hexes[0].transform.position = WorldConversions.HexToUnityPosition(hex);
                         hexes[0].transform.SetParent(transform);
-                        ShownHexesObjects[point2Hex].Add(hexes[0]);
+                        ShownHexesObjects[point2Hex][hex][0] = hexes[0];
                     }
                     else
                     {
@@ -101,7 +102,7 @@ public class WorldMono : MonoBehaviour
                             hexes[i].transform.position = WorldConversions.HexToUnityPosition(hex);
                             hexes[i].transform.SetParent(transform);
                             hexes[i].transform.rotation = Quaternion.Euler(0, 60 * i, 0);
-                            ShownHexesObjects[point2Hex].Add(hexes[i]);
+                            ShownHexesObjects[point2Hex][hex][i] = hexes[i];
                         }
                     }
 
@@ -129,11 +130,19 @@ public class WorldMono : MonoBehaviour
         foreach (Point2Int point in toRemove)
         {
             SetGrassActiveForHex(point, false);
-            foreach (GameObject hex in ShownHexesObjects[point])
+            foreach (GameObject[] hex in ShownHexesObjects[point].Values)
             {
-                var parsedType =
-                    System.Enum.Parse(typeof(TriangleSubType), hex.name);
-                HexPool.ReturnTri((TriangleSubType)parsedType, hex);
+                foreach (GameObject tri in hex)
+                {
+                    if (tri == null)
+                    {
+                        continue;
+                    }
+
+                    var parsedType =
+                        System.Enum.Parse(typeof(TriangleSubType), tri.name);
+                    HexPool.ReturnTri((TriangleSubType)parsedType, tri);
+                }
             }
         }
 
@@ -164,18 +173,55 @@ public class WorldMono : MonoBehaviour
                 SpawnedCharacters.Remove(updateBuildingRemoved.Id);
                 SetGrassActiveForHex((Point2Int)updateBuildingRemoved.GridPosition, true);
                 break;
+            case UpdateType.TriUncoveredOrAdded:
+                HandleTriUncoveredOrAdded((TriUncoveredOrAdded)update);
+                break;
+            case UpdateType.TriHiddenOrDestroyed:
+                HandleTriHiddenOrDestroyed((TriHiddenOrDestroyed)update);
+                break;
         }
         World.AckUpdate();
     }
 
-    private void SetGrassActiveForHex(Point2Int hex, bool active)
+    private void HandleTriUncoveredOrAdded(TriUncoveredOrAdded update)
     {
-        if (ShownHexesObjects.ContainsKey(hex))
+        Triangle? triangle = World.Terrain.GetTri(update.GridPosition, update.Side);
+        if (triangle != null)
         {
-            foreach (var tri in ShownHexesObjects[hex])
+            var triGO = GameObject.Instantiate(Models.GetTriangleMesh(triangle.SubType), transform);
+            triGO.transform.position = WorldConversions.HexToUnityPosition(update.GridPosition);
+        }
+    }
+
+    private void HandleTriHiddenOrDestroyed(TriHiddenOrDestroyed update)
+    {
+        if (ShownHexesObjects.ContainsKey((Point2Int)update.GridPosition))
+        {
+            if (ShownHexesObjects[(Point2Int)update.GridPosition].ContainsKey((Point3Int)update.GridPosition))
             {
-                tri.transform.Find("Grass")?.gameObject.SetActive(active);
+                var triGO = ShownHexesObjects[(Point2Int)update.GridPosition][(Point3Int)update.GridPosition][(int)update.Side];
+                if (triGO != null)
+                {
+                    var parsedType =
+                        System.Enum.Parse(typeof(TriangleSubType), triGO.name);
+                    HexPool.ReturnTri((TriangleSubType)parsedType, triGO);
+                    ShownHexesObjects
+                        [(Point2Int)update.GridPosition]
+                        [(Point3Int)update.GridPosition]
+                        [(int)update.Side] = null;
+                }
             }
         }
+    }
+
+    private void SetGrassActiveForHex(Point2Int hex, bool active)
+    {
+        // if (ShownHexesObjects.ContainsKey(hex))
+        // {
+        //     foreach (var tri in ShownHexesObjects[hex])
+        //     {
+        //         tri.transform.Find("Grass")?.gameObject.SetActive(active);
+        //     }
+        // }
     }
 }

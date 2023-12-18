@@ -31,11 +31,9 @@ namespace Core
                             var triangles = new Triangle?[6];
                             for (int i = 0; i < 6; i++)
                             {
-                                triangles[i] = new Triangle()
-                                {
-                                    Type = Types[x, y, z]!.Value,
-                                    SubType = TriangleData.AvailableSubTypes[Types[x, y, z]!.Value][0],
-                                };
+                                triangles[i] = new Triangle(
+                                    Types[x, y, z]!.Value,
+                                    TriangleData.AvailableSubTypes[Types[x, y, z]!.Value][0]);
                             }
 
                             TerrainData[x, y, z] = triangles;
@@ -216,7 +214,8 @@ namespace Core
         {
             for (int z = this.MaxZ - 1; z >= 0; z--)
             {
-                if (this.TerrainData[location.x, location.y, z] != null)
+                var hex = this.TerrainData[location.x, location.y, z];
+                if (hex != null)
                 {
                     return new Point3Int(location.x, location.y, z);
                 }

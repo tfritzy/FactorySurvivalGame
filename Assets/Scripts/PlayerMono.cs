@@ -1,6 +1,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using Core;
+using DG.Tweening;
+using Microsoft.SqlServer.Server;
 using UnityEngine;
 
 public class PlayerMono : MonoBehaviour
@@ -14,15 +16,23 @@ public class PlayerMono : MonoBehaviour
     private Dictionary<Point2Int, GameObject> conveyorArrows = new();
     private BuildGrid buildGrid;
     private HexSide rotation = 0;
+    private PreviewBlockState blockState = new PreviewBlockState();
+    private class PreviewBlockState
+    {
+        public Point3Int? pos;
+        public HexSide? side;
+        public ItemType? type;
+        public GameObject? block;
+    }
 
-    private static PlayerMono instance;
+    private static PlayerMono? instance;
     public static PlayerMono Instance
     {
         get
         {
             if (instance == null)
             {
-                instance = GameObject.FindObjectOfType<PlayerMono>();
+                instance = GameObject.FindAnyObjectByType<PlayerMono>();
             }
             return instance;
         }
@@ -49,18 +59,21 @@ public class PlayerMono : MonoBehaviour
 
     void Update()
     {
-        PreviewSelectedItem();
+        PreviewSelectedBlock();
+        PlaceBlock();
+
+        PreviewSelectedBuilding();
         MakePreviewBuildingReal();
         RotatePreviewBuilding();
     }
 
-    private void PreviewSelectedItem()
+    private void PreviewSelectedBuilding()
     {
         if (SelectedItem == null)
         {
             if (previewBuilding != null)
             {
-                ClearPreviewBuilding();
+                ClearPreviews();
             }
 
             return;
@@ -68,7 +81,7 @@ public class PlayerMono : MonoBehaviour
 
         if (previewBuilding != null && SelectedItem?.Builds != previewBuilding?.Type)
         {
-            ClearPreviewBuilding();
+            ClearPreviews();
         }
 
         if (SelectedItem?.Builds != null)
@@ -83,7 +96,7 @@ public class PlayerMono : MonoBehaviour
 
             if (previewBuilding != null)
             {
-                ClearPreviewBuilding();
+                ClearPreviews();
             }
 
             if (buildGrid == null)
@@ -106,6 +119,72 @@ public class PlayerMono : MonoBehaviour
                 previewBuilding = actualBuilding;
                 UpdateArrows();
             }
+        }
+    }
+
+    private void PreviewSelectedBlock()
+    {
+        if (SelectedItem == null)
+        {
+            if (blockState.pos != null)
+                ClearPreviews();
+
+            return;
+        }
+
+        if (SelectedItem.Type != blockState.type)
+            ClearPreviews();
+
+        if (SelectedItem?.Places != null)
+        {
+            RaycastHelper.PointWithSide? hex = RaycastHelper.GetTriUnderCursor();
+            if (hex == null ||
+                (blockState.pos == hex.Point && blockState.side == hex.hexSide) ||
+                !WorldMono.Instance.World.Terrain.IsInBounds(hex.Point))
+            {
+                return;
+            }
+
+            if (buildGrid == null)
+            {
+                buildGrid = new GameObject("BuildGrid").AddComponent<BuildGrid>();
+            }
+            else
+            {
+                buildGrid.gameObject.SetActive(true);
+            }
+
+            buildGrid.SetPos(hex.Point);
+
+            if (blockState.block == null)
+            {
+                blockState.block = HexPool.GetTri(SelectedItem.Places.SubType, null);
+            }
+
+            blockState.pos = hex.Point;
+            blockState.side = HexSide.NorthEast;
+            blockState.type = SelectedItem.Type;
+            blockState.block.transform.DOMove(WorldConversions.HexToUnityPosition(hex.Point), 0.1f);
+            int rotation = (int)hex.hexSide * 60;
+            blockState.block.transform.DORotate(new Vector3(0, rotation, 0), .1f);
+        }
+    }
+
+    private void PlaceBlock()
+    {
+        if (blockState.pos == null || blockState.side == null)
+        {
+            return;
+        }
+
+        if (Input.GetMouseButtonDown(0))
+        {
+            Actual.PlaceBlockFromItem(SelectedInventoryIndex, blockState.pos.Value, blockState.side.Value);
+            blockState.pos = null;
+            blockState.side = null;
+            blockState.type = null;
+            buildGrid.gameObject.SetActive(false);
+            ClearPreviews();
         }
     }
 
@@ -147,15 +226,24 @@ public class PlayerMono : MonoBehaviour
         }
     }
 
-    private void ClearPreviewBuilding()
+    private void ClearPreviews()
     {
         if (previewBuilding != null)
         {
             WorldMono.Instance.World.RemoveBuilding(previewBuilding.Id);
         }
-        buildGrid.gameObject.SetActive(false);
+
+        if (blockState.block != null)
+        {
+            Destroy(blockState.block);
+        }
+
+        buildGrid?.gameObject.SetActive(false);
         ClearArrows();
         previewBuilding = null;
+        blockState.pos = null;
+        blockState.side = null;
+        blockState.type = null;
     }
 
     private void RotatePreviewBuilding()

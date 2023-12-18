@@ -4,7 +4,7 @@ using UnityEngine;
 public static class HexPool
 {
     private static Dictionary<TriangleSubType, Queue<GameObject>> Hexes = new();
-    public static GameObject GetTri(TriangleSubType tri, Transform parent)
+    public static GameObject GetTri(TriangleSubType tri, Transform? parent)
     {
         if (!Hexes.ContainsKey(tri))
         {
