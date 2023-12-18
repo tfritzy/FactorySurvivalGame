@@ -190,6 +190,7 @@ public class WorldMono : MonoBehaviour
         {
             var triGO = GameObject.Instantiate(Models.GetTriangleMesh(triangle.SubType), transform);
             triGO.transform.position = WorldConversions.HexToUnityPosition(update.GridPosition);
+            triGO.transform.rotation = Quaternion.Euler(0, 60 * (int)update.Side, 0);
         }
     }
 

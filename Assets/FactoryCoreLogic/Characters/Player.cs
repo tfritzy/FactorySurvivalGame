@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using UnityEngine;
 
 namespace Core
 {
@@ -77,18 +78,22 @@ namespace Core
 
         public void PlaceBlockFromItem(int itemIndex, Point3Int location, HexSide subIndex)
         {
+            Debug.Log("Checking item");
             Item? item = this.ActiveItems.GetItemAt(itemIndex);
             if (item == null)
                 return;
 
+            Debug.Log("Checking existing tri");
             Triangle? existingTri = Context.World.Terrain.GetTri(location, subIndex);
             if (existingTri != null)
                 return;
 
+            Debug.Log("Checking item places");
             Triangle? toPlace = item.Places;
             if (toPlace == null)
                 return;
 
+            Debug.Log("Placing block");
             this.ActiveItems.DecrementCountOf(itemIndex, 1);
             Context.World.Terrain.SetTriangle(
                 location,

@@ -138,6 +138,11 @@ public class PlayerMono : MonoBehaviour
         if (SelectedItem?.Places != null)
         {
             RaycastHelper.PointWithSide? hex = RaycastHelper.GetTriUnderCursor();
+            if (hex != null)
+            {
+                hex.Point.z += 1; // place on top.
+            }
+
             if (hex == null ||
                 (blockState.pos == hex.Point && blockState.side == hex.hexSide) ||
                 !WorldMono.Instance.World.Terrain.IsInBounds(hex.Point))
@@ -162,7 +167,8 @@ public class PlayerMono : MonoBehaviour
             }
 
             blockState.pos = hex.Point;
-            blockState.side = HexSide.NorthEast;
+            blockState.side = hex.hexSide;
+            Debug.Log("Updating to side " + hex.hexSide);
             blockState.type = SelectedItem.Type;
             blockState.block.transform.DOMove(WorldConversions.HexToUnityPosition(hex.Point), 0.1f);
             int rotation = (int)hex.hexSide * 60;
@@ -179,6 +185,7 @@ public class PlayerMono : MonoBehaviour
 
         if (Input.GetMouseButtonDown(0))
         {
+            Debug.Log("Placing block on side " + blockState.side);
             Actual.PlaceBlockFromItem(SelectedInventoryIndex, blockState.pos.Value, blockState.side.Value);
             blockState.pos = null;
             blockState.side = null;

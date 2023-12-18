@@ -37,7 +37,6 @@ public static class RaycastHelper
         if (hit)
         {
             cachedPointWithSide.Point = WorldConversions.UnityPositionToHex(hitInfo.point);
-            Debug.Log(hitInfo.point.y);
             cachedPointWithSide.hexSide = GridHelpers.pixel_hex_side(new Point2Float(hitInfo.point.x, hitInfo.point.z));
             return cachedPointWithSide;
         }
