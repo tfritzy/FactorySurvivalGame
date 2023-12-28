@@ -21,17 +21,12 @@ public class CraftingMenu : Modal
         modal.style.minHeight = 350;
 
         var items = new List<Item> {
-            new IronOre(),
-            new Stone(),
-            new ConveyorItem(),
-            new Coal(),
-            new ToolShaft(),
-            new IronBar(),
-            new IronPickaxe(),
-            new Log(),
-            new DepotItem(),
-            new MineshaftItem(),
-            new Arrowhead(),
+            new ConveyorItem(1),
+            new ToolShaft(1),
+            new IronPickaxe(1),
+            new DepotItem(1),
+            new MineshaftItem(1),
+            new Arrowhead(1),
         };
         var search = new ItemSearch(
             items,

@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Core;
+using HighlightPlus;
 using UnityEngine;
 
 public class CharacterMono : EntityMono

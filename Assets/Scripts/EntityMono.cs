@@ -12,6 +12,7 @@ public abstract class EntityMono : MonoBehaviour
     {
         this.Actual = entity;
         HighlightEffect = gameObject.AddComponent<HighlightEffect>();
+        HighlightEffect.ProfileLoad(HighlightProfiles.GetHighlightProfile(HighlightProfiles.Profile.Highlighted));
     }
 
     void Update()

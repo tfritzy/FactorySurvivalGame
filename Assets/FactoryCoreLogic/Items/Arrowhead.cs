@@ -5,17 +5,17 @@ namespace Core
     public class Arrowhead : Item
     {
         public override ItemType Type => ItemType.Arrowhead;
-        public override int MaxStack => 16;
-        public override Dictionary<ItemType, int> Recipe => recipe;
+        public override uint MaxStack => 16;
+        public override Dictionary<ItemType, uint> Recipe => recipe;
         private const string name = "Arrowhead";
         public override string Name => name;
+        public override string? ChemicalFormula => throw new System.NotImplementedException();
 
-        public Arrowhead(int quantity) : base(quantity) { }
-        public Arrowhead() : base() { }
+        public Arrowhead(uint quantity) : base(quantity) { }
 
-        private static Dictionary<ItemType, int> recipe = new Dictionary<ItemType, int>()
+        private static Dictionary<ItemType, uint> recipe = new()
         {
-            { ItemType.Stone, 1 },
+            { ItemType.Limestone, 1 },
         };
     }
 }

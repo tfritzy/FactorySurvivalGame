@@ -13,7 +13,13 @@ public class ItemPool
         }
         if (Items[type].Count == 0)
         {
-            var newObj = GameObject.Instantiate(Models.GetItemModel(type), parent);
+            var model = Models.GetItemModel(type);
+            if (model == null)
+            {
+                throw new System.Exception("Missing prefab for item: " + type);
+            }
+
+            var newObj = GameObject.Instantiate(model, parent);
             newObj.AddComponent<ItemMono>();
             newObj.name = type.ToString();
             Items[type].Enqueue(newObj);

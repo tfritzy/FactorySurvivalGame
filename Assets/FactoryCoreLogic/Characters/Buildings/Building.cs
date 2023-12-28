@@ -20,6 +20,10 @@ namespace Core
                 gridPosition = value;
             }
         }
+        public ItemPort? ItemPort => GetComponent<ItemPort>();
+        public Smelt? Smelt => GetComponent<Smelt>();
+        public OreInventory? OreInventory => GetComponent<OreInventory>();
+        public FuelInventory? FuelInventory => GetComponent<FuelInventory>();
 
         private Point3Int gridPosition;
 

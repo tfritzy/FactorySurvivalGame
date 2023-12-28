@@ -11,7 +11,7 @@ namespace Core
         Attack,
         TowerTargeting,
         Mine,
-        TransferToConveyor,
-        TransferToInventory
+        ItemPort,
+        Smelt
     }
 }

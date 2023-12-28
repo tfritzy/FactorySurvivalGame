@@ -6,7 +6,7 @@ public class UiItem : VisualElement
 {
     private Label quantityLabel;
     public const int SIZE = 55;
-    public Item Item { get; private set; }
+    public Item? Item { get; private set; }
 
     public UiItem(bool withLabel = false)
     {
@@ -34,7 +34,7 @@ public class UiItem : VisualElement
         quantityLabel.SetAllMargin(0);
     }
 
-    private int renderedQuantity = -1;
+    private uint? renderedQuantity = null;
     private ItemType? renderedItemType = null;
     public void Update(Item item)
     {
@@ -43,7 +43,7 @@ public class UiItem : VisualElement
 
         Item = item;
         renderedItemType = item?.Type;
-        renderedQuantity = item?.Quantity ?? -1;
+        renderedQuantity = item?.Quantity;
         if (item == null)
         {
             this.style.backgroundImage = null;

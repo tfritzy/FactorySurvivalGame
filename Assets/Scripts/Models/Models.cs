@@ -45,4 +45,18 @@ public static class Models
 
         return _itemModels[type];
     }
+
+    private static Dictionary<VegetationType, GameObject[]> _vegetationPrefabs = new();
+    public static GameObject GetVegetationPrefab(VegetationType type)
+    {
+        if (_vegetationPrefabs == null)
+            _vegetationPrefabs = new Dictionary<VegetationType, GameObject[]>();
+
+        if (!_vegetationPrefabs.ContainsKey(type))
+        {
+            _vegetationPrefabs[type] = Resources.LoadAll<GameObject>("Prefabs/Vegetation/" + type.ToString());
+        }
+
+        return _vegetationPrefabs[type][Random.Range(0, _vegetationPrefabs[type].Length)];
+    }
 }

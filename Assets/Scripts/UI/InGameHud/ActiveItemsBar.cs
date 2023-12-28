@@ -58,13 +58,15 @@ public class ActiveItemsBar : ActiveElement
     {
         Inventory inventory = PlayerMono.Instance.Actual.GetComponent<ActiveItems>();
 
-        inventory.AddItem(new StoneBrick(32), 1);
-        inventory.AddItem(new StoneDoubleBrick(32), 2);
+        inventory.AddItem(new LimestoneBrick(32), 1);
+        inventory.AddItem(new LimestoneDoubleBrick(32), 2);
+        inventory.AddItem(new SorterItem(8), 3);
+        inventory.AddItem(new ClayFurnaceItem(32), 4);
 
-        inventory.AddItem(new ConveyorItem(16), 4);
-        inventory.AddItem(new MineshaftItem(), 5);
-        inventory.AddItem(new DepotItem(), 6);
-        inventory.AddItem(new Stone(7), 10);
+        inventory.AddItem(new ConveyorItem(16), 5);
+        inventory.AddItem(new MineshaftItem(1), 6);
+        inventory.AddItem(new DepotItem(1), 7);
+        inventory.AddItem(new Limestone(7), 10);
 
         this.inventoryGrid = new InventoryGrid(new InventoryGrid.Props
         {

@@ -12,7 +12,7 @@ public class BuildGrid : MonoBehaviour
     private static readonly Color DistanceTwo = ColorExtensions.FromHex("#000000AA");
     private static readonly Color UnbuildableColor = ColorExtensions.FromHex("#000000AA");
 
-    private Transform gridParent;
+    private Transform? gridParent;
     private List<GameObject> RentedFilled = new();
     private List<GameObject> RentedEmpty = new();
     private static List<GameObject> FilledPool = new();
@@ -57,13 +57,13 @@ public class BuildGrid : MonoBehaviour
     private void Disable()
     {
         previewBlock?.SetActive(false);
-        gridParent.gameObject.SetActive(false);
+        gridParent?.gameObject.SetActive(false);
     }
 
     private void Enable()
     {
         previewBlock?.SetActive(true);
-        gridParent.gameObject.SetActive(true);
+        gridParent?.gameObject.SetActive(true);
     }
 
     public void SetPos(Point3Int pos)

@@ -26,14 +26,6 @@ namespace Core
             }
         }
 
-        public void UpdateOwnerOfCells()
-        {
-            foreach (var cell in Components.Values)
-            {
-                cell.Owner = this;
-            }
-        }
-
         public static Character Create(
             CharacterType character,
             Context context,
@@ -61,6 +53,10 @@ namespace Core
                     return new Mineshaft(context, alliance);
                 case CharacterType.Depot:
                     return new Depot(context, alliance);
+                case CharacterType.Sorter:
+                    return new Sorter(context, alliance);
+                case CharacterType.ClayFurnace:
+                    return new ClayFurnace(context, alliance);
                 default:
                     throw new ArgumentException("Invalid character type " + character);
             }

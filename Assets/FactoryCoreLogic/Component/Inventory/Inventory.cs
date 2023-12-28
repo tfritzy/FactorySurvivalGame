@@ -35,12 +35,12 @@ namespace Core
             return CanAddItem(item.Type, item.Quantity);
         }
 
-        public bool CanAddItem(ItemType itemType, int quantity)
+        public virtual bool CanAddItem(ItemType itemType, uint quantity)
         {
             if (Disabled)
                 return false;
 
-            int remainingUnplaced = quantity;
+            uint remainingUnplaced = quantity;
             for (int i = 0; i < items.Length; i++)
             {
                 Item? currentSlot = items[i];
@@ -50,8 +50,8 @@ namespace Core
 
                 if (currentSlot.Type == itemType && currentSlot.Quantity < currentSlot.MaxStack)
                 {
-                    int maxAddable = currentSlot.MaxStack - currentSlot.Quantity;
-                    int numToAdd = Math.Min(maxAddable, remainingUnplaced);
+                    uint maxAddable = currentSlot.MaxStack - currentSlot.Quantity;
+                    uint numToAdd = Math.Min(maxAddable, remainingUnplaced);
 
                     remainingUnplaced -= numToAdd;
 
@@ -72,7 +72,7 @@ namespace Core
         /// <param name="item">The item to add.</param>
         /// <param name="index">THe index the item will occupy</param>
         /// <returns>true if item was fully added, false otherwise</returns>
-        public bool AddItem(Item item, int index)
+        public virtual bool AddItem(Item item, int index)
         {
             if (Disabled)
                 return false;
@@ -93,8 +93,8 @@ namespace Core
             if (currentSlot.Type == item.Type && currentSlot.Quantity < currentSlot.MaxStack)
             {
                 Version++;
-                int maxAddable = currentSlot.MaxStack - currentSlot.Quantity;
-                int numToAdd = Math.Min(maxAddable, item.Quantity);
+                uint maxAddable = currentSlot.MaxStack - currentSlot.Quantity;
+                uint numToAdd = Math.Min(maxAddable, item.Quantity);
 
                 currentSlot.AddToStack(numToAdd);
                 item.RemoveFromStack(numToAdd);
@@ -113,7 +113,7 @@ namespace Core
         /// </summary>
         /// <param name="item">The item to add to the inventory</param>
         /// <returns>true if item was fully added, false otherwise</returns>
-        public bool AddItem(Item item)
+        public virtual bool AddItem(Item item)
         {
             if (Disabled)
                 return false;
@@ -127,8 +127,8 @@ namespace Core
 
                 if (currentSlot.Type == item.Type && currentSlot.Quantity < currentSlot.MaxStack)
                 {
-                    int maxAddable = currentSlot.MaxStack - currentSlot.Quantity;
-                    int numToAdd = Math.Min(maxAddable, item.Quantity);
+                    uint maxAddable = currentSlot.MaxStack - currentSlot.Quantity;
+                    uint numToAdd = Math.Min(maxAddable, item.Quantity);
 
                     currentSlot.AddToStack(numToAdd);
                     item.RemoveFromStack(numToAdd);
@@ -180,13 +180,24 @@ namespace Core
             return null;
         }
 
-        public int GetItemCount(ItemType itemType)
+        public Item? FindWhere(Func<Item?, bool> predicate)
         {
-            int count = 0;
+            for (int i = 0; i < items.Length; i++)
+            {
+                if (predicate(items[i]))
+                    return items[i];
+            }
+
+            return null;
+        }
+
+        public uint GetItemCount(ItemType itemType)
+        {
+            uint count = 0;
             for (int i = 0; i < items.Length; i++)
             {
                 if (items[i]?.Type == itemType)
-                    count += items[i]?.Quantity ?? 0;
+                    count += items[i]?.Quantity ?? 0u;
             }
 
             return count;
@@ -204,7 +215,7 @@ namespace Core
             return count;
         }
 
-        public void DecrementCountOf(int index, int quantity)
+        public void DecrementCountOf(int index, uint quantity)
         {
             if (Disabled)
                 return;
@@ -250,7 +261,7 @@ namespace Core
             return null;
         }
 
-        public void RemoveCount(ItemType itemType, int quantity)
+        public void RemoveCount(ItemType itemType, uint quantity)
         {
             if (Disabled)
                 return;
@@ -258,17 +269,31 @@ namespace Core
             if (GetItemCount(itemType) < quantity)
                 throw new InvalidOperationException("Cannot remove more items than are in the inventory.");
 
-            int remainingToRemove = quantity;
+            uint remainingToRemove = quantity;
             for (int i = 0; i < items.Length; i++)
             {
                 if (items[i]?.Type == itemType)
                 {
-                    int numToRemove = Math.Min(items[i]?.Quantity ?? 0, remainingToRemove);
+                    uint numToRemove = Math.Min(items[i]?.Quantity ?? 0, remainingToRemove);
                     DecrementCountOf(i, numToRemove);
                     remainingToRemove -= numToRemove;
 
                     if (remainingToRemove <= 0)
                         return;
+                }
+            }
+        }
+
+        public void RemoveAll(ItemType itemType)
+        {
+            if (Disabled)
+                return;
+
+            for (int i = 0; i < items.Length; i++)
+            {
+                if (items[i]?.Type == itemType)
+                {
+                    items[i] = null;
                 }
             }
         }
@@ -354,7 +379,7 @@ namespace Core
                 }
             }
 
-            int totalQuantity = 0;
+            uint totalQuantity = 0;
             for (int i = 0; i < indexes.Count; i++)
             {
                 Item? currentItem = GetItemAt(indexes[i]);
@@ -362,9 +387,9 @@ namespace Core
                     totalQuantity += currentItem.Quantity;
             }
 
-            int numTargets = indexes.Count;
-            int quantityPerTarget = totalQuantity / numTargets;
-            int remainder = totalQuantity % numTargets;
+            uint numTargets = (uint)indexes.Count;
+            uint quantityPerTarget = totalQuantity / numTargets;
+            uint remainder = totalQuantity % numTargets;
 
             for (int i = 0; i < numTargets; i++)
             {
@@ -375,7 +400,7 @@ namespace Core
                     Item toAdd = Item.Create(item.Type);
                     toAdd.SetQuantity(0);
 
-                    int quantity = quantityPerTarget;
+                    uint quantity = quantityPerTarget;
                     if (i < remainder)
                         quantity++;
                     toAdd.SetQuantity(quantity);
@@ -384,7 +409,7 @@ namespace Core
                 }
                 else
                 {
-                    int quantityToAdd = quantityPerTarget - currentItem.Quantity;
+                    uint quantityToAdd = quantityPerTarget - currentItem.Quantity;
                     if (i < remainder)
                         quantityToAdd++;
 

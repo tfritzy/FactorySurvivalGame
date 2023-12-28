@@ -130,11 +130,11 @@ MonoBehaviour:
   seeThroughOccluderCheckIndividualObjects: 0
   seeThroughDepthOffset: 0
   seeThroughMaxDepth: 0
-  seeThroughIntensity: 4.25
+  seeThroughIntensity: 0.63
   seeThroughTintAlpha: 0.5
-  seeThroughTintColor: {r: 1, g: 0, b: 0, a: 0.2}
-  seeThroughNoise: 1
-  seeThroughBorder: 0
+  seeThroughTintColor: {r: 1, g: 1, b: 1, a: 1}
+  seeThroughNoise: 0
+  seeThroughBorder: 0.156
   seeThroughBorderColor: {r: 0, g: 0, b: 0, a: 1}
   seeThroughBorderWidth: 0.45
   seeThroughBorderOnly: 0

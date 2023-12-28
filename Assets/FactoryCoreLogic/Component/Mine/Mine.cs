@@ -1,6 +1,6 @@
 using System;
 using System.Collections.Generic;
-using NoiseTest;
+using Noise;
 
 namespace Core
 {
@@ -29,7 +29,7 @@ namespace Core
             {
                 if (Owner?.Inventory != null && Owner.Inventory.CanAddItem(UpcomingItemType, 1))
                 {
-                    Item item = Item.Create(UpcomingItemType);
+                    Item item = Item.Create(UpcomingItemType, 30_000_000u);
                     Owner.Inventory.AddItem(item);
 
                     collectionTimeRemaining = CollectionTime;
@@ -57,11 +57,14 @@ namespace Core
                 }
             }
 
-            return ItemType.Stone;
+            return ItemType.Limestone;
         }
 
         private const float MaxOrePercent = .5f;
-        private static readonly List<ItemType> OreTypes = new() { ItemType.Coal, ItemType.IronOre };
+        private static readonly List<ItemType> OreTypes = new() {
+            ItemType.AnthraciteCoal,
+            ItemType.Chalcopyrite,
+        };
         public static Dictionary<ItemType, float> GetResourceWeights(int seed, Point2Int location)
         {
             Dictionary<ItemType, float> weights = new();
@@ -92,7 +95,7 @@ namespace Core
                 weights.Add(OreTypes[i], percents[i]);
             }
 
-            weights.Add(ItemType.Stone, 1 - updatedSum);
+            weights.Add(ItemType.Limestone, 1 - updatedSum);
 
             return weights;
         }

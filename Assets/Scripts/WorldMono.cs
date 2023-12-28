@@ -36,6 +36,7 @@ public class WorldMono : MonoBehaviour
         Context.SetWorld(new World(
             new Core.Terrain(generator.GenerateRollingHills(Context),
             Context)));
+        SpawnVegetation();
     }
 
     void Update()
@@ -149,6 +150,30 @@ public class WorldMono : MonoBehaviour
         foreach (Point2Int point in toRemove)
         {
             ShownHexesObjects.Remove(point);
+        }
+    }
+
+    private void SpawnVegetation()
+    {
+        Transform vegetationParent = new GameObject("Vegetation").transform;
+        vegetationParent.transform.SetParent(transform);
+
+        for (int x = 0; x < Context.World.MaxX; x++)
+        {
+            for (int y = 0; y < Context.World.MaxY; y++)
+            {
+                VegetationType? type = Context.World.Terrain.Vegetation[x, y];
+                if (type != null)
+                {
+                    GameObject vegetation =
+                        Instantiate(VegetationPool.GetVegetation(type.Value, vegetationParent));
+                    Point3Int topPoint = Context.World.Terrain.GetTopHex(new Point2Int(x, y));
+                    vegetation.transform.position = WorldConversions.HexToUnityPosition(topPoint);
+                    vegetation.transform.SetParent(transform);
+                    vegetation.transform.rotation = Quaternion.Euler(0, Random.Range(0, 360), 0);
+                    vegetation.transform.localScale = vegetation.transform.localScale * Random.Range(.8f, 1.2f);
+                }
+            }
         }
     }
 

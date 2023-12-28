@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Core;
@@ -10,8 +11,8 @@ public class ConveyorMono : BuildingMono
 
     private Building owner => (Building)this.Actual;
     private ConveyorComponent conveyor => owner.GetComponent<ConveyorComponent>();
-    private Building next => (Building)conveyor.Next?.Owner;
-    private Building prev => (Building)conveyor.Prev?.Owner;
+    private Building? next => (Building)conveyor.Next;
+    private Building? prev => (Building)conveyor.Prev;
     private LinkedList<ItemMono> itemBodies = new LinkedList<ItemMono>();
     private List<Vector3> path = new List<Vector3>();
     private List<float> pathProgress = new List<float>();
@@ -81,6 +82,7 @@ public class ConveyorMono : BuildingMono
             index++;
         }
         index -= 1;
+        index = Math.Max(1, index);
 
         float progressAlongSegment = item.ProgressMeters - pathProgress[index - 1];
         float segmentLength = pathProgress[index] - pathProgress[index - 1];
@@ -189,7 +191,7 @@ public class ConveyorMono : BuildingMono
     private ItemMono BuildItem(Item item)
     {
         var itemBody = ItemPool.GetItem(item.Type, this.transform);
-        itemBody.transform.rotation = Quaternion.Euler(0, item.Id % 360, 0);
+        // itemBody.transform.rotation = Quaternion.Euler(0, item.Id % 360, 0);
         var mono = itemBody.GetComponent<ItemMono>();
         mono.SetItem(item);
         itemBody.transform.position = this.transform.position;

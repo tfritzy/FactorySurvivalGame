@@ -33,11 +33,6 @@ public class CharacterInspectionManager : MonoBehaviour
             highlightedObject = c;
             if (c != null)
             {
-                var desiredProfile = HighlightProfiles.GetHighlightProfile(HighlightProfiles.Profile.Highlighted);
-                if (c.HighlightEffect != desiredProfile)
-                    c.HighlightEffect.ProfileLoad(desiredProfile);
-
-                c.HighlightEffect.Refresh();
                 c.HighlightEffect.SetHighlighted(true);
             }
         }
