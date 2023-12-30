@@ -32,9 +32,9 @@ public class WorldMono : MonoBehaviour
     void Awake()
     {
         Context = new Context();
-        TerrainGenerator generator = new TerrainGenerator(100, 100, 25);
+        TerrainGenerator generator = new TerrainGenerator(100, 100, 10);
         Context.SetWorld(new World(
-            new Core.Terrain(generator.GenerateRollingHills(Context),
+            new Core.Terrain(generator.GenerateFlatWorld(Context),
             Context)));
         SpawnVegetation();
     }

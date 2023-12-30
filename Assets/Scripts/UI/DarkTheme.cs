@@ -2,28 +2,23 @@ using UnityEngine;
 
 public class DarkTheme : ColorTheme
 {
-    private static Color primaryText = Color.black;
+    private static Color primaryText = ColorExtensions.FromHex("#e6eeed");
     public override Color PrimaryText => primaryText;
-    private static Color itemSlotTextColor = Color.black;
+    private static Color itemSlotTextColor = ColorExtensions.FromHex("#e6eeed");
     public override Color ItemSlotTextColor => itemSlotTextColor;
 
-    private static Color panelBackgroundColor = Color.white;
+    private static Color panelBackgroundColor = ColorExtensions.FromHex("#2e2e43");
     public override Color PanelBackgroundColor => panelBackgroundColor;
-    private static Color panelForegroundColor = new Color(0.95f, 0.95f, 0.95f);
+    private static Color panelForegroundColor = ColorExtensions.FromHex("#4a4b5b");
     public override Color PanelForegroundColor => panelForegroundColor;
 
-    private static Color panelOutline = Color.black;
+    private static Color panelOutline = ColorExtensions.FromHex("#2e2e43");
     public override Color PanelOutline => panelOutline;
-    private static Color gridDivider = new Color(.90f, .90f, .90f);
+    private static Color gridDivider = ColorExtensions.FromHex("#707b89");
     public override Color GridDivider => gridDivider;
 
-    private static Color occupiedInventorySlot = new Color(.95f, .95f, .95f);
+    private static Color occupiedInventorySlot = ColorExtensions.FromHex("#2e2e43");
     public override Color OccupiedInventorySlot => occupiedInventorySlot;
-    private static Color selectedInventorySlot = ColorExtensions.FromHex("#b3b3ff");
+    private static Color selectedInventorySlot = ColorExtensions.FromHex("#9d4343");
     public override Color SelectedInventorySlot => selectedInventorySlot;
-
-    private static Color panelGradientStart = Color.white;
-    public override Color PanelGradientStart => panelGradientStart;
-    private static Color panelGradientEnd = ColorExtensions.FromHex("#e6e6e6");
-    public override Color PanelGradientEnd => panelGradientEnd;
 }
