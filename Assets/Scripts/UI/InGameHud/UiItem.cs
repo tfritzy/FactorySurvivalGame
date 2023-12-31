@@ -23,12 +23,14 @@ public class UiItem : VisualElement
         quantityLabel = new Label();
         Add(quantityLabel);
         quantityLabel.style.position = Position.Absolute;
-        quantityLabel.style.right = -11;
-        quantityLabel.style.bottom = -11;
+        quantityLabel.style.right = -5;
+        quantityLabel.style.bottom = -9;
         quantityLabel.pickingMode = PickingMode.Ignore;
-        quantityLabel.style.fontSize = 20;
+        quantityLabel.style.fontSize = 14;
         quantityLabel.style.color = UIManager.ColorTheme.ItemSlotTextColor;
-        quantityLabel.style.unityFontStyleAndWeight = FontStyle.Normal;
+        quantityLabel.style.unityFontStyleAndWeight = FontStyle.Bold;
+        quantityLabel.style.unityTextOutlineColor = UIManager.ColorTheme.PanelBackgroundColor;
+        quantityLabel.style.unityTextOutlineWidth = 1;
         quantityLabel.SetAllMargin(0);
     }
 
@@ -52,7 +54,17 @@ public class UiItem : VisualElement
             this.style.backgroundImage = new StyleBackground(Icons.GetIcon(item.Type));
 
             if (item.Quantity > 1)
-                this.quantityLabel.text = item.Quantity.ToString();
+            {
+                if (item.Units == Item.UnitType.Unit)
+                {
+                    this.quantityLabel.text = item.Quantity.ToString();
+                }
+                else
+                {
+                    this.quantityLabel.text = (item.Quantity / 1_000_000f).ToString("0.#") + "kg";
+                }
+
+            }
             else
                 this.quantityLabel.text = "";
         }

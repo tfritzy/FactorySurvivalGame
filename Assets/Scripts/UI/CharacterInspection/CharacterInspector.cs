@@ -11,9 +11,12 @@ public class CharacterInspector : Modal
     private readonly Label nameLabel;
     private int seenConveyorVersion = -1;
     private Character character;
-    private InventoryGrid inventoryGrid;
+    private InventoryGrid? inventoryGrid;
+    private InventoryGrid? fuelInventoryGrid;
+    private InventoryGrid? oreInventoryGrid;
+    private SmeltSection? smeltSection;
 
-    private enum Section { Inventory, Conveyor }
+    private enum Section { Inventory, Conveyor, FuelAndOre, Smelt }
 
     private Dictionary<Section, VisualElement> sections = new();
 
@@ -45,6 +48,18 @@ public class CharacterInspector : Modal
             section.Clear();
         }
 
+        if (character is Building building
+            && building.OreInventory != null
+            && building.OreInventory != null)
+        {
+            SetupOreAndFuel(building);
+        }
+
+        if (character is Building smeltyBuilding && smeltyBuilding.Smelt != null)
+        {
+            SetupSmelting(smeltyBuilding);
+        }
+
         if (character.Inventory != null)
         {
             SetupInventory(character);
@@ -66,7 +81,7 @@ public class CharacterInspector : Modal
             {
                 var label = new Label("Inventory");
                 label.style.color = UIManager.ColorTheme.PrimaryText;
-                label.style.fontSize = 20;
+                label.style.fontSize = 14;
                 label.pickingMode = PickingMode.Ignore;
                 sections[Section.Inventory].Add(label);
             }
@@ -83,6 +98,67 @@ public class CharacterInspector : Modal
         }
     }
 
+    private void SetupOreAndFuel(Building building)
+    {
+        sections[Section.FuelAndOre]?.Clear();
+
+        if (building.OreInventory != null && building.FuelInventory != null)
+        {
+            VisualElement bothInventories = new VisualElement();
+            bothInventories.style.flexDirection = FlexDirection.Row;
+
+            VisualElement fuelInventory = new VisualElement();
+            var fuelLabel = new Label("Fuel");
+            fuelLabel.style.color = UIManager.ColorTheme.PrimaryText;
+            fuelLabel.style.fontSize = 14;
+            fuelLabel.pickingMode = PickingMode.Ignore;
+            fuelInventory.Add(fuelLabel);
+
+            fuelInventoryGrid = new InventoryGrid(
+                 new InventoryGrid.Props
+                 {
+                     inventory = building.FuelInventory,
+                     HideBorder = true,
+                 }
+             );
+            fuelInventory.Add(fuelInventoryGrid);
+            fuelInventory.style.marginRight = 10;
+            bothInventories.Add(fuelInventory);
+
+            VisualElement oreInventory = new VisualElement();
+            var oreLabel = new Label("Ore");
+            oreLabel.style.color = UIManager.ColorTheme.PrimaryText;
+            oreLabel.style.fontSize = 14;
+            oreLabel.pickingMode = PickingMode.Ignore;
+            oreInventory.Add(oreLabel);
+
+            oreInventoryGrid = new InventoryGrid(
+                 new InventoryGrid.Props
+                 {
+                     inventory = building.OreInventory,
+                     HideBorder = true,
+                 }
+             );
+            oreInventory.Add(oreInventoryGrid);
+            bothInventories.Add(oreInventory);
+
+            sections[Section.FuelAndOre].Add(bothInventories);
+            sections[Section.FuelAndOre].style.marginBottom = 10f;
+        }
+    }
+
+    private void SetupSmelting(Building building)
+    {
+        sections[Section.Smelt]?.Clear();
+
+        if (building.Smelt != null)
+        {
+            smeltSection = new SmeltSection(building);
+            smeltSection.style.marginBottom = 10;
+            sections[Section.Smelt].Add(smeltSection);
+        }
+    }
+
     private void SetupConveyor(Character character)
     {
         sections[Section.Conveyor]?.Clear();
@@ -93,7 +169,7 @@ public class CharacterInspector : Modal
             {
                 var label = new Label("Conveyor");
                 label.style.color = UIManager.ColorTheme.PrimaryText;
-                label.style.fontSize = 20;
+                label.style.fontSize = 14;
                 label.pickingMode = PickingMode.Ignore;
                 sections[Section.Conveyor].Add(label);
             }
@@ -138,7 +214,6 @@ public class CharacterInspector : Modal
         container.style.flexDirection = FlexDirection.Row;
         container.style.alignItems = Align.Center;
         container.style.justifyContent = Justify.Center;
-        container.style.backgroundImage = new StyleBackground(UIElements.GetElement(UIElementType.Vignette));
         container.style.minWidth = InventorySlot.Size;
         container.style.minHeight = InventorySlot.Size;
         container.SetAllBorderRadius(5);
@@ -156,7 +231,10 @@ public class CharacterInspector : Modal
             return;
         }
 
+        fuelInventoryGrid?.Update();
+        oreInventoryGrid?.Update();
         inventoryGrid?.Update();
+        smeltSection?.Update();
 
         if (character.Conveyor != null && character.Conveyor?.Version != seenConveyorVersion)
         {

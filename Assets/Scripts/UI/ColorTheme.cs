@@ -14,4 +14,6 @@ public abstract class ColorTheme
     public abstract Color OccupiedInventorySlot { get; }
     public abstract Color SelectedInventorySlot { get; }
     public abstract Color GridDivider { get; }
+
+    public abstract Color MainAccent { get; }
 }

@@ -50,7 +50,7 @@ public abstract class Modal : ActiveElement
 
         var content = new VisualElement();
         modal.Add(content);
-        content.SetAllPadding(10);
+        content.SetAllPadding(20);
         content.style.paddingBottom = 0;
         modal = content;
 

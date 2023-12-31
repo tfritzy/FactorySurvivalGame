@@ -265,7 +265,7 @@ public class ConveyorMono : BuildingMono
 
         for (int i = 0; i < path.Count; i++)
         {
-            path[i] += new Vector3(0f, 0.25f, 0f);
+            path[i] += new Vector3(0f, 0.23f, 0f);
         }
 
         this.pathProgress = new List<float>(path.Count);
