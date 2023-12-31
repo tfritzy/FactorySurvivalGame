@@ -21,7 +21,7 @@ public class ItemSearch : VisualElement
         var textInput = input.Children().First();
         textInput.SetAllBorderRadius(20);
         textInput.SetAllPadding(2);
-        textInput.SetAllBorderColor(Color.black);
+        textInput.SetAllBorderColor(UIManager.ColorTheme.PanelOutline);
         textInput.style.backgroundColor = UIManager.ColorTheme.PanelBackgroundColor;
         textInput.style.paddingLeft = 10;
         var label = textInput.Children().First();

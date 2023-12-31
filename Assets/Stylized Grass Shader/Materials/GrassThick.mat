@@ -26,14 +26,14 @@ Material:
   m_ModifiedSerializedProperties: 0
   m_ValidKeywords:
   - _ADVANCED_LIGHTING
-  - _ENVIRONMENTREFLECTIONS_OFF
   - _NORMALMAP
   - _SPECULARHIGHLIGHTS_OFF
-  m_InvalidKeywords: []
+  m_InvalidKeywords:
+  - _ENVIRONMENTREFLECTIONS_ON
   m_LightmapFlags: 4
   m_EnableInstancingVariants: 1
   m_DoubleSidedGI: 0
-  m_CustomRenderQueue: -1
+  m_CustomRenderQueue: 2450
   stringTagMap: {}
   disabledShaderPasses: []
   m_LockedProperties: 
@@ -108,7 +108,7 @@ Material:
     - _DisableBending: 0
     - _DisableDecals: 0
     - _DstBlend: 0
-    - _EnvironmentReflections: 0
+    - _EnvironmentReflections: 1
     - _FadeAngleThreshold: 15
     - _FadingOn: 0
     - _GlossMapScale: 0
@@ -121,7 +121,7 @@ Material:
     - _NormalFlattening: 1
     - _NormalSpherify: 0
     - _NormalSpherifyMask: 0
-    - _OcclusionStrength: 0.352
+    - _OcclusionStrength: 0.152
     - _PerspectiveCorrection: 1
     - _QueueOffset: 0
     - _ReceiveShadows: 1
@@ -141,12 +141,12 @@ Material:
     - _VertexColorBendingChannel: 0
     - _VertexColorShadingChannel: 0
     - _VertexColorWindChannel: 0
-    - _VertexDarkening: 0.25
+    - _VertexDarkening: 0
     - _WindAmbientStrength: 0.2
     - _WindGustFreq: 4
-    - _WindGustSpeed: 4
-    - _WindGustStrength: 0.31
-    - _WindGustTint: 0.025
+    - _WindGustSpeed: 2
+    - _WindGustStrength: 0.079
+    - _WindGustTint: 0
     - _WindObjectRand: 1
     - _WindRandStrength: 1
     - _WindSpeed: 3.2
@@ -156,14 +156,14 @@ Material:
     - _WorkflowMode: 1
     - _ZWrite: 1
     m_Colors:
-    - _BaseColor: {r: 0.20392157, g: 0.2509804, b: 0.30980393, a: 1}
+    - _BaseColor: {r: 0.19878481, g: 0.24465823, b: 0.30200002, a: 1}
     - _BendTint: {r: 1, g: 1, b: 1, a: 0}
     - _Color: {r: 0.5, g: 0.5, b: 0.5, a: 1}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
     - _FadeFar: {r: 50, g: 100, b: 0, a: 0}
     - _FadeNear: {r: 0.25, g: 0.5, b: 0, a: 0}
     - _FadeParams: {r: 50, g: 100, b: 0, a: 0}
-    - _HueVariation: {r: 0.19664766, g: 0.37106913, b: 0, a: 0.16470589}
+    - _HueVariation: {r: 0, g: 0.41819417, b: 1, a: 0.12156863}
     - _LODDebugColor: {r: 1, g: 1, b: 1, a: 1}
     - _NormalParams: {r: 0.809, g: 1, b: 0, a: 0}
     - _ScalemapInfluence: {r: 0, g: 1, b: 0, a: 0}
