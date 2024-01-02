@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Cryptography;
 using Core;
 using DG.Tweening;
 using Microsoft.SqlServer.Server;
@@ -55,6 +56,19 @@ public class PlayerMono : MonoBehaviour
 #endif
     }
 
+    void Update()
+    {
+        ObeyCommands();
+    }
+
+    private void ObeyCommands()
+    {
+        if (Actual.Command?.CurrentCommand is MoveCommand moveCommand)
+        {
+            GetComponent<CharacterController>().SimpleMove(moveCommand.TargetPosition.ToVector3());
+        }
+    }
+
     private void UpdateArrows()
     {
         ClearArrows();
@@ -88,6 +102,24 @@ public class PlayerMono : MonoBehaviour
         if (SelectedInventoryIndex < 0)
         {
             SelectedInventoryIndex = SelectedInventory.Size + SelectedInventoryIndex;
+        }
+    }
+
+    public void MoveCommand(Vector3 pos)
+    {
+        if (Input.GetKeyDown(KeyCode.LeftShift) || Input.GetKeyDown(KeyCode.RightShift))
+        {
+            Actual.Command!.AddCommand(
+                new MoveCommand(
+                    pos.ToPoint3Float(),
+                    Actual));
+        }
+        else
+        {
+            Actual.Command!.ReplaceCommands(
+                new MoveCommand(
+                    pos.ToPoint3Float(),
+                    Actual));
         }
     }
 }

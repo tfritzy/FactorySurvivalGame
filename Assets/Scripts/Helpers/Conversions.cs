@@ -22,4 +22,14 @@ public static class WorldConversions
         res.y = -res.y;
         return res;
     }
+
+    public static Vector3 ToVector3(this Point3Float pos)
+    {
+        return new Vector3(pos.x, pos.z, pos.y);
+    }
+
+    public static Point3Float ToPoint3Float(this Vector3 pos)
+    {
+        return new Point3Float(pos.x, pos.y, pos.z);
+    }
 }

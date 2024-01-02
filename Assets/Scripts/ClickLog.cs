@@ -3,17 +3,30 @@ using UnityEngine;
 
 public static class ClickLog
 {
-    private static float mouseButtonUpTime = 0f;
+    private static float lmbUpTime = 0f;
+    private static float rmbUpTime = 0f;
 
-    public static bool GetMouseButtonUp()
+    public static bool GetLmbUp()
     {
         if (!Input.GetMouseButtonUp(0))
             return false;
 
-        if (Time.time == mouseButtonUpTime)
+        if (Time.time == lmbUpTime)
             return false;
 
-        mouseButtonUpTime = Time.time;
+        lmbUpTime = Time.time;
+        return true;
+    }
+
+    public static bool GetRmbUp()
+    {
+        if (!Input.GetMouseButtonUp(1))
+            return false;
+
+        if (Time.time == rmbUpTime)
+            return false;
+
+        rmbUpTime = Time.time;
         return true;
     }
 }

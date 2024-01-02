@@ -4,7 +4,7 @@ using Core;
 using HighlightPlus;
 using UnityEngine;
 
-public class CharacterMono : EntityMono
+public class CharacterMono : EntityMono, Interactable
 {
     private bool previewMode;
     private List<Renderer> renderers = new List<Renderer>();
@@ -58,5 +58,20 @@ public class CharacterMono : EntityMono
         {
             c.enabled = true;
         }
+    }
+
+    public void OnInteract()
+    {
+        Debug.Log("Interraction click on " + name);
+    }
+
+    public HighlightEffect GetHighlightEffect()
+    {
+        return HighlightEffect;
+    }
+
+    public void OnInspect()
+    {
+        UIManager.Instance.OpenCharacterInspector((Character)Actual);
     }
 }

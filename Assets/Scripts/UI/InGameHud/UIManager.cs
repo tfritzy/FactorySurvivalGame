@@ -44,7 +44,7 @@ public class UIManager : MonoBehaviour
         characterInspector?.Update();
     }
 
-    public void OpenCharacterInspector(Character character, System.Action onClose)
+    public void OpenCharacterInspector(Character character)
     {
         characterInspector.SetCharacter(character);
         characterInspector.Show();

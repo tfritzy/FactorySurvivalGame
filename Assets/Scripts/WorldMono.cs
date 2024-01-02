@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Core;
+using HighlightPlus;
 using UnityEngine;
 
 public class WorldMono : MonoBehaviour
@@ -172,6 +173,12 @@ public class WorldMono : MonoBehaviour
                     vegetation.transform.SetParent(transform);
                     vegetation.transform.rotation = Quaternion.Euler(0, Random.Range(0, 360), 0);
                     vegetation.transform.localScale = vegetation.transform.localScale * Random.Range(.8f, 1.2f);
+                    vegetation.layer = Layers.Vegetation;
+                    vegetation.AddComponent<VegetationMono>();
+                    var he = vegetation.AddComponent<HighlightEffect>();
+                    he.ProfileLoad(
+                        HighlightProfiles.GetHighlightProfile(
+                            HighlightProfiles.Profile.Highlighted));
                 }
             }
         }

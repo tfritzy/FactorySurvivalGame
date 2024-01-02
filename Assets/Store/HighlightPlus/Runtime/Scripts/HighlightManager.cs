@@ -2,26 +2,33 @@
 using UnityEngine;
 using UnityEngine.EventSystems;
 
-namespace HighlightPlus {
+namespace HighlightPlus
+{
 
     public delegate bool OnObjectSelectionEvent(GameObject obj);
 
     [RequireComponent(typeof(HighlightEffect))]
     [DefaultExecutionOrder(100)]
     [HelpURL("https://kronnect.com/guides/highlight-plus-introduction/")]
-    public class HighlightManager : MonoBehaviour {
+    public class HighlightManager : MonoBehaviour
+    {
 
         [Tooltip("Enables highlight when pointer is over this object.")]
         [SerializeField]
         bool _highlightOnHover = true;
 
-        public bool highlightOnHover {
+        public bool highlightOnHover
+        {
             get { return _highlightOnHover; }
-            set {
-                if (_highlightOnHover != value) {
+            set
+            {
+                if (_highlightOnHover != value)
+                {
                     _highlightOnHover = value;
-                    if (!_highlightOnHover) {
-                        if (currentEffect != null) {
+                    if (!_highlightOnHover)
+                    {
+                        if (currentEffect != null)
+                        {
                             Highlight(false);
                         }
                     }
@@ -65,9 +72,12 @@ namespace HighlightPlus {
         public static int lastTriggerFrame;
 
         static HighlightManager _instance;
-        public static HighlightManager instance {
-            get {
-                if (_instance == null) {
+        public static HighlightManager instance
+        {
+            get
+            {
+                if (_instance == null)
+                {
                     _instance = FindObjectOfType<HighlightManager>();
                 }
                 return _instance;
@@ -75,63 +85,78 @@ namespace HighlightPlus {
         }
 
         [RuntimeInitializeOnLoadMethod]
-        static void DomainReloadDisabledSupport() {
+        static void DomainReloadDisabledSupport()
+        {
             selectedObjects.Clear();
             lastTriggerFrame = 0;
             _instance = null;
         }
 
-        void OnEnable() {
+        void OnEnable()
+        {
             currentObject = null;
             currentEffect = null;
-			if (baseEffect == null) {
-				baseEffect = GetComponent<HighlightEffect> ();
-				if (baseEffect == null) {
-					baseEffect = gameObject.AddComponent<HighlightEffect> ();
-				}
-			}
-			raycastCamera = GetComponent<Camera> ();
-			if (raycastCamera == null) {
-				raycastCamera = GetCamera ();
-				if (raycastCamera == null) {
-					Debug.LogError ("Highlight Manager: no camera found!");
-				}
-			}
+            if (baseEffect == null)
+            {
+                baseEffect = GetComponent<HighlightEffect>();
+                if (baseEffect == null)
+                {
+                    baseEffect = gameObject.AddComponent<HighlightEffect>();
+                }
+            }
+            raycastCamera = GetComponent<Camera>();
+            if (raycastCamera == null)
+            {
+                raycastCamera = GetCamera();
+                if (raycastCamera == null)
+                {
+                    Debug.LogError("Highlight Manager: no camera found!");
+                }
+            }
             hitInfo2D = new RaycastHit2D[1];
             InputProxy.Init();
-		}
+        }
 
 
-		void OnDisable () {
-			SwitchesCollider (null);
+        void OnDisable()
+        {
+            SwitchesCollider(null);
             internal_DeselectAll();
-		}
+        }
 
-		void Update () {
-			if (raycastCamera == null)
+        void Update()
+        {
+            if (raycastCamera == null)
                 return;
 
 #if ENABLE_INPUT_SYSTEM
-            if (respectUI) {
+            if (respectUI)
+            {
                 EventSystem es = EventSystem.current;
-                if (es == null) {
+                if (es == null)
+                {
                     es = CreateEventSystem();
                 }
                 List<RaycastResult> raycastResults = new List<RaycastResult>();
                 PointerEventData eventData = new PointerEventData(es);
                 Vector3 cameraPos = raycastCamera.transform.position;
-                if (raycastSource == RayCastSource.MousePosition) {
+                if (raycastSource == RayCastSource.MousePosition)
+                {
                     eventData.position = InputProxy.mousePosition;
-                } else {
+                }
+                else
+                {
                     eventData.position = new Vector2(raycastCamera.pixelWidth * 0.5f, raycastCamera.pixelHeight * 0.5f);
                 }
                 es.RaycastAll(eventData, raycastResults);
                 int hitCount = raycastResults.Count;
                 // check UI blocker
                 bool blocked = false;
-                for (int k = 0; k < hitCount; k++) {
+                for (int k = 0; k < hitCount; k++)
+                {
                     RaycastResult rr = raycastResults[k];
-                    if (rr.module is UnityEngine.UI.GraphicRaycaster) {
+                    if (rr.module is UnityEngine.UI.GraphicRaycaster)
+                    {
                         blocked = true;
                         break;
                     }
@@ -139,7 +164,8 @@ namespace HighlightPlus {
                 if (blocked) return;
 
                 // look for our gameobject
-                for (int k = 0; k < hitCount; k++) {
+                for (int k = 0; k < hitCount; k++)
+                {
                     RaycastResult rr = raycastResults[k];
                     float distance = Vector3.Distance(rr.worldPosition, cameraPos);
                     if (distance < minDistance || (maxDistance > 0 && distance > maxDistance)) continue;
@@ -153,13 +179,18 @@ namespace HighlightPlus {
 
                     // Toggles selection
                     Transform t = theGameObject.transform;
-                    if (InputProxy.GetMouseButtonDown(0)) {
-                        if (selectOnClick) {
+                    if (InputProxy.GetMouseButtonDown(0))
+                    {
+                        if (selectOnClick)
+                        {
                             ToggleSelection(t, !toggle);
                         }
-                    } else {
+                    }
+                    else
+                    {
                         // Check if the object has a Highlight Effect
-                        if (t != currentObject) {
+                        if (t != currentObject)
+                        {
                             SwitchesCollider(t);
                         }
                     }
@@ -170,50 +201,66 @@ namespace HighlightPlus {
 #endif
 
             Ray ray;
-            if (raycastSource == RayCastSource.MousePosition) {
+            if (raycastSource == RayCastSource.MousePosition)
+            {
 #if !ENABLE_INPUT_SYSTEM
                 if (!CanInteract()) {
                     return;
                 }
 #endif
                 ray = raycastCamera.ScreenPointToRay(InputProxy.mousePosition);
-            } else {
+            }
+            else
+            {
                 ray = new Ray(raycastCamera.transform.position, raycastCamera.transform.forward);
             }
             RaycastHit hitInfo;
-            if (Physics.Raycast(ray, out hitInfo, maxDistance > 0 ? maxDistance : raycastCamera.farClipPlane, layerMask) && Vector3.Distance(hitInfo.point, ray.origin) >= minDistance) {
+            if (Physics.Raycast(ray, out hitInfo, maxDistance > 0 ? maxDistance : raycastCamera.farClipPlane, layerMask) && Vector3.Distance(hitInfo.point, ray.origin) >= minDistance)
+            {
                 Transform t = hitInfo.collider.transform;
                 // is this object state controller by Highlight Trigger?
                 HighlightTrigger trigger = t.GetComponent<HighlightTrigger>();
                 if (trigger != null) return;
 
                 // Toggles selection
-                if (InputProxy.GetMouseButtonDown(0)) {
-                    if (selectOnClick) {
+                if (InputProxy.GetMouseButtonDown(0))
+                {
+                    if (selectOnClick)
+                    {
                         ToggleSelection(t, !toggle);
                     }
-                } else {
+                }
+                else
+                {
                     // Check if the object has a Highlight Effect
-                    if (t != currentObject) {
+                    if (t != currentObject)
+                    {
                         SwitchesCollider(t);
                     }
                 }
                 return;
-            } else // check sprites
-            if (Physics2D.GetRayIntersectionNonAlloc(ray, hitInfo2D, maxDistance > 0 ? maxDistance : raycastCamera.farClipPlane, layerMask) > 0 && Vector3.Distance(hitInfo2D[0].point, ray.origin) >= minDistance) {
+            }
+            else // check sprites
+            if (Physics2D.GetRayIntersectionNonAlloc(ray, hitInfo2D, maxDistance > 0 ? maxDistance : raycastCamera.farClipPlane, layerMask) > 0 && Vector3.Distance(hitInfo2D[0].point, ray.origin) >= minDistance)
+            {
                 Transform t = hitInfo2D[0].collider.transform;
                 // is this object state controller by Highlight Trigger?
                 HighlightTrigger trigger = t.GetComponent<HighlightTrigger>();
                 if (trigger != null) return;
 
                 // Toggles selection
-                if (InputProxy.GetMouseButtonDown(0)) {
-                    if (selectOnClick) {
+                if (InputProxy.GetMouseButtonDown(0))
+                {
+                    if (selectOnClick)
+                    {
                         ToggleSelection(t, !toggle);
                     }
-                } else {
+                }
+                else
+                {
                     // Check if the object has a Highlight Effect
-                    if (t != currentObject) {
+                    if (t != currentObject)
+                    {
                         SwitchesCollider(t);
                     }
                 }
@@ -221,24 +268,29 @@ namespace HighlightPlus {
             }
 
             // no hit
-            if (selectOnClick && !keepSelection && InputProxy.GetMouseButtonDown(0) && lastTriggerFrame < Time.frameCount) {
+            if (selectOnClick && !keepSelection && InputProxy.GetMouseButtonDown(0) && lastTriggerFrame < Time.frameCount)
+            {
                 internal_DeselectAll();
             }
-            SwitchesCollider (null);
-		}
+            SwitchesCollider(null);
+        }
 
 
 #if ENABLE_INPUT_SYSTEM
-        EventSystem CreateEventSystem() {
+        EventSystem CreateEventSystem()
+        {
             GameObject eo = new GameObject("Event System created by Highlight Plus", typeof(EventSystem), typeof(UnityEngine.InputSystem.UI.InputSystemUIInputModule));
             return eo.GetComponent<EventSystem>();
         }
 #endif
 
 
-		void SwitchesCollider (Transform newObject) {
-            if (currentEffect != null) {
-                if (highlightOnHover) {
+        void SwitchesCollider(Transform newObject)
+        {
+            if (currentEffect != null)
+            {
+                if (highlightOnHover)
+                {
                     Highlight(false);
                 }
                 currentEffect = null;
@@ -247,55 +299,68 @@ namespace HighlightPlus {
             if (newObject == null) return;
             HighlightTrigger ht = newObject.GetComponent<HighlightTrigger>();
             if (ht != null && ht.enabled)
-				return;
-			
-			HighlightEffect otherEffect = newObject.GetComponent<HighlightEffect> ();
-			if (otherEffect == null) {
-				// Check if there's a parent highlight effect that includes this object
-				HighlightEffect parentEffect = newObject.GetComponentInParent<HighlightEffect>();
-				if (parentEffect != null && parentEffect.Includes(newObject)) {
-					currentEffect = parentEffect;
-                    if (highlightOnHover) {
+                return;
+
+            HighlightEffect otherEffect = newObject.GetComponent<HighlightEffect>();
+            if (otherEffect == null)
+            {
+                // Check if there's a parent highlight effect that includes this object
+                HighlightEffect parentEffect = newObject.GetComponentInParent<HighlightEffect>();
+                if (parentEffect != null && parentEffect.Includes(newObject))
+                {
+                    currentEffect = parentEffect;
+                    if (highlightOnHover)
+                    {
                         Highlight(true);
                     }
-					return;
-				}
+                    return;
+                }
             }
             currentEffect = otherEffect != null ? otherEffect : baseEffect;
             baseEffect.enabled = currentEffect == baseEffect;
             currentEffect.SetTarget(currentObject);
 
-            if (highlightOnHover) {
+            if (highlightOnHover)
+            {
                 Highlight(true);
             }
         }
 
 
-        bool CanInteract() {
+        bool CanInteract()
+        {
             if (!respectUI) return true;
             EventSystem es = EventSystem.current;
             if (es == null) return true;
-            if (Application.isMobilePlatform && InputProxy.touchCount > 0 && es.IsPointerOverGameObject(InputProxy.GetFingerIdFromTouch(0))) {
+            if (Application.isMobilePlatform && InputProxy.touchCount > 0 && es.IsPointerOverGameObject(InputProxy.GetFingerIdFromTouch(0)))
+            {
                 return false;
-            } else if (es.IsPointerOverGameObject(-1))
+            }
+            else if (es.IsPointerOverGameObject(-1))
                 return false;
             return true;
         }
 
 
-        void ToggleSelection(Transform t, bool forceSelection) {
+        void ToggleSelection(Transform t, bool forceSelection)
+        {
 
             // We need a highlight effect on each selected object
             HighlightEffect hb = t.GetComponent<HighlightEffect>();
-            if (hb == null) {
+            if (hb == null)
+            {
                 HighlightEffect parentEffect = t.GetComponentInParent<HighlightEffect>();
-                if (parentEffect != null && parentEffect.Includes(t)) {
+                if (parentEffect != null && parentEffect.Includes(t))
+                {
                     hb = parentEffect;
-                    if (hb.previousSettings == null) {
-                       hb.previousSettings = ScriptableObject.CreateInstance<HighlightProfile>();
+                    if (hb.previousSettings == null)
+                    {
+                        hb.previousSettings = ScriptableObject.CreateInstance<HighlightProfile>();
                     }
                     hb.previousSettings.Save(hb);
-                } else {
+                }
+                else
+                {
                     hb = t.gameObject.AddComponent<HighlightEffect>();
                     hb.previousSettings = ScriptableObject.CreateInstance<HighlightProfile>();
                     // copy default highlight effect settings from this manager into this highlight plus component
@@ -308,13 +373,17 @@ namespace HighlightPlus {
             bool newState = forceSelection ? true : !currentState;
             if (newState == currentState) return;
 
-            if (newState) {
+            if (newState)
+            {
                 if (OnObjectSelected != null && !OnObjectSelected(t.gameObject)) return;
-            } else {
+            }
+            else
+            {
                 if (OnObjectUnSelected != null && !OnObjectUnSelected(t.gameObject)) return;
             }
 
-            if (singleSelection) {
+            if (singleSelection)
+            {
                 internal_DeselectAll();
             }
 
@@ -322,20 +391,27 @@ namespace HighlightPlus {
             currentEffect.isSelected = newState;
             baseEffect.enabled = false;
 
-            if (currentEffect.isSelected) {
-                if (currentEffect.previousSettings == null) {
+            if (currentEffect.isSelected)
+            {
+                if (currentEffect.previousSettings == null)
+                {
                     currentEffect.previousSettings = ScriptableObject.CreateInstance<HighlightProfile>();
                 }
                 hb.previousSettings.Save(hb);
 
-                if (!selectedObjects.Contains(currentEffect)) {
+                if (!selectedObjects.Contains(currentEffect))
+                {
                     selectedObjects.Add(currentEffect);
                 }
-            } else {
-                if (currentEffect.previousSettings != null) {
+            }
+            else
+            {
+                if (currentEffect.previousSettings != null)
+                {
                     currentEffect.previousSettings.Load(hb);
                 }
-                if (selectedObjects.Contains(currentEffect)) {
+                if (selectedObjects.Contains(currentEffect))
+                {
                     selectedObjects.Remove(currentEffect);
                 }
             }
@@ -343,36 +419,56 @@ namespace HighlightPlus {
             Highlight(true);
         }
 
-        void Highlight(bool state) {
-            if (state) {
-                if (!currentEffect.highlighted) {
-                    if (OnObjectHighlightStart != null && currentEffect.target != null) {
+        void Highlight(bool state)
+        {
+            if (state)
+            {
+                if (!currentEffect.highlighted)
+                {
+                    if (OnObjectHighlightStart != null && currentEffect.target != null)
+                    {
                         if (!OnObjectHighlightStart(currentEffect.target.gameObject)) return;
                     }
                 }
-            } else {
-                if (currentEffect.highlighted) {
-                    if (OnObjectHighlightEnd != null && currentEffect.target != null) {
+            }
+            else
+            {
+                if (currentEffect.highlighted)
+                {
+                    if (OnObjectHighlightEnd != null && currentEffect.target != null)
+                    {
                         OnObjectHighlightEnd(currentEffect.target.gameObject);
                     }
                 }
             }
-            if (selectOnClick || currentEffect.isSelected) {
-                if (currentEffect.isSelected) {
-                    if (state && selectedAndHighlightedProfile != null) {
+            if (selectOnClick || currentEffect.isSelected)
+            {
+                if (currentEffect.isSelected)
+                {
+                    if (state && selectedAndHighlightedProfile != null)
+                    {
                         selectedAndHighlightedProfile.Load(currentEffect);
-                    } else if (selectedProfile != null) {
+                    }
+                    else if (selectedProfile != null)
+                    {
                         selectedProfile.Load(currentEffect);
-                    } else {
+                    }
+                    else
+                    {
                         currentEffect.previousSettings.Load(currentEffect);
                     }
-                    if (currentEffect.highlighted) {
+                    if (currentEffect.highlighted)
+                    {
                         currentEffect.UpdateMaterialProperties();
-                    } else {
+                    }
+                    else
+                    {
                         currentEffect.SetHighlighted(true);
                     }
                     return;
-                } else if (!highlightOnHover) {
+                }
+                else if (!highlightOnHover)
+                {
                     currentEffect.SetHighlighted(false);
                     return;
                 }
@@ -380,18 +476,24 @@ namespace HighlightPlus {
             currentEffect.SetHighlighted(state);
         }
 
-        public static Camera GetCamera() {
+        public static Camera GetCamera()
+        {
             Camera raycastCamera = Camera.main;
-            if (raycastCamera == null) {
+            if (raycastCamera == null)
+            {
                 raycastCamera = FindObjectOfType<Camera>();
             }
             return raycastCamera;
         }
 
-        void internal_DeselectAll() {
-            foreach (HighlightEffect hb in selectedObjects) {
-                if (hb != null && hb.gameObject != null) {
-                    if (OnObjectUnSelected != null) {
+        void internal_DeselectAll()
+        {
+            foreach (HighlightEffect hb in selectedObjects)
+            {
+                if (hb != null && hb.gameObject != null)
+                {
+                    if (OnObjectUnSelected != null)
+                    {
                         if (!OnObjectUnSelected(hb.gameObject)) continue;
                     }
                     hb.RestorePreviousHighlightEffectSettings();
@@ -403,13 +505,19 @@ namespace HighlightPlus {
         }
 
 
-        public static void DeselectAll() {
-            foreach (HighlightEffect hb in selectedObjects) {
-                if (hb != null && hb.gameObject != null) {
+        public static void DeselectAll()
+        {
+            foreach (HighlightEffect hb in selectedObjects)
+            {
+                if (hb != null && hb.gameObject != null)
+                {
                     hb.isSelected = false;
-                    if (hb.highlighted && _instance != null) {
+                    if (hb.highlighted && _instance != null)
+                    {
                         _instance.Highlight(false);
-                    } else {
+                    }
+                    else
+                    {
                         hb.SetHighlighted(false);
                     }
                 }
@@ -420,27 +528,32 @@ namespace HighlightPlus {
         /// <summary>
         /// Manually causes highlight manager to select an object
         /// </summary>
-        public void SelectObject(Transform t) {
+        public void SelectObject(Transform t)
+        {
             ToggleSelection(t, true);
         }
 
         /// <summary>
         /// Manually causes highlight manager to toggle selection on an object
         /// </summary>
-        public void ToggleObject(Transform t) {
+        public void ToggleObject(Transform t)
+        {
             ToggleSelection(t, false);
         }
 
         /// <summary>
         /// Manually causes highlight manager to unselect an object
         /// </summary>
-        public void UnselectObject(Transform t) {
+        public void UnselectObject(Transform t)
+        {
             if (t == null) return;
             HighlightEffect hb = t.GetComponent<HighlightEffect>();
             if (hb == null) return;
 
-            if (selectedObjects.Contains(hb)) {
-                if (OnObjectUnSelected != null) {
+            if (selectedObjects.Contains(hb))
+            {
+                if (OnObjectUnSelected != null)
+                {
                     if (!OnObjectUnSelected(hb.gameObject)) return;
                 }
                 hb.isSelected = false;

@@ -57,6 +57,11 @@ public static class Models
             _vegetationPrefabs[type] = Resources.LoadAll<GameObject>("Prefabs/Vegetation/" + type.ToString());
         }
 
+        if (_vegetationPrefabs[type].Length == 0)
+        {
+            throw new System.Exception("Could not find a folder of vegetation for " + type);
+        }
+
         return _vegetationPrefabs[type][Random.Range(0, _vegetationPrefabs[type].Length)];
     }
 }
