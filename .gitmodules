@@ -1,0 +1,3 @@
+[submodule "Assets/Assets/Core"]
+	path = Assets/Assets/Core
+	url = https://github.com/tfritzy/FactoryCoreLogic.git
