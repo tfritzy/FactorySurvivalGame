@@ -46,13 +46,13 @@ public static class RaycastHelper
         }
     }
 
-    public static CharacterMono? GetCharacterUnderCursor()
+    public static Interactable? GetInteractableUnderCursor()
     {
         var hit = Physics.Raycast(
             Managers.MainCamera.ScreenPointToRay(Input.mousePosition),
             out var hitInfo,
             100f,
-            Layers.CharacterMask);
+            Layers.CharacterMask | Layers.VegetationMask);
         if (hit)
         {
             var iter = hitInfo.collider.transform;

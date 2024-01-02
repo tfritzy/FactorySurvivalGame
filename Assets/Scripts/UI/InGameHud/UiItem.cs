@@ -34,7 +34,7 @@ public class UiItem : VisualElement
         quantityLabel.SetAllMargin(0);
     }
 
-    private uint? renderedQuantity = null;
+    private ulong? renderedQuantity = null;
     private ItemType? renderedItemType = null;
     public void Update(Item item)
     {
