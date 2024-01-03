@@ -1,3 +1,4 @@
+using System.Linq;
 using Core;
 using HighlightPlus;
 using UnityEngine;
@@ -8,33 +9,86 @@ public class InteractionManager : MonoBehaviour
 
     void LateUpdate()
     {
-        Interactable? i = RaycastHelper.GetInteractableUnderCursor();
-
         ListenForHotkeys();
-        CheckOpenMenu(i);
+        Interactable? i = RaycastHelper.GetInteractableUnderCursor();
         UpdateHighlight(i);
+
+        if (i != null)
+        {
+            bool interacted = PerformInspections(i);
+            if (interacted)
+            {
+                return;
+            }
+        }
+
+        if (Input.GetKey(KeyCode.Space))
+        {
+            bool interacted = InteractWithinSphere();
+            if (interacted)
+            {
+                return;
+            }
+        }
+
+        if (Input.GetMouseButtonDown(1))
+        {
+            RightClickMove();
+        }
     }
 
     private void UpdateHighlight(Interactable? i)
     {
         if (i != highlightedObject)
         {
-            if (highlightedObject != null)
+            if (highlightedObject?.GameObject != null)
             {
-                highlightedObject.GetHighlightEffect().SetHighlighted(false);
-            }
-
-            if (i != null)
-            {
-                highlightedObject = null;
-                return;
+                highlightedObject.GetHighlightEffect().highlighted = false;
             }
 
             highlightedObject = i;
+            if (highlightedObject == null)
+            {
+                return;
+            }
+            else
+            {
+                i.GetHighlightEffect().highlighted = true;
+            }
+        }
+    }
+
+    private bool InteractWithinSphere()
+    {
+        Vector3 origin = PlayerMono.Instance.transform.position;
+        Collider[] hits = Physics.OverlapSphere(
+            origin,
+            2.25f,
+            Layers.CharacterMask | Layers.VegetationMask);
+
+        Debug.Log($"Found {hits.Length} hits");
+        if (hits.Length > 0)
+        {
+            var closest = hits.OrderBy(
+                c => (c.transform.position - origin).sqrMagnitude).First();
+            Interactable i = closest.GetComponent<Interactable>();
             if (i != null)
             {
-                i.GetHighlightEffect().SetHighlighted(true);
+                Debug.Log($"Found interactable {i.GameObject.name}");
+                i.OnInteract();
+                return true;
             }
+        }
+
+        return false;
+    }
+
+    private void RightClickMove()
+    {
+        Vector3? point = RaycastHelper.GetGroundPointUnderCursor();
+        if (point != null)
+        {
+            PlayerMono.Instance.MoveCommand(point.Value);
         }
     }
 
@@ -46,23 +100,26 @@ public class InteractionManager : MonoBehaviour
         }
     }
 
-    private void CheckOpenMenu(Interactable? i)
+    private bool PerformInspections(Interactable? i)
     {
-
         if (i == null)
         {
-            return;
+            return false;
         }
 
         if (ClickLog.GetLmbUp())
         {
             i.OnInspect();
+            return true;
         }
 
         if (ClickLog.GetRmbUp())
         {
             i.OnInteract();
+            return true;
         }
+
+        return false;
     }
 
     private void Close()

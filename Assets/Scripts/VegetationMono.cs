@@ -5,6 +5,8 @@ using UnityEngine.Rendering;
 
 public class VegetationMono : MonoBehaviour, Interactable
 {
+    public Point2Int Pos;
+    public VegetationType Type;
     private HighlightEffect? _highlightEffect;
     private HighlightEffect HighlightEffect
     {
@@ -17,6 +19,13 @@ public class VegetationMono : MonoBehaviour, Interactable
 
             return _highlightEffect;
         }
+    }
+    public GameObject GameObject => this.gameObject;
+
+    public void Init(Point2Int pos, VegetationType type)
+    {
+        this.Type = type;
+        this.Pos = pos;
     }
 
     public HighlightEffect GetHighlightEffect()
@@ -31,6 +40,13 @@ public class VegetationMono : MonoBehaviour, Interactable
 
     public void OnInteract()
     {
-        PlayerMono.Instance.MoveCommand(transform.position);
+        if (this.Type == VegetationType.Bush)
+        {
+            PlayerMono.Instance.PluckBush(this.Pos);
+        }
+        else
+        {
+            Debug.Log("Interaction click on " + Type);
+        }
     }
 }

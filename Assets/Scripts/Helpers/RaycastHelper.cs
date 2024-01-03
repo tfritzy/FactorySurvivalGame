@@ -46,6 +46,23 @@ public static class RaycastHelper
         }
     }
 
+    public static Vector3? GetGroundPointUnderCursor()
+    {
+        var hit = Physics.Raycast(
+            Managers.MainCamera.ScreenPointToRay(Input.mousePosition),
+            out var hitInfo,
+            100f,
+            Layers.HexMask);
+        if (hit)
+        {
+            return hitInfo.point;
+        }
+        else
+        {
+            return null;
+        }
+    }
+
     public static Interactable? GetInteractableUnderCursor()
     {
         var hit = Physics.Raycast(
@@ -58,9 +75,9 @@ public static class RaycastHelper
             var iter = hitInfo.collider.transform;
             while (iter.parent != null)
             {
-                if (iter.gameObject.TryGetComponent<CharacterMono>(out var cm))
+                if (iter.gameObject.TryGetComponent<Interactable>(out Interactable interactable))
                 {
-                    return cm;
+                    return interactable;
                 }
 
                 iter = iter.parent;

@@ -30,6 +30,6 @@ public static class WorldConversions
 
     public static Point3Float ToPoint3Float(this Vector3 pos)
     {
-        return new Point3Float(pos.x, pos.y, pos.z);
+        return new Point3Float(pos.x, pos.z, pos.y);
     }
 }
