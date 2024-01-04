@@ -31,7 +31,7 @@ public class InteractionManager : MonoBehaviour
             }
         }
 
-        if (Input.GetMouseButtonDown(1))
+        if (Input.GetMouseButton(1))
         {
             RightClickMove();
         }
@@ -64,17 +64,15 @@ public class InteractionManager : MonoBehaviour
         Collider[] hits = Physics.OverlapSphere(
             origin,
             2.25f,
-            Layers.CharacterMask | Layers.VegetationMask);
+            Layers.InteractableLayersMask);
 
-        Debug.Log($"Found {hits.Length} hits");
         if (hits.Length > 0)
         {
             var closest = hits.OrderBy(
                 c => (c.transform.position - origin).sqrMagnitude).First();
-            Interactable i = closest.GetComponent<Interactable>();
+            Interactable? i = RaycastHelper.FindInteractableInHierarchy(closest.gameObject);
             if (i != null)
             {
-                Debug.Log($"Found interactable {i.GameObject.name}");
                 i.OnInteract();
                 return true;
             }

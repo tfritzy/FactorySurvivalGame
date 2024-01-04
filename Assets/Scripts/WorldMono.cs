@@ -9,11 +9,12 @@ public class WorldMono : MonoBehaviour
 {
     public World World => Context.World;
     public Context Context;
-    private RectInt ShownHexRange = new RectInt(-10, -5, 20, 23);
+    private RectInt ShownHexRange = new RectInt(-15, -5, 30, 23);
     private Dictionary<Point2Int, Dictionary<Point3Int, GameObject?[]>> ShownHexesObjects = new();
     private Dictionary<ulong, GameObject> SpawnedCharacters = new();
     private Point2Int PlayerPos = new Point2Int(-1, -1);
     private Dictionary<Point2Int, GameObject> SpawnedVegetation = new();
+    private Dictionary<ulong, GameObject> SpawnedItemObjects = new();
     Transform? vegetationParent;
 
     [Range(.25f, 4f)]
@@ -40,6 +41,13 @@ public class WorldMono : MonoBehaviour
             new Core.Terrain(generator.GenerateFlatWorld(Context),
             Context)));
         SpawnVegetation();
+        Point3Int topHex = Context.World.Terrain.GetTopHex(new Point2Int(15, 10));
+        Context.World.AddItemObject(new Stick(1), topHex.ToPoint3Float(), new Point3Float(0, 0, 0));
+        Context.World.AddItemObject(new Limestone(1), topHex.WalkEast.ToPoint3Float(), new Point3Float(0, 0, 0));
+        Context.World.AddItemObject(new CopperBar(1), topHex.WalkEast.WalkEast.ToPoint3Float(), new Point3Float(0, 0, 0));
+        Context.World.AddItemObject(new CopperBar(1), topHex.WalkEast.WalkEast.WalkEast.ToPoint3Float(), new Point3Float(0, 0, 0));
+        Context.World.AddItemObject(new CopperBar(1), topHex.WalkEast.WalkEast.WalkEast.WalkEast.ToPoint3Float(), new Point3Float(0, 0, 0));
+        Context.World.AddItemObject(new CopperBar(1), topHex.WalkEast.WalkEast.WalkEast.WalkEast.WalkEast.ToPoint3Float(), new Point3Float(0, 0, 0));
     }
 
     void Update()
@@ -230,6 +238,12 @@ public class WorldMono : MonoBehaviour
             case UpdateType.VegetationChange:
                 HandleVegetationChange((VegetationChange)update);
                 break;
+            case UpdateType.ItemObjectAdded:
+                HandleItemObjectAdded((ItemObjectAdded)update);
+                break;
+            case UpdateType.ItemObjectRemoved:
+                HandleItemObjectRemoved((ItemObjectRemoved)update);
+                break;
         }
         World.AckUpdate();
     }
@@ -284,6 +298,23 @@ public class WorldMono : MonoBehaviour
                         [(int)update.Side] = null;
                 }
             }
+        }
+    }
+
+    private void HandleItemObjectAdded(ItemObjectAdded objectAdded)
+    {
+        GameObject itemObject = ItemPool.GetItem(objectAdded.ItemObject.Item.Type, this.transform);
+        itemObject.transform.position = objectAdded.ItemObject.Position.ToVector3();
+        itemObject.GetComponent<ItemMono>().SetItem(objectAdded.ItemObject.Item);
+        SpawnedItemObjects.Add(objectAdded.ItemObject.Item.Id, itemObject);
+    }
+
+    private void HandleItemObjectRemoved(ItemObjectRemoved objectRemoved)
+    {
+        if (SpawnedItemObjects.ContainsKey(objectRemoved.ItemId))
+        {
+            Destroy(SpawnedItemObjects[objectRemoved.ItemId]);
+            SpawnedItemObjects.Remove(objectRemoved.ItemId);
         }
     }
 

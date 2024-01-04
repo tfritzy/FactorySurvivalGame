@@ -9,7 +9,7 @@ public class PlayerMono : MonoBehaviour
     public Inventory SelectedInventory;
     public int SelectedInventoryIndex;
     public Player Actual;
-    public const float MovementSpeed = 8f;
+    public const float MovementSpeed = 5f;
 
     public Item? SelectedItem => SelectedInventory.GetItemAt(SelectedInventoryIndex);
     private Building? previewBuilding;
@@ -102,27 +102,31 @@ public class PlayerMono : MonoBehaviour
 
     public void MoveCommand(Vector3 pos)
     {
-        if (Input.GetKey(KeyCode.LeftShift) || Input.GetKey(KeyCode.RightShift))
-        {
-            Actual.Command!.AddCommand(
-                new MoveCommand(
-                    pos.ToPoint3Float(),
-                    Actual));
-        }
-        else
-        {
-            Actual.Command!.ReplaceCommands(
-                new MoveCommand(
-                    pos.ToPoint3Float(),
-                    Actual));
-        }
+        Actual.Command!.ReplaceCommands(
+            new MoveCommand(
+                pos.ToPoint3Float(),
+                Actual));
     }
 
     public void PluckBush(Point2Int pos)
     {
+        Debug.Log("Player given pluck command");
         Point3Int topHex = Actual.Context.World.GetTopHex(pos);
         Actual.Command!.ReplaceCommands(new MoveCommand(topHex.ToPoint3Float(), Actual));
         Actual.Command!.AddCommand(new PluckBushCommand(pos, Actual));
+    }
+
+    public void PickupItem(ulong id)
+    {
+        Debug.Log("Player given pickup command");
+        if (!Actual.Context.World.ItemObjects.ContainsKey(id))
+        {
+            return;
+        }
+
+        Point3Float itemPos = Actual.Context.World.ItemObjects[id].Position;
+        Actual.Command!.ReplaceCommands(new MoveCommand(itemPos, Actual));
+        Actual.Command!.AddCommand(new PickupItem(id, Actual));
     }
 
     private void ObeyCommands()
@@ -140,6 +144,10 @@ public class PlayerMono : MonoBehaviour
         else if (Actual.Command.CurrentCommand is PluckBushCommand pluck)
         {
             Actual.Context.Api.PluckBush(Actual.Id, pluck.Pos);
+        }
+        else if (Actual.Command.CurrentCommand is PickupItem pickup)
+        {
+            Actual.Context.Api.PickupItem(Actual.Id, pickup.Id);
         }
     }
 

@@ -8,4 +8,9 @@ public static class Layers
 
     public const int Vegetation = 8;
     public const int VegetationMask = 1 << Vegetation;
+
+    public const int Item = 9;
+    public const int ItemMask = 1 << Item;
+
+    public const int InteractableLayersMask = CharacterMask | VegetationMask | ItemMask;
 }
