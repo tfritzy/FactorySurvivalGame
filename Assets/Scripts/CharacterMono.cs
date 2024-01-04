@@ -6,6 +6,7 @@ using UnityEngine;
 
 public class CharacterMono : EntityMono, Interactable
 {
+    public GameObject GameObject => this.gameObject;
     private bool previewMode;
     private List<Renderer> renderers = new List<Renderer>();
     private float birthTime;

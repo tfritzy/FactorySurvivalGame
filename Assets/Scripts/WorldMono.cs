@@ -13,6 +13,8 @@ public class WorldMono : MonoBehaviour
     private Dictionary<Point2Int, Dictionary<Point3Int, GameObject?[]>> ShownHexesObjects = new();
     private Dictionary<ulong, GameObject> SpawnedCharacters = new();
     private Point2Int PlayerPos = new Point2Int(-1, -1);
+    private Dictionary<Point2Int, GameObject> SpawnedVegetation = new();
+    Transform? vegetationParent;
 
     [Range(.25f, 4f)]
     public float TickPercent = 1;
@@ -164,24 +166,38 @@ public class WorldMono : MonoBehaviour
             for (int y = 0; y < Context.World.MaxY; y++)
             {
                 VegetationType? type = Context.World.Terrain.Vegetation[x, y];
-                if (type != null)
-                {
-                    GameObject vegetation =
-                        Instantiate(VegetationPool.GetVegetation(type.Value, vegetationParent));
-                    Point3Int topPoint = Context.World.Terrain.GetTopHex(new Point2Int(x, y));
-                    vegetation.transform.position = WorldConversions.HexToUnityPosition(topPoint);
-                    vegetation.transform.SetParent(transform);
-                    vegetation.transform.rotation = Quaternion.Euler(0, Random.Range(0, 360), 0);
-                    vegetation.transform.localScale = vegetation.transform.localScale * Random.Range(.8f, 1.2f);
-                    vegetation.layer = Layers.Vegetation;
-                    vegetation.AddComponent<VegetationMono>();
-                    var he = vegetation.AddComponent<HighlightEffect>();
-                    he.ProfileLoad(
-                        HighlightProfiles.GetHighlightProfile(
-                            HighlightProfiles.Profile.Highlighted));
-                }
+                SpawnSingleVegetation(new Point2Int(x, y), type);
             }
         }
+    }
+
+    private void SpawnSingleVegetation(Point2Int pos, VegetationType? type)
+    {
+        if (SpawnedVegetation.ContainsKey(pos))
+        {
+            Destroy(SpawnedVegetation[pos]);
+        }
+
+        if (type == null)
+        {
+            return;
+        }
+
+        GameObject vegetation =
+            Instantiate(VegetationPool.GetVegetation(type.Value, vegetationParent));
+        Point3Int topPoint = Context.World.Terrain.GetTopHex(pos);
+        vegetation.transform.position = WorldConversions.HexToUnityPosition(topPoint);
+        vegetation.transform.SetParent(transform);
+        vegetation.transform.rotation = Quaternion.Euler(0, Random.Range(0, 360), 0);
+        vegetation.transform.localScale = vegetation.transform.localScale * Random.Range(.8f, 1.2f);
+        vegetation.layer = Layers.Vegetation;
+        var vm = vegetation.AddComponent<VegetationMono>();
+        vm.Init(pos, type.Value);
+        var he = vegetation.AddComponent<HighlightEffect>();
+        he.ProfileLoad(
+            HighlightProfiles.GetHighlightProfile(
+                HighlightProfiles.Profile.Highlighted));
+        SpawnedVegetation[pos] = vegetation;
     }
 
     private void HandleUpdate(Update update)
@@ -211,6 +227,9 @@ public class WorldMono : MonoBehaviour
             case UpdateType.TriHiddenOrDestroyed:
                 HandleTriHiddenOrDestroyed((TriHiddenOrDestroyed)update);
                 break;
+            case UpdateType.VegetationChange:
+                HandleVegetationChange((VegetationChange)update);
+                break;
         }
         World.AckUpdate();
     }
@@ -223,6 +242,27 @@ public class WorldMono : MonoBehaviour
             var triGO = GameObject.Instantiate(Models.GetTriangleMesh(triangle.SubType), transform);
             triGO.transform.position = WorldConversions.HexToUnityPosition(update.GridPosition);
             triGO.transform.rotation = Quaternion.Euler(0, 60 * (int)update.Side, 0);
+        }
+    }
+
+    private void RemoveLeavesFromBush(GameObject bushGameObject)
+    {
+        foreach (MeshRenderer renderer in bushGameObject.GetComponentsInChildren<MeshRenderer>())
+        {
+            renderer.material = null;
+        }
+    }
+
+    private void HandleVegetationChange(VegetationChange vegetationChange)
+    {
+        if (vegetationChange.NewVegeType == VegetationType.StrippedBush
+            && SpawnedVegetation.ContainsKey(vegetationChange.GridPosition))
+        {
+            RemoveLeavesFromBush(SpawnedVegetation[vegetationChange.GridPosition]);
+        }
+        else
+        {
+            SpawnSingleVegetation(vegetationChange.GridPosition, vegetationChange.NewVegeType);
         }
     }
 

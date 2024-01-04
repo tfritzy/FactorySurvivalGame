@@ -26,7 +26,7 @@ public class UiItem : VisualElement
         quantityLabel.style.right = -5;
         quantityLabel.style.bottom = -9;
         quantityLabel.pickingMode = PickingMode.Ignore;
-        quantityLabel.style.fontSize = 14;
+        quantityLabel.style.fontSize = 15;
         quantityLabel.style.color = UIManager.ColorTheme.ItemSlotTextColor;
         quantityLabel.style.unityFontStyleAndWeight = FontStyle.Bold;
         quantityLabel.style.unityTextOutlineColor = UIManager.ColorTheme.PanelBackgroundColor;

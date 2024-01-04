@@ -1,9 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
-using System.Security.Cryptography;
 using Core;
 using DG.Tweening;
-using Microsoft.SqlServer.Server;
 using UnityEngine;
 
 public class PlayerMono : MonoBehaviour
@@ -11,6 +9,7 @@ public class PlayerMono : MonoBehaviour
     public Inventory SelectedInventory;
     public int SelectedInventoryIndex;
     public Player Actual;
+    public const float MovementSpeed = 8f;
 
     public Item? SelectedItem => SelectedInventory.GetItemAt(SelectedInventoryIndex);
     private Building? previewBuilding;
@@ -40,6 +39,7 @@ public class PlayerMono : MonoBehaviour
     void Awake()
     {
         Actual = new Player(WorldMono.Instance.Context, 0);
+        WorldMono.Instance.World.AddCharacter(Actual);
         SelectedInventory = Actual.GetComponent<ActiveItems>();
         SelectedInventoryIndex = 0;
         InputManager.Instance.RegisterKeyDown(KeyCode.RightArrow, () => IncrementInventoryIndex(1));
@@ -58,15 +58,10 @@ public class PlayerMono : MonoBehaviour
 
     void Update()
     {
+        Actual.Context.Api.SetUnitLocation(Actual.Id, this.transform.position.ToPoint3Float());
+        Vector3 movementVector = GetMovementVector();
+        this.transform.position += movementVector;
         ObeyCommands();
-    }
-
-    private void ObeyCommands()
-    {
-        if (Actual.Command?.CurrentCommand is MoveCommand moveCommand)
-        {
-            GetComponent<CharacterController>().SimpleMove(moveCommand.TargetPosition.ToVector3());
-        }
     }
 
     private void UpdateArrows()
@@ -107,7 +102,7 @@ public class PlayerMono : MonoBehaviour
 
     public void MoveCommand(Vector3 pos)
     {
-        if (Input.GetKeyDown(KeyCode.LeftShift) || Input.GetKeyDown(KeyCode.RightShift))
+        if (Input.GetKey(KeyCode.LeftShift) || Input.GetKey(KeyCode.RightShift))
         {
             Actual.Command!.AddCommand(
                 new MoveCommand(
@@ -121,5 +116,62 @@ public class PlayerMono : MonoBehaviour
                     pos.ToPoint3Float(),
                     Actual));
         }
+    }
+
+    public void PluckBush(Point2Int pos)
+    {
+        Point3Int topHex = Actual.Context.World.GetTopHex(pos);
+        Actual.Command!.ReplaceCommands(new MoveCommand(topHex.ToPoint3Float(), Actual));
+        Actual.Command!.AddCommand(new PluckBushCommand(pos, Actual));
+    }
+
+    private void ObeyCommands()
+    {
+        if (Actual.Command == null)
+        {
+            return;
+        }
+
+        if (Actual.Command.CurrentCommand is MoveCommand moveCommand)
+        {
+            Vector3 delta = (moveCommand.TargetPosition - Actual.Location).ToVector3().normalized * MovementSpeed;
+            this.transform.position += delta * Time.deltaTime;
+        }
+        else if (Actual.Command.CurrentCommand is PluckBushCommand pluck)
+        {
+            Actual.Context.Api.PluckBush(Actual.Id, pluck.Pos);
+        }
+    }
+
+    private Vector3 GetMovementVector()
+    {
+        Vector3 movement = Vector3.zero;
+        if (Input.GetKey(KeyCode.W))
+        {
+            movement += Vector3.forward;
+        }
+
+        if (Input.GetKey(KeyCode.D))
+        {
+            movement += Vector3.right;
+        }
+
+        if (Input.GetKey(KeyCode.S))
+        {
+            movement += Vector3.back;
+        }
+
+        if (Input.GetKey(KeyCode.A))
+        {
+            movement += Vector3.left;
+        }
+
+        if (movement != Vector3.zero && Actual.Command?.CurrentCommand != null)
+        {
+            Actual.Command?.ClearCommands();
+        }
+
+        movement = movement.normalized * MovementSpeed * Time.deltaTime;
+        return movement;
     }
 }
