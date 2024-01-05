@@ -25,11 +25,10 @@ Material:
   m_Parent: {fileID: 0}
   m_ModifiedSerializedProperties: 0
   m_ValidKeywords:
-  - _ADVANCED_LIGHTING
   - _NORMALMAP
+  - _SIMPLE_LIGHTING
   - _SPECULARHIGHLIGHTS_OFF
-  m_InvalidKeywords:
-  - _ENVIRONMENTREFLECTIONS_ON
+  m_InvalidKeywords: []
   m_LightmapFlags: 4
   m_EnableInstancingVariants: 1
   m_DoubleSidedGI: 0
@@ -103,7 +102,7 @@ Material:
     - _ColorMapHeight: 0
     - _ColorMapStrength: 1
     - _Cull: 0
-    - _Cutoff: 0.196
+    - _Cutoff: 0.246
     - _Darkening: 0.1
     - _DisableBending: 0
     - _DisableDecals: 0
@@ -115,13 +114,13 @@ Material:
     - _Glossiness: 0
     - _GlossyReflections: 0
     - _HueVariationHeight: 0
-    - _LightingMode: 2
+    - _LightingMode: 1
     - _Metallic: 0
     - _NormalFlattenDepthNormals: 0
     - _NormalFlattening: 1
     - _NormalSpherify: 0
     - _NormalSpherifyMask: 0
-    - _OcclusionStrength: 0.152
+    - _OcclusionStrength: 0.337
     - _PerspectiveCorrection: 1
     - _QueueOffset: 0
     - _ReceiveShadows: 1
@@ -141,7 +140,7 @@ Material:
     - _VertexColorBendingChannel: 0
     - _VertexColorShadingChannel: 0
     - _VertexColorWindChannel: 0
-    - _VertexDarkening: 0
+    - _VertexDarkening: 0.278
     - _WindAmbientStrength: 0.2
     - _WindGustFreq: 4
     - _WindGustSpeed: 2
@@ -163,7 +162,7 @@ Material:
     - _FadeFar: {r: 50, g: 100, b: 0, a: 0}
     - _FadeNear: {r: 0.25, g: 0.5, b: 0, a: 0}
     - _FadeParams: {r: 50, g: 100, b: 0, a: 0}
-    - _HueVariation: {r: 0, g: 0.41819417, b: 1, a: 0.12156863}
+    - _HueVariation: {r: 1, g: 0.060846783, b: 0, a: 0.05882353}
     - _LODDebugColor: {r: 1, g: 1, b: 1, a: 1}
     - _NormalParams: {r: 0.809, g: 1, b: 0, a: 0}
     - _ScalemapInfluence: {r: 0, g: 1, b: 0, a: 0}

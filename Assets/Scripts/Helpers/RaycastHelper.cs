@@ -93,7 +93,7 @@ public static class RaycastHelper
 
             iter = iter.parent;
         }
-        while (iter.parent != null);
+        while (iter?.parent != null);
 
         return null;
     }
