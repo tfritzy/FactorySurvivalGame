@@ -35,6 +35,7 @@ public class WorldMono : MonoBehaviour
 
     void Awake()
     {
+        Application.targetFrameRate = 60;
         Context = new Context();
         TerrainGenerator generator = new TerrainGenerator(100, 100, 10);
         Context.SetWorld(new World(

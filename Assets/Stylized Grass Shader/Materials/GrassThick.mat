@@ -120,7 +120,7 @@ Material:
     - _NormalFlattening: 1
     - _NormalSpherify: 0
     - _NormalSpherifyMask: 0
-    - _OcclusionStrength: 0.337
+    - _OcclusionStrength: 0.206
     - _PerspectiveCorrection: 1
     - _QueueOffset: 0
     - _ReceiveShadows: 1
@@ -140,7 +140,7 @@ Material:
     - _VertexColorBendingChannel: 0
     - _VertexColorShadingChannel: 0
     - _VertexColorWindChannel: 0
-    - _VertexDarkening: 0.278
+    - _VertexDarkening: 0.147
     - _WindAmbientStrength: 0.2
     - _WindGustFreq: 4
     - _WindGustSpeed: 2
@@ -155,14 +155,14 @@ Material:
     - _WorkflowMode: 1
     - _ZWrite: 1
     m_Colors:
-    - _BaseColor: {r: 0.19878481, g: 0.24465823, b: 0.30200002, a: 1}
+    - _BaseColor: {r: 0.23529412, g: 0.42352942, b: 0.32941177, a: 1}
     - _BendTint: {r: 1, g: 1, b: 1, a: 0}
     - _Color: {r: 0.5, g: 0.5, b: 0.5, a: 1}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
     - _FadeFar: {r: 50, g: 100, b: 0, a: 0}
     - _FadeNear: {r: 0.25, g: 0.5, b: 0, a: 0}
     - _FadeParams: {r: 50, g: 100, b: 0, a: 0}
-    - _HueVariation: {r: 1, g: 0.060846783, b: 0, a: 0.05882353}
+    - _HueVariation: {r: 0.4313725, g: 0.7529412, b: 0.46666658, a: 0.13333334}
     - _LODDebugColor: {r: 1, g: 1, b: 1, a: 1}
     - _NormalParams: {r: 0.809, g: 1, b: 0, a: 0}
     - _ScalemapInfluence: {r: 0, g: 1, b: 0, a: 0}

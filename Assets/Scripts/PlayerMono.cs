@@ -59,9 +59,6 @@ public class PlayerMono : MonoBehaviour
     void Update()
     {
         Actual.Context.Api.SetUnitLocation(Actual.Id, this.transform.position.ToPoint3Float());
-        Vector3 movementVector = GetMovementVector();
-        this.transform.position += movementVector;
-        ObeyCommands();
     }
 
     private void UpdateArrows()
@@ -100,25 +97,18 @@ public class PlayerMono : MonoBehaviour
         }
     }
 
-    public void MoveCommand(Vector3 pos)
-    {
-        Actual.Command!.ReplaceCommands(
-            new MoveCommand(
-                pos.ToPoint3Float(),
-                Actual));
-    }
-
     public void PluckBush(Point2Int pos)
     {
-        Debug.Log("Player given pluck command");
         Point3Int topHex = Actual.Context.World.GetTopHex(pos);
+        float distance_sq = (WorldConversions.HexToUnityPosition(topHex) - this.transform.position).sqrMagnitude;
+
+
         Actual.Command!.ReplaceCommands(new MoveCommand(topHex.ToPoint3Float(), Actual));
         Actual.Command!.AddCommand(new PluckBushCommand(pos, Actual));
     }
 
     public void PickupItem(ulong id)
     {
-        Debug.Log("Player given pickup command");
         if (!Actual.Context.World.ItemObjects.ContainsKey(id))
         {
             return;
@@ -127,59 +117,5 @@ public class PlayerMono : MonoBehaviour
         Point3Float itemPos = Actual.Context.World.ItemObjects[id].Position;
         Actual.Command!.ReplaceCommands(new MoveCommand(itemPos, Actual));
         Actual.Command!.AddCommand(new PickupItem(id, Actual));
-    }
-
-    private void ObeyCommands()
-    {
-        if (Actual.Command == null)
-        {
-            return;
-        }
-
-        if (Actual.Command.CurrentCommand is MoveCommand moveCommand)
-        {
-            Vector3 delta = (moveCommand.TargetPosition - Actual.Location).ToVector3().normalized * MovementSpeed;
-            this.transform.position += delta * Time.deltaTime;
-        }
-        else if (Actual.Command.CurrentCommand is PluckBushCommand pluck)
-        {
-            Actual.Context.Api.PluckBush(Actual.Id, pluck.Pos);
-        }
-        else if (Actual.Command.CurrentCommand is PickupItem pickup)
-        {
-            Actual.Context.Api.PickupItem(Actual.Id, pickup.Id);
-        }
-    }
-
-    private Vector3 GetMovementVector()
-    {
-        Vector3 movement = Vector3.zero;
-        if (Input.GetKey(KeyCode.W))
-        {
-            movement += Vector3.forward;
-        }
-
-        if (Input.GetKey(KeyCode.D))
-        {
-            movement += Vector3.right;
-        }
-
-        if (Input.GetKey(KeyCode.S))
-        {
-            movement += Vector3.back;
-        }
-
-        if (Input.GetKey(KeyCode.A))
-        {
-            movement += Vector3.left;
-        }
-
-        if (movement != Vector3.zero && Actual.Command?.CurrentCommand != null)
-        {
-            Actual.Command?.ClearCommands();
-        }
-
-        movement = movement.normalized * MovementSpeed * Time.deltaTime;
-        return movement;
     }
 }
