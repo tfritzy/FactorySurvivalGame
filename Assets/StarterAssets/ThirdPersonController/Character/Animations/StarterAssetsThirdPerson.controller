@@ -50,10 +50,10 @@ AnimatorStateMachine:
     m_Position: {x: 0, y: 490, z: 0}
   - serializedVersion: 1
     m_State: {fileID: -2359016540567737998}
-    m_Position: {x: 790, y: 340, z: 0}
+    m_Position: {x: 510, y: 350, z: 0}
   - serializedVersion: 1
     m_State: {fileID: 6230031098872457587}
-    m_Position: {x: 790, y: 480, z: 0}
+    m_Position: {x: 510, y: 410, z: 0}
   m_ChildStateMachines: []
   m_AnyStateTransitions: []
   m_EntryTransitions: []
@@ -215,7 +215,7 @@ AnimatorState:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: BasicMotions@Loot01 - End
+  m_Name: Pickup end
   m_Speed: 1
   m_CycleOffset: 0
   m_Transitions:
@@ -570,7 +570,7 @@ AnimatorState:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: BasicMotions@Loot01 - Start
+  m_Name: Pickup start
   m_Speed: 1
   m_CycleOffset: 0
   m_Transitions:

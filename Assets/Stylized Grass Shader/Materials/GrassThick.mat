@@ -25,10 +25,9 @@ Material:
   m_Parent: {fileID: 0}
   m_ModifiedSerializedProperties: 0
   m_ValidKeywords:
-  - _NORMALMAP
-  - _SIMPLE_LIGHTING
   - _SPECULARHIGHLIGHTS_OFF
-  m_InvalidKeywords: []
+  m_InvalidKeywords:
+  - _ENVIRONMENTREFLECTIONS_ON
   m_LightmapFlags: 4
   m_EnableInstancingVariants: 1
   m_DoubleSidedGI: 0
@@ -114,13 +113,13 @@ Material:
     - _Glossiness: 0
     - _GlossyReflections: 0
     - _HueVariationHeight: 0
-    - _LightingMode: 1
+    - _LightingMode: 0
     - _Metallic: 0
     - _NormalFlattenDepthNormals: 0
     - _NormalFlattening: 1
     - _NormalSpherify: 0
     - _NormalSpherifyMask: 0
-    - _OcclusionStrength: 0.206
+    - _OcclusionStrength: 0
     - _PerspectiveCorrection: 1
     - _QueueOffset: 0
     - _ReceiveShadows: 1
@@ -135,12 +134,12 @@ Material:
     - _Translucency: 0.791
     - _TranslucencyDirect: 0
     - _TranslucencyFalloff: 8
-    - _TranslucencyIndirect: 0
+    - _TranslucencyIndirect: 0.062
     - _TranslucencyOffset: 0
     - _VertexColorBendingChannel: 0
     - _VertexColorShadingChannel: 0
     - _VertexColorWindChannel: 0
-    - _VertexDarkening: 0.147
+    - _VertexDarkening: 0
     - _WindAmbientStrength: 0.2
     - _WindGustFreq: 4
     - _WindGustSpeed: 2
@@ -155,14 +154,14 @@ Material:
     - _WorkflowMode: 1
     - _ZWrite: 1
     m_Colors:
-    - _BaseColor: {r: 0.23529412, g: 0.42352942, b: 0.32941177, a: 1}
+    - _BaseColor: {r: 0.36078432, g: 0.5372549, b: 0.58431375, a: 1}
     - _BendTint: {r: 1, g: 1, b: 1, a: 0}
     - _Color: {r: 0.5, g: 0.5, b: 0.5, a: 1}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
     - _FadeFar: {r: 50, g: 100, b: 0, a: 0}
     - _FadeNear: {r: 0.25, g: 0.5, b: 0, a: 0}
     - _FadeParams: {r: 50, g: 100, b: 0, a: 0}
-    - _HueVariation: {r: 0.4313725, g: 0.7529412, b: 0.46666658, a: 0.13333334}
+    - _HueVariation: {r: 0.5882353, g: 0.8627451, b: 0.49803895, a: 0.2627451}
     - _LODDebugColor: {r: 1, g: 1, b: 1, a: 1}
     - _NormalParams: {r: 0.809, g: 1, b: 0, a: 0}
     - _ScalemapInfluence: {r: 0, g: 1, b: 0, a: 0}
