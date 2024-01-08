@@ -193,7 +193,7 @@ public class WorldMono : MonoBehaviour
         }
 
         GameObject vegetation =
-            Instantiate(VegetationPool.GetVegetation(type.Value, vegetationParent));
+            VegetationPool.GetVegetation(type.Value, vegetationParent);
         Point3Int topPoint = Context.World.Terrain.GetTopHex(pos);
         vegetation.transform.position = WorldConversions.HexToUnityPosition(topPoint);
         vegetation.transform.SetParent(transform);
