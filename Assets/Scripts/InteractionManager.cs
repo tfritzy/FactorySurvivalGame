@@ -21,20 +21,6 @@ public class InteractionManager : MonoBehaviour
                 return;
             }
         }
-
-        if (Input.GetKey(KeyCode.Space))
-        {
-            bool interacted = InteractWithinSphere();
-            if (interacted)
-            {
-                return;
-            }
-        }
-
-        if (Input.GetMouseButtonDown(1))
-        {
-            RightClickMove();
-        }
     }
 
     private void UpdateHighlight(Interactable? i)
@@ -58,38 +44,33 @@ public class InteractionManager : MonoBehaviour
         }
     }
 
-    private bool InteractWithinSphere()
+    public static bool InteractWithinSphere()
     {
         Vector3 origin = PlayerMono.Instance.transform.position;
         Collider[] hits = Physics.OverlapSphere(
             origin,
             2.25f,
-            Layers.CharacterMask | Layers.VegetationMask);
-
-        Debug.Log($"Found {hits.Length} hits");
+            Layers.InteractableLayersMask);
         if (hits.Length > 0)
         {
-            var closest = hits.OrderBy(
-                c => (c.transform.position - origin).sqrMagnitude).First();
-            Interactable i = closest.GetComponent<Interactable>();
+            var ordered = hits.OrderBy(
+                c => (c.transform.position - origin).sqrMagnitude)
+                .ToList();
+
+            if (ordered.Count < 2)
+            {
+                return false;
+            }
+
+            Interactable? i = RaycastHelper.FindInteractableInHierarchy(ordered[1].gameObject);
             if (i != null)
             {
-                Debug.Log($"Found interactable {i.GameObject.name}");
                 i.OnInteract();
                 return true;
             }
         }
 
         return false;
-    }
-
-    private void RightClickMove()
-    {
-        Vector3? point = RaycastHelper.GetGroundPointUnderCursor();
-        if (point != null)
-        {
-            PlayerMono.Instance.MoveCommand(point.Value);
-        }
     }
 
     private void ListenForHotkeys()

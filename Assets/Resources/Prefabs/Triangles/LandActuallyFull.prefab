@@ -208,6 +208,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: GrassThick (1)
       objectReference: {fileID: 0}
+    - target: {fileID: 4339158089320749558, guid: d5f74406c85467741bd1b1e5088e515d, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 6159090623379372425, guid: d5f74406c85467741bd1b1e5088e515d, type: 3}
       propertyPath: m_CastShadows
       value: 0
@@ -325,6 +329,10 @@ PrefabInstance:
     - target: {fileID: 4339158089320749558, guid: d5f74406c85467741bd1b1e5088e515d, type: 3}
       propertyPath: m_Name
       value: GrassThick (2)
+      objectReference: {fileID: 0}
+    - target: {fileID: 4339158089320749558, guid: d5f74406c85467741bd1b1e5088e515d, type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6159090623379372425, guid: d5f74406c85467741bd1b1e5088e515d, type: 3}
       propertyPath: m_CastShadows
@@ -444,6 +452,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: GrassThick
       objectReference: {fileID: 0}
+    - target: {fileID: 4339158089320749558, guid: d5f74406c85467741bd1b1e5088e515d, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 6159090623379372425, guid: d5f74406c85467741bd1b1e5088e515d, type: 3}
       propertyPath: m_CastShadows
       value: 0
@@ -561,6 +573,10 @@ PrefabInstance:
     - target: {fileID: 4339158089320749558, guid: d5f74406c85467741bd1b1e5088e515d, type: 3}
       propertyPath: m_Name
       value: GrassThick (3)
+      objectReference: {fileID: 0}
+    - target: {fileID: 4339158089320749558, guid: d5f74406c85467741bd1b1e5088e515d, type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6159090623379372425, guid: d5f74406c85467741bd1b1e5088e515d, type: 3}
       propertyPath: m_CastShadows

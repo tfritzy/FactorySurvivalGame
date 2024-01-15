@@ -69,25 +69,32 @@ public static class RaycastHelper
             Managers.MainCamera.ScreenPointToRay(Input.mousePosition),
             out var hitInfo,
             100f,
-            Layers.CharacterMask | Layers.VegetationMask);
+            Layers.InteractableLayersMask,
+            QueryTriggerInteraction.Collide);
         if (hit)
         {
-            var iter = hitInfo.collider.transform;
-            while (iter.parent != null)
-            {
-                if (iter.gameObject.TryGetComponent<Interactable>(out Interactable interactable))
-                {
-                    return interactable;
-                }
-
-                iter = iter.parent;
-            }
-
-            return null;
+            return FindInteractableInHierarchy(hitInfo.collider.gameObject);
         }
         else
         {
             return null;
         }
+    }
+
+    public static Interactable? FindInteractableInHierarchy(GameObject gameObject)
+    {
+        var iter = gameObject.transform;
+        do
+        {
+            if (iter.gameObject.TryGetComponent<Interactable>(out Interactable interactable))
+            {
+                return interactable;
+            }
+
+            iter = iter.parent;
+        }
+        while (iter?.parent != null);
+
+        return null;
     }
 }
