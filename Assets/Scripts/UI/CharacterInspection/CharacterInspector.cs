@@ -23,7 +23,7 @@ public class CharacterInspector : Modal
     public CharacterInspector(Action onClose) : base(onClose)
     {
         nameLabel = new Label();
-        nameLabel.style.color = UIManager.ColorTheme.PrimaryText;
+        nameLabel.style.color = ColorTheme.Current.PrimaryText;
         nameLabel.style.fontSize = 25;
         nameLabel.style.marginBottom = 10;
         nameLabel.pickingMode = PickingMode.Ignore;
@@ -80,7 +80,7 @@ public class CharacterInspector : Modal
             if (sections.Count > 1)
             {
                 var label = new Label("Inventory");
-                label.style.color = UIManager.ColorTheme.PrimaryText;
+                label.style.color = ColorTheme.Current.PrimaryText;
                 label.style.fontSize = 14;
                 label.pickingMode = PickingMode.Ignore;
                 sections[Section.Inventory].Add(label);
@@ -109,7 +109,7 @@ public class CharacterInspector : Modal
 
             VisualElement fuelInventory = new VisualElement();
             var fuelLabel = new Label("Fuel");
-            fuelLabel.style.color = UIManager.ColorTheme.PrimaryText;
+            fuelLabel.style.color = ColorTheme.Current.PrimaryText;
             fuelLabel.style.fontSize = 14;
             fuelLabel.pickingMode = PickingMode.Ignore;
             fuelInventory.Add(fuelLabel);
@@ -127,7 +127,7 @@ public class CharacterInspector : Modal
 
             VisualElement oreInventory = new VisualElement();
             var oreLabel = new Label("Ore");
-            oreLabel.style.color = UIManager.ColorTheme.PrimaryText;
+            oreLabel.style.color = ColorTheme.Current.PrimaryText;
             oreLabel.style.fontSize = 14;
             oreLabel.pickingMode = PickingMode.Ignore;
             oreInventory.Add(oreLabel);
@@ -168,7 +168,7 @@ public class CharacterInspector : Modal
             if (sections.Count > 1)
             {
                 var label = new Label("Conveyor");
-                label.style.color = UIManager.ColorTheme.PrimaryText;
+                label.style.color = ColorTheme.Current.PrimaryText;
                 label.style.fontSize = 14;
                 label.pickingMode = PickingMode.Ignore;
                 sections[Section.Conveyor].Add(label);
@@ -195,7 +195,7 @@ public class CharacterInspector : Modal
                 var itemElement = new UiItem();
                 itemElement.Update(item.Item);
                 container.Add(itemElement);
-                container.style.backgroundColor = UIManager.ColorTheme.OccupiedInventorySlot;
+                container.style.backgroundColor = ColorTheme.Current.OccupiedInventorySlot;
                 conveyorElements.contentContainer.Add(container);
                 i += 1;
             }
@@ -218,7 +218,7 @@ public class CharacterInspector : Modal
         container.style.minHeight = InventorySlot.Size;
         container.SetAllBorderRadius(5);
         container.SetAllBorderWidth(1);
-        container.SetAllBorderColor(UIManager.ColorTheme.PanelOutline);
+        container.SetAllBorderColor(ColorTheme.Current.PanelOutline);
 
         if (!isLast)
             container.style.marginRight = 10;

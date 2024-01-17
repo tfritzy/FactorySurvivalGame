@@ -1,7 +1,9 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.Remoting.Messaging;
 using Core;
+using Google.Protobuf;
 using HighlightPlus;
 using UnityEngine;
 
@@ -306,7 +308,7 @@ public class WorldMono : MonoBehaviour
     {
         GameObject itemObject = ItemPool.GetItem(objectAdded.ItemObject.Item.Type, this.transform);
         itemObject.transform.position = objectAdded.ItemObject.Position.ToVector3();
-        itemObject.GetComponent<ItemMono>().SetItem(objectAdded.ItemObject.Item);
+        itemObject.GetComponent<ItemMono>().SetItem(objectAdded.ItemObject.Item.FromSchema());
         SpawnedItemObjects.Add(objectAdded.ItemObject.Item.Id, itemObject);
     }
 

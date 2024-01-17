@@ -8,7 +8,7 @@ public abstract class Drawer : ActiveElement
 
     public Drawer()
     {
-        Content.style.backgroundColor = UIManager.ColorTheme.PanelBackgroundColor;
+        Content.style.backgroundColor = ColorTheme.Current.PanelBackgroundColor;
         Content.style.position = Position.Absolute;
         Content.style.right = 0;
         Content.style.top = 0;
@@ -27,7 +27,7 @@ public abstract class Drawer : ActiveElement
         Content = content;
         Content.SetAllPadding(10);
         Content.style.borderLeftWidth = 1;
-        Content.style.borderLeftColor = UIManager.ColorTheme.PanelOutline;
+        Content.style.borderLeftColor = ColorTheme.Current.PanelOutline;
 
         Shown = false;
     }

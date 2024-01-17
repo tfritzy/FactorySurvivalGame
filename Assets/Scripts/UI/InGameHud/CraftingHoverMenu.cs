@@ -16,15 +16,15 @@ public class CraftingHoverMenu : VisualElement
         style.left = x + 10;
         style.top = y;
         style.width = 200;
-        style.backgroundColor = UIManager.ColorTheme.PanelBackgroundColor;
+        style.backgroundColor = ColorTheme.Current.PanelBackgroundColor;
         this.SetAllBorderRadius(10);
         this.SetAllPadding(5);
         this.SetAllBorderWidth(1);
-        this.SetAllBorderColor(UIManager.ColorTheme.PanelOutline);
+        this.SetAllBorderColor(ColorTheme.Current.PanelOutline);
 
         var label = new Label(item.Name);
         label.style.fontSize = 16;
-        label.style.color = UIManager.ColorTheme.PrimaryText;
+        label.style.color = ColorTheme.Current.PrimaryText;
         Add(label);
 
         if (item.Recipe != null)
@@ -76,7 +76,7 @@ public class CraftingHoverMenu : VisualElement
             if (quantityHeld < quantity)
                 amountNeeded.style.color = Color.red;
             else
-                amountNeeded.style.color = UIManager.ColorTheme.PrimaryText;
+                amountNeeded.style.color = ColorTheme.Current.PrimaryText;
         }
     }
 

@@ -18,10 +18,10 @@ public class ActiveItemsBar : ActiveElement
     {
         style.marginBottom = 10;
 
-        this.Content.style.backgroundColor = UIManager.ColorTheme.PanelBackgroundColor;
+        this.Content.style.backgroundColor = ColorTheme.Current.PanelBackgroundColor;
         this.Content.SetAllBorderRadius(InventorySlot.BorderRadius);
         this.Content.SetAllBorderWidth(1);
-        this.Content.SetAllBorderColor(UIManager.ColorTheme.PanelOutline);
+        this.Content.SetAllBorderColor(ColorTheme.Current.PanelOutline);
 
         var content = new VisualElement();
         this.Content.Add(content);

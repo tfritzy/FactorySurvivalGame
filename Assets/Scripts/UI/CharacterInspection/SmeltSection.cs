@@ -28,20 +28,20 @@ public class SmeltSection : VisualElement
         }
 
         var label = new Label("Smelting");
-        label.style.color = UIManager.ColorTheme.PrimaryText;
+        label.style.color = ColorTheme.Current.PrimaryText;
         label.style.fontSize = 14;
         label.pickingMode = PickingMode.Ignore;
         this.Add(label);
 
         float tempGaugeWidth = 150;
         VisualElement tempGaugeContainer = new VisualElement();
-        tempGaugeContainer.style.backgroundColor = UIManager.ColorTheme.PanelForegroundColor;
+        tempGaugeContainer.style.backgroundColor = ColorTheme.Current.PanelForegroundColor;
         tempGaugeContainer.style.width = tempGaugeWidth;
         tempGaugeContainer.style.height = 10;
         tempGaugeContainer.SetAllBorderRadius(5);
         temperatureGauge = new VisualElement();
         temperatureGauge.style.height = 10;
-        temperatureGauge.style.backgroundColor = UIManager.ColorTheme.MainAccent;
+        temperatureGauge.style.backgroundColor = ColorTheme.Current.MainAccent;
         temperatureGauge.SetAllBorderRadius(5);
         float smeltProgress =
             building.Smelt.SmeltingItemTemperature_C /
@@ -60,7 +60,7 @@ public class SmeltSection : VisualElement
         this.Add(tempGaugeContainer);
 
         temperatureLabel = new Label();
-        temperatureLabel.style.color = UIManager.ColorTheme.MainAccent;
+        temperatureLabel.style.color = ColorTheme.Current.MainAccent;
         this.Add(temperatureLabel);
     }
 

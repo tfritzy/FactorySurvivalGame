@@ -19,7 +19,7 @@ public static class WorldConversions
     {
         Point3Int res =
             GridHelpers.PixelToEvenRPlusHeight(new Point3Float(unityPosition.x, unityPosition.z, unityPosition.y));
-        res.y = -res.y;
+        // res.y = -res.y;
         return res;
     }
 

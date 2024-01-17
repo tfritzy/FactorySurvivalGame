@@ -21,11 +21,11 @@ public class ItemSearch : VisualElement
         var textInput = input.Children().First();
         textInput.SetAllBorderRadius(20);
         textInput.SetAllPadding(2);
-        textInput.SetAllBorderColor(UIManager.ColorTheme.PanelOutline);
-        textInput.style.backgroundColor = UIManager.ColorTheme.PanelBackgroundColor;
+        textInput.SetAllBorderColor(ColorTheme.Current.PanelOutline);
+        textInput.style.backgroundColor = ColorTheme.Current.PanelBackgroundColor;
         textInput.style.paddingLeft = 10;
         var label = textInput.Children().First();
-        label.style.color = UIManager.ColorTheme.PrimaryText;
+        label.style.color = ColorTheme.Current.PrimaryText;
         label.SetAllMargin(7);
         label.style.fontSize = 16;
 
@@ -48,12 +48,12 @@ public class ItemSearch : VisualElement
         });
         input.RegisterCallback<FocusInEvent>((evt) =>
         {
-            textInput.style.backgroundColor = UIManager.ColorTheme.PanelBackgroundColor;
+            textInput.style.backgroundColor = ColorTheme.Current.PanelBackgroundColor;
             InputManager.Instance.SetEnabled(false);
         });
         input.RegisterCallback<FocusOutEvent>((evt) =>
         {
-            textInput.style.backgroundColor = UIManager.ColorTheme.PanelForegroundColor;
+            textInput.style.backgroundColor = ColorTheme.Current.PanelForegroundColor;
             InputManager.Instance.SetEnabled(true);
         });
         Add(input);
@@ -90,7 +90,7 @@ public class ItemSearch : VisualElement
 
             var itemName = new Label();
             itemName.text = item.Name.ToString();
-            itemName.style.color = UIManager.ColorTheme.PrimaryText;
+            itemName.style.color = ColorTheme.Current.PrimaryText;
             itemName.style.unityTextAlign = TextAnchor.MiddleCenter;
             itemWithName.Add(itemName);
 

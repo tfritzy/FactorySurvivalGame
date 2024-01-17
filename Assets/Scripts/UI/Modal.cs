@@ -23,8 +23,8 @@ public abstract class Modal : ActiveElement
         modal = new VisualElement();
         modal.SetAllBorderRadius(15);
         modal.style.overflow = Overflow.Hidden;
-        modal.style.backgroundColor = UIManager.ColorTheme.PanelBackgroundColor;
-        modal.SetAllBorderColor(UIManager.ColorTheme.PanelOutline);
+        modal.style.backgroundColor = ColorTheme.Current.PanelBackgroundColor;
+        modal.SetAllBorderColor(ColorTheme.Current.PanelOutline);
         modal.SetAllBorderWidth(1);
 
         Add(modal);
@@ -51,7 +51,6 @@ public abstract class Modal : ActiveElement
         var content = new VisualElement();
         modal.Add(content);
         content.SetAllPadding(20);
-        content.style.paddingBottom = 0;
         modal = content;
 
         if (onClose != null)
@@ -62,18 +61,18 @@ public abstract class Modal : ActiveElement
             closeButton.style.top = 2;
             closeButton.text = "✕";
             closeButton.style.fontSize = 26;
-            closeButton.style.color = UIManager.ColorTheme.PrimaryText;
+            closeButton.style.color = ColorTheme.Current.PrimaryText;
             closeButton.style.width = 40;
             closeButton.style.height = 40;
             closeButton.style.backgroundColor = Color.clear;
             closeButton.SetAllBorderWidth(0);
             closeButton.clicked += onClose;
             modal.Add(closeButton);
+
+            InputManager.Instance.RegisterKeyDown(KeyCode.Escape, Hide, -1);
+            Hide();
         }
 
-        InputManager.Instance.RegisterKeyDown(KeyCode.Escape, Hide, -1);
-
-        Hide();
         Shown = false;
     }
 

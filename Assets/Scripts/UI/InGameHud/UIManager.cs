@@ -9,7 +9,6 @@ public class UIManager : MonoBehaviour
 {
     private VisualElement root;
     private InGameHud inGameHud;
-    public static ColorTheme ColorTheme;
     private CharacterInspector characterInspector;
 
     private static UIManager _instance;
@@ -28,7 +27,6 @@ public class UIManager : MonoBehaviour
 
     void Start()
     {
-        ColorTheme = new DarkTheme();
         root = GetComponent<UIDocument>().rootVisualElement;
 
         inGameHud = new InGameHud();

@@ -16,4 +16,6 @@ public abstract class ColorTheme
     public abstract Color GridDivider { get; }
 
     public abstract Color MainAccent { get; }
+
+    public static ColorTheme Current { get; set; } = new DarkTheme();
 }

@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: 64eab6b3672dbcc478a24a7a828cfcc4
+guid: a54551e97a6450040af70a41693b383f
 ModelImporter:
   serializedVersion: 22200
   internalIDToNameTable: []
@@ -7,13 +7,23 @@ ModelImporter:
   - first:
       type: UnityEngine:Material
       assembly: UnityEngine.CoreModule
-      name: Bark
+      name: Material.001
     second: {fileID: 2100000, guid: 0203a20b8d8bff541834f2fab01199a1, type: 2}
   - first:
       type: UnityEngine:Material
       assembly: UnityEngine.CoreModule
-      name: Leaves
+      name: Material.002
+    second: {fileID: 2100000, guid: 0203a20b8d8bff541834f2fab01199a1, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Material.003
     second: {fileID: 2100000, guid: 3a4ee8b08cff7fb409aeda15dce78942, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Material.004
+    second: {fileID: 2100000, guid: 0203a20b8d8bff541834f2fab01199a1, type: 2}
   materials:
     materialImportMode: 2
     materialName: 0
