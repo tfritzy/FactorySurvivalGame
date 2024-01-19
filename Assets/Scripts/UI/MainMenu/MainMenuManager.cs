@@ -25,7 +25,10 @@ public class MainMenuManager : MonoBehaviour
     {
         MainMenu,
         Lobby,
-        Settings
+        Settings,
+        JoinVsCreateSelect,
+        CreateMultiplayerGame,
+        LobbyBrowser,
     }
     private Dictionary<Page, ActiveElement> pages = new();
 
@@ -35,7 +38,10 @@ public class MainMenuManager : MonoBehaviour
         {
             { Page.MainMenu, new MainMenu() },
             { Page.Lobby, new Lobby() },
-            { Page.Settings, new Settings() }
+            { Page.Settings, new Settings() },
+            { Page.JoinVsCreateSelect, new JoinVsCreate() },
+            { Page.CreateMultiplayerGame, new CreateMultiplayerGame() },
+            { Page.LobbyBrowser, new LobbyBrowser() },
         };
 
         root = GetComponent<UIDocument>().rootVisualElement;
@@ -51,6 +57,18 @@ public class MainMenuManager : MonoBehaviour
         var settings = new Settings();
         root.Add(settings);
         pages[Page.Settings] = settings;
+
+        var joinVsCreateSelect = new JoinVsCreate();
+        root.Add(joinVsCreateSelect);
+        pages[Page.JoinVsCreateSelect] = joinVsCreateSelect;
+
+        var createMultiplayerGame = new CreateMultiplayerGame();
+        root.Add(createMultiplayerGame);
+        pages[Page.CreateMultiplayerGame] = createMultiplayerGame;
+
+        var lobbyBrowser = new LobbyBrowser();
+        root.Add(lobbyBrowser);
+        pages[Page.LobbyBrowser] = lobbyBrowser;
 
         ShowPage(Page.MainMenu);
     }

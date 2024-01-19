@@ -58,7 +58,7 @@ public class PlayerMono : MonoBehaviour
 
     void Update()
     {
-        Actual.Context.Api.SetUnitLocation(Actual.Id, this.transform.position.ToPoint3Float());
+        Actual.SetLocation(this.transform.position.ToPoint3Float());
     }
 
     private void UpdateArrows()

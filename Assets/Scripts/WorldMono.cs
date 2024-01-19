@@ -98,7 +98,7 @@ public class WorldMono : MonoBehaviour
                         continue;
                     }
 
-                    Triangle?[]? point = Context.World.Terrain.GetAt(hex);
+                    Schema.Triangle?[]? point = Context.World.Terrain.GetAt(hex);
                     GameObject[] hexes = new GameObject[6];
                     bool allFull = point.All(p => p.SubType == TriangleSubType.LandFull);
                     ShownHexesObjects[point2Hex][hex] = new GameObject[6];
@@ -176,13 +176,16 @@ public class WorldMono : MonoBehaviour
         {
             for (int y = 0; y < Context.World.MaxY; y++)
             {
-                VegetationType? type = Context.World.Terrain.Vegetation[x, y];
-                SpawnSingleVegetation(new Point2Int(x, y), type);
+                TerrainObject? obj = Context.World.Terrain.TerrainObjects[x, y];
+                if (obj != null)
+                {
+                    SpawnSingleVegetation(new Point2Int(x, y), obj.Type);
+                }
             }
         }
     }
 
-    private void SpawnSingleVegetation(Point2Int pos, VegetationType? type)
+    private void SpawnSingleVegetation(Point2Int pos, TerrainObjectType? type)
     {
         if (SpawnedVegetation.ContainsKey(pos))
         {
@@ -238,8 +241,8 @@ public class WorldMono : MonoBehaviour
             case UpdateType.TriHiddenOrDestroyed:
                 HandleTriHiddenOrDestroyed((TriHiddenOrDestroyed)update);
                 break;
-            case UpdateType.VegetationChange:
-                HandleVegetationChange((VegetationChange)update);
+            case UpdateType.TerrainObjectChange:
+                HandleTerrainObjectChange((TerrainObjectChange)update);
                 break;
             case UpdateType.ItemObjectAdded:
                 HandleItemObjectAdded((ItemObjectAdded)update);
@@ -253,7 +256,7 @@ public class WorldMono : MonoBehaviour
 
     private void HandleTriUncoveredOrAdded(TriUncoveredOrAdded update)
     {
-        Triangle? triangle = World.Terrain.GetTri(update.GridPosition, update.Side);
+        Schema.Triangle? triangle = World.Terrain.GetTri(update.GridPosition, update.Side);
         if (triangle != null)
         {
             var triGO = GameObject.Instantiate(Models.GetTriangleMesh(triangle.SubType), transform);
@@ -270,9 +273,9 @@ public class WorldMono : MonoBehaviour
         }
     }
 
-    private void HandleVegetationChange(VegetationChange vegetationChange)
+    private void HandleTerrainObjectChange(TerrainObjectChange vegetationChange)
     {
-        if (vegetationChange.NewVegeType == VegetationType.StrippedBush
+        if (vegetationChange.NewVegeType == TerrainObjectType.StrippedBush
             && SpawnedVegetation.ContainsKey(vegetationChange.GridPosition))
         {
             RemoveLeavesFromBush(SpawnedVegetation[vegetationChange.GridPosition]);
@@ -308,7 +311,7 @@ public class WorldMono : MonoBehaviour
     {
         GameObject itemObject = ItemPool.GetItem(objectAdded.ItemObject.Item.Type, this.transform);
         itemObject.transform.position = objectAdded.ItemObject.Position.ToVector3();
-        itemObject.GetComponent<ItemMono>().SetItem(objectAdded.ItemObject.Item.FromSchema());
+        itemObject.GetComponent<ItemMono>().SetItem(Item.FromSchema(objectAdded.ItemObject.Item));
         SpawnedItemObjects.Add(objectAdded.ItemObject.Item.Id, itemObject);
     }
 

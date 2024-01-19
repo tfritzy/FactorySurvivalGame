@@ -4,8 +4,8 @@ using UnityEngine;
 
 public static class VegetationPool
 {
-    private static Dictionary<VegetationType, Queue<GameObject>> Vegetation = new();
-    public static GameObject GetVegetation(VegetationType type, Transform? parent)
+    private static Dictionary<TerrainObjectType, Queue<GameObject>> Vegetation = new();
+    public static GameObject GetVegetation(TerrainObjectType type, Transform? parent)
     {
         if (!Vegetation.ContainsKey(type))
         {
@@ -22,7 +22,7 @@ public static class VegetationPool
         return vege;
     }
 
-    public static void ReturnVegetation(VegetationType type, GameObject vegetation)
+    public static void ReturnVegetation(TerrainObjectType type, GameObject vegetation)
     {
         if (!Vegetation.ContainsKey(type))
         {

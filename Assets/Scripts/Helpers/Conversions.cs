@@ -28,6 +28,12 @@ public static class WorldConversions
         return new Vector3(pos.x, pos.z, pos.y);
     }
 
+    public static Vector3 ToVector3(this Schema.Point3Float pos)
+    {
+        return new Vector3(pos.X, pos.Z, pos.Y);
+    }
+
+
     public static Point3Float ToPoint3Float(this Vector3 pos)
     {
         return new Point3Float(pos.x, pos.z, pos.y);

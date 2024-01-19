@@ -1,8 +1,10 @@
-public class LobbyList : Modal
+using UnityEngine.UIElements;
+
+public class LobbyBrowser : Modal
 {
-    public LobbyList()
+    public LobbyBrowser()
     {
-        Label title = new Label("Open games");
+        Label title = new Label("Browse games");
         title.style.fontSize = 30;
         title.style.color = ColorTheme.Current.PrimaryText;
         modal.Add(title);
@@ -16,10 +18,13 @@ public class LobbyList : Modal
         findRandomGame.style.backgroundColor = ColorTheme.Current.PanelForegroundColor;
         findRandomGame.style.color = ColorTheme.Current.PrimaryText;
         findRandomGame.SetAllBorderRadius(5);
-        findRandomGame.clicked += () =>
+        findRandomGame.clicked += async () =>
         {
-            MainMenuManager.Instance.ShowPage(MainMenuManager.Page.Lobby);
+            await ConnectionManager.Instance.StartClientConnection(
+                () => { MainMenuManager.Instance.ShowPage(MainMenuManager.Page.Lobby); }
+            );
         };
+        modal.Add(findRandomGame);
 
         Button back = new Button();
         back.text = "Back";
@@ -37,4 +42,6 @@ public class LobbyList : Modal
             MainMenuManager.Instance.ShowPage(MainMenuManager.Page.MainMenu);
         };
     }
+
+
 }

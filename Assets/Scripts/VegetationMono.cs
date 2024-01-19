@@ -6,7 +6,7 @@ using UnityEngine.Rendering;
 public class VegetationMono : MonoBehaviour, Interactable
 {
     public Point2Int Pos;
-    public VegetationType Type;
+    public TerrainObjectType Type;
     private HighlightEffect? _highlightEffect;
     private HighlightEffect HighlightEffect
     {
@@ -22,7 +22,7 @@ public class VegetationMono : MonoBehaviour, Interactable
     }
     public GameObject GameObject => this.gameObject;
 
-    public void Init(Point2Int pos, VegetationType type)
+    public void Init(Point2Int pos, TerrainObjectType type)
     {
         this.Type = type;
         this.Pos = pos;
@@ -40,7 +40,7 @@ public class VegetationMono : MonoBehaviour, Interactable
 
     public void OnInteract()
     {
-        if (this.Type == VegetationType.Bush)
+        if (this.Type == TerrainObjectType.Bush)
         {
             PlayerMono.Instance.PluckBush(this.Pos);
         }

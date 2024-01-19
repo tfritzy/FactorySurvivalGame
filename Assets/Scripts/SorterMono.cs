@@ -22,7 +22,7 @@ public class SorterMono : BuildingMono
             Destroy(renderType);
         }
 
-        if (FilterType == ItemType.Invalid)
+        if (FilterType == ItemType.InvalidItemType)
         {
             return;
         }

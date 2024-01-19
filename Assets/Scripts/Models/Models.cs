@@ -46,11 +46,11 @@ public static class Models
         return _itemModels[type];
     }
 
-    private static Dictionary<VegetationType, GameObject[]> _vegetationPrefabs = new();
-    public static GameObject GetVegetationPrefab(VegetationType type)
+    private static Dictionary<TerrainObjectType, GameObject[]> _vegetationPrefabs = new();
+    public static GameObject GetVegetationPrefab(TerrainObjectType type)
     {
         if (_vegetationPrefabs == null)
-            _vegetationPrefabs = new Dictionary<VegetationType, GameObject[]>();
+            _vegetationPrefabs = new Dictionary<TerrainObjectType, GameObject[]>();
 
         if (!_vegetationPrefabs.ContainsKey(type))
         {

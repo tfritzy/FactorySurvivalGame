@@ -27,7 +27,7 @@ public class MainMenu : Modal
         StyleMainMenuButton(multiplayer);
         multiplayer.clicked += () =>
         {
-            MainMenuManager.Instance.ShowPage(MainMenuManager.Page.Lobby);
+            MainMenuManager.Instance.ShowPage(MainMenuManager.Page.JoinVsCreateSelect);
         };
         modal.Add(multiplayer);
 
