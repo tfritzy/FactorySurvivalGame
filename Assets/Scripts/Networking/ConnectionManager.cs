@@ -3,10 +3,12 @@ using System.Net.Sockets;
 using System.Threading.Tasks;
 using Core;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class ConnectionManager : MonoBehaviour
 {
     private Connection? connection;
+    private string currentScene = "";
 
     private static ConnectionManager? _instance;
     public static ConnectionManager Instance
@@ -32,9 +34,11 @@ public class ConnectionManager : MonoBehaviour
         Task.Run(ReceiveLoop);
     }
 
-    async void Update()
+    void Update()
     {
         connection?.Update();
+        WaitForClientConnectionToReceiveWorld();
+        OnLoadGameSceneComplete();
     }
 
     async Task ReceiveLoop()
@@ -65,17 +69,70 @@ public class ConnectionManager : MonoBehaviour
         Debug.Log("Receive loop ded");
     }
 
-    public async Task StartHostConnection(Action onConnected)
+    private void WaitForClientConnectionToReceiveWorld()
     {
-        Client client = new Client();
-        connection = new HostConnection(client);
-        await connection.Connect(onConnected);
+        if (currentScene != "Game")
+        {
+            return;
+        }
+
+        if (!WorldMono.Instance.Context.HasWorld)
+        {
+            if (connection is ClientConnection clientConnection)
+            {
+                if (clientConnection.ConnectedWorld != null)
+                {
+                    WorldMono.Instance.SetWorld(clientConnection.ConnectedWorld);
+                }
+            }
+        }
     }
 
-    public async Task StartClientConnection(Action onConnected)
+    private void OnLoadGameSceneComplete()
+    {
+        if (SceneManager.GetActiveScene().name != currentScene)
+        {
+            currentScene = SceneManager.GetActiveScene().name;
+        }
+        else
+        {
+            return;
+        }
+
+        if (currentScene == "Game")
+        {
+            if (connection?.ConnectedWorld == null)
+            {
+                throw new Exception("ConnectionManager's world should not be null on game load.");
+            }
+
+            WorldMono.Instance.SetWorld(connection.ConnectedWorld);
+        }
+    }
+
+    private void LoadGameScene()
+    {
+        Debug.Log("On connected. Loading game scene");
+        SceneManager.LoadScene("Game");
+    }
+
+    public async Task StartHostConnection()
     {
         Client client = new Client();
-        connection = new ClientConnection(client);
-        await connection.Connect(onConnected);
+        connection = new HostConnection(client, LoadGameScene);
+
+        Context context = new Context();
+        Core.Terrain terrain = new Core.Terrain(new TerrainGenerator(100, 100, 5).GenerateFlatWorld(context), context);
+        World world = new World(terrain, context);
+        connection.SetWorld(world);
+
+        await connection.Connect();
+    }
+
+    public async Task StartClientConnection()
+    {
+        Client client = new Client();
+        connection = new ClientConnection(client, LoadGameScene);
+        await connection.Connect();
     }
 }

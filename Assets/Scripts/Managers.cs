@@ -24,7 +24,7 @@ public static class Managers
         {
             if (_world == null)
             {
-                _world = GameObject.Find("World").GetComponent<WorldMono>();
+                _world = GameObject.FindFirstObjectByType<WorldMono>();
             }
 
             return _world;

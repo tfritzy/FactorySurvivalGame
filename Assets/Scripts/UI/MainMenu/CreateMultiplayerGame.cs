@@ -1,3 +1,4 @@
+using UnityEngine.SceneManagement;
 using UnityEngine.UIElements;
 
 public class CreateMultiplayerGame : Modal
@@ -20,9 +21,7 @@ public class CreateMultiplayerGame : Modal
         createGame.SetAllBorderRadius(5);
         createGame.clicked += async () =>
         {
-            await ConnectionManager.Instance.StartHostConnection(
-                () => { MainMenuManager.Instance.ShowPage(MainMenuManager.Page.Lobby); }
-            );
+            await ConnectionManager.Instance.StartHostConnection();
         };
         modal.Add(createGame);
 

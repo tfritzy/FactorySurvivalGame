@@ -1,3 +1,4 @@
+using UnityEngine.SceneManagement;
 using UnityEngine.UIElements;
 
 public class LobbyBrowser : Modal
@@ -20,9 +21,7 @@ public class LobbyBrowser : Modal
         findRandomGame.SetAllBorderRadius(5);
         findRandomGame.clicked += async () =>
         {
-            await ConnectionManager.Instance.StartClientConnection(
-                () => { MainMenuManager.Instance.ShowPage(MainMenuManager.Page.Lobby); }
-            );
+            await ConnectionManager.Instance.StartClientConnection();
         };
         modal.Add(findRandomGame);
 

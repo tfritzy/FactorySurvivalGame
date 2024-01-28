@@ -39,7 +39,6 @@ public class PlayerMono : MonoBehaviour
     void Awake()
     {
         Actual = new Player(WorldMono.Instance.Context, 0);
-        WorldMono.Instance.World.AddCharacter(Actual);
         SelectedInventory = Actual.GetComponent<ActiveItems>();
         SelectedInventoryIndex = 0;
         InputManager.Instance.RegisterKeyDown(KeyCode.RightArrow, () => IncrementInventoryIndex(1));

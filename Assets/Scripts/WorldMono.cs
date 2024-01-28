@@ -39,22 +39,22 @@ public class WorldMono : MonoBehaviour
     {
         Application.targetFrameRate = 60;
         Context = new Context();
-        TerrainGenerator generator = new TerrainGenerator(100, 100, 10);
-        Context.SetWorld(new World(
-            new Core.Terrain(generator.GenerateFlatWorld(Context),
-            Context)));
+    }
+
+    public void SetWorld(World world)
+    {
+        Context.SetWorld(world);
+        World.AddCharacter(PlayerMono.Instance.Actual);
         SpawnVegetation();
-        Point3Int topHex = Context.World.Terrain.GetTopHex(new Point2Int(15, 10));
-        Context.World.AddItemObject(new Stick(1), topHex.ToPoint3Float(), new Point3Float(0, 0, 0));
-        Context.World.AddItemObject(new Limestone(1), topHex.WalkEast.ToPoint3Float(), new Point3Float(0, 0, 0));
-        Context.World.AddItemObject(new CopperBar(1), topHex.WalkEast.WalkEast.ToPoint3Float(), new Point3Float(0, 0, 0));
-        Context.World.AddItemObject(new CopperBar(1), topHex.WalkEast.WalkEast.WalkEast.ToPoint3Float(), new Point3Float(0, 0, 0));
-        Context.World.AddItemObject(new CopperBar(1), topHex.WalkEast.WalkEast.WalkEast.WalkEast.ToPoint3Float(), new Point3Float(0, 0, 0));
-        Context.World.AddItemObject(new CopperBar(1), topHex.WalkEast.WalkEast.WalkEast.WalkEast.WalkEast.ToPoint3Float(), new Point3Float(0, 0, 0));
     }
 
     void Update()
     {
+        if (!Context.HasWorld)
+        {
+            return;
+        }
+
         Context.World.Tick(Time.deltaTime * TickPercent);
 
         Point2Int currentPos = (Point2Int)WorldConversions.UnityPositionToHex(Managers.Player.transform.position);
@@ -72,6 +72,11 @@ public class WorldMono : MonoBehaviour
 
     private void UpdateShownHex()
     {
+        if (!Context.HasWorld)
+        {
+            return;
+        }
+
         DespawnOutOfRangeHex();
         for (int x = PlayerPos.x + ShownHexRange.min.x; x < PlayerPos.x + ShownHexRange.max.x; x++)
         {
@@ -132,6 +137,11 @@ public class WorldMono : MonoBehaviour
 
     private void DespawnOutOfRangeHex()
     {
+        if (!Context.HasWorld)
+        {
+            return;
+        }
+
         List<Point2Int> toRemove = new();
         foreach (Point2Int point in ShownHexesObjects.Keys)
         {
@@ -214,13 +224,13 @@ public class WorldMono : MonoBehaviour
         SpawnedVegetation[pos] = vegetation;
     }
 
-    private void HandleUpdate(Update update)
+    private void HandleUpdate(Schema.OneofUpdate update)
     {
-        switch (update.Type)
+        switch (update.UpdateCase)
         {
-            case UpdateType.BuildingAdded:
-                BuildingAdded updateBuildingAdded = (BuildingAdded)update;
-                Building newBuilding = World.GetBuildingAt(updateBuildingAdded.GridPosition);
+            case Schema.OneofUpdate.UpdateOneofCase.BuildingAdded:
+                Schema.BuildingAdded updateBuildingAdded = update.BuildingAdded;
+                Building newBuilding = World.GetBuildingAt(Point2Int.FromSchema(updateBuildingAdded.GridPosition));
                 GameObject building = Instantiate(Models.GetCharacterModel(newBuilding.Type));
                 building.transform.position = WorldConversions.HexToUnityPosition(newBuilding.GridPosition);
                 building.transform.SetParent(transform);
@@ -229,41 +239,41 @@ public class WorldMono : MonoBehaviour
                 em.Setup(newBuilding);
                 SetGrassActiveForHex((Point2Int)newBuilding.GridPosition, false);
                 break;
-            case UpdateType.BuildingRemoved:
-                BuildingRemoved updateBuildingRemoved = (BuildingRemoved)update;
-                Destroy(SpawnedCharacters[updateBuildingRemoved.Id]);
-                SpawnedCharacters.Remove(updateBuildingRemoved.Id);
-                SetGrassActiveForHex((Point2Int)updateBuildingRemoved.GridPosition, true);
+            case Schema.OneofUpdate.UpdateOneofCase.BuildingRemoved:
+                Schema.BuildingRemoved updateBuildingRemoved = update.BuildingRemoved;
+                Destroy(SpawnedCharacters[updateBuildingRemoved.BuildingId]);
+                SpawnedCharacters.Remove(updateBuildingRemoved.BuildingId);
+                SetGrassActiveForHex((Point2Int)Point3Int.FromSchema(updateBuildingRemoved.GridPosition), true);
                 break;
-            case UpdateType.TriUncoveredOrAdded:
-                HandleTriUncoveredOrAdded((TriUncoveredOrAdded)update);
-                break;
-            case UpdateType.TriHiddenOrDestroyed:
-                HandleTriHiddenOrDestroyed((TriHiddenOrDestroyed)update);
-                break;
-            case UpdateType.TerrainObjectChange:
-                HandleTerrainObjectChange((TerrainObjectChange)update);
-                break;
-            case UpdateType.ItemObjectAdded:
-                HandleItemObjectAdded((ItemObjectAdded)update);
-                break;
-            case UpdateType.ItemObjectRemoved:
-                HandleItemObjectRemoved((ItemObjectRemoved)update);
-                break;
+                // case UpdateType.TriUncoveredOrAdded:
+                //     HandleTriUncoveredOrAdded((TriUncoveredOrAdded)update);
+                //     break;
+                // case UpdateType.TriHiddenOrDestroyed:
+                //     HandleTriHiddenOrDestroyed((TriHiddenOrDestroyed)update);
+                //     break;
+                // case UpdateType.TerrainObjectChange:
+                //     HandleTerrainObjectChange((TerrainObjectChange)update);
+                //     break;
+                // case UpdateType.ItemObjectAdded:
+                //     HandleItemObjectAdded((ItemObjectAdded)update);
+                //     break;
+                // case UpdateType.ItemObjectRemoved:
+                //     HandleItemObjectRemoved((ItemObjectRemoved)update);
+                //     break;
         }
         World.AckUpdate();
     }
 
-    private void HandleTriUncoveredOrAdded(TriUncoveredOrAdded update)
-    {
-        Schema.Triangle? triangle = World.Terrain.GetTri(update.GridPosition, update.Side);
-        if (triangle != null)
-        {
-            var triGO = GameObject.Instantiate(Models.GetTriangleMesh(triangle.SubType), transform);
-            triGO.transform.position = WorldConversions.HexToUnityPosition(update.GridPosition);
-            triGO.transform.rotation = Quaternion.Euler(0, 60 * (int)update.Side, 0);
-        }
-    }
+    // private void HandleTriUncoveredOrAdded(TriUncoveredOrAdded update)
+    // {
+    //     Schema.Triangle? triangle = World.Terrain.GetTri(update.GridPosition, update.Side);
+    //     if (triangle != null)
+    //     {
+    //         var triGO = GameObject.Instantiate(Models.GetTriangleMesh(triangle.SubType), transform);
+    //         triGO.transform.position = WorldConversions.HexToUnityPosition(update.GridPosition);
+    //         triGO.transform.rotation = Quaternion.Euler(0, 60 * (int)update.Side, 0);
+    //     }
+    // }
 
     private void RemoveLeavesFromBush(GameObject bushGameObject)
     {
@@ -273,56 +283,56 @@ public class WorldMono : MonoBehaviour
         }
     }
 
-    private void HandleTerrainObjectChange(TerrainObjectChange vegetationChange)
-    {
-        if (vegetationChange.NewVegeType == TerrainObjectType.StrippedBush
-            && SpawnedVegetation.ContainsKey(vegetationChange.GridPosition))
-        {
-            RemoveLeavesFromBush(SpawnedVegetation[vegetationChange.GridPosition]);
-        }
-        else
-        {
-            SpawnSingleVegetation(vegetationChange.GridPosition, vegetationChange.NewVegeType);
-        }
-    }
+    // private void HandleTerrainObjectChange(TerrainObjectChange vegetationChange)
+    // {
+    //     if (vegetationChange.NewVegeType == TerrainObjectType.StrippedBush
+    //         && SpawnedVegetation.ContainsKey(vegetationChange.GridPosition))
+    //     {
+    //         RemoveLeavesFromBush(SpawnedVegetation[vegetationChange.GridPosition]);
+    //     }
+    //     else
+    //     {
+    //         SpawnSingleVegetation(vegetationChange.GridPosition, vegetationChange.NewVegeType);
+    //     }
+    // }
 
-    private void HandleTriHiddenOrDestroyed(TriHiddenOrDestroyed update)
-    {
-        if (ShownHexesObjects.ContainsKey((Point2Int)update.GridPosition))
-        {
-            if (ShownHexesObjects[(Point2Int)update.GridPosition].ContainsKey((Point3Int)update.GridPosition))
-            {
-                var triGO = ShownHexesObjects[(Point2Int)update.GridPosition][(Point3Int)update.GridPosition][(int)update.Side];
-                if (triGO != null)
-                {
-                    var parsedType =
-                        System.Enum.Parse(typeof(TriangleSubType), triGO.name);
-                    HexPool.ReturnTri((TriangleSubType)parsedType, triGO);
-                    ShownHexesObjects
-                        [(Point2Int)update.GridPosition]
-                        [(Point3Int)update.GridPosition]
-                        [(int)update.Side] = null;
-                }
-            }
-        }
-    }
+    // private void HandleTriHiddenOrDestroyed(TriHiddenOrDestroyed update)
+    // {
+    //     if (ShownHexesObjects.ContainsKey((Point2Int)update.GridPosition))
+    //     {
+    //         if (ShownHexesObjects[(Point2Int)update.GridPosition].ContainsKey((Point3Int)update.GridPosition))
+    //         {
+    //             var triGO = ShownHexesObjects[(Point2Int)update.GridPosition][(Point3Int)update.GridPosition][(int)update.Side];
+    //             if (triGO != null)
+    //             {
+    //                 var parsedType =
+    //                     System.Enum.Parse(typeof(TriangleSubType), triGO.name);
+    //                 HexPool.ReturnTri((TriangleSubType)parsedType, triGO);
+    //                 ShownHexesObjects
+    //                     [(Point2Int)update.GridPosition]
+    //                     [(Point3Int)update.GridPosition]
+    //                     [(int)update.Side] = null;
+    //             }
+    //         }
+    //     }
+    // }
 
-    private void HandleItemObjectAdded(ItemObjectAdded objectAdded)
-    {
-        GameObject itemObject = ItemPool.GetItem(objectAdded.ItemObject.Item.Type, this.transform);
-        itemObject.transform.position = objectAdded.ItemObject.Position.ToVector3();
-        itemObject.GetComponent<ItemMono>().SetItem(Item.FromSchema(objectAdded.ItemObject.Item));
-        SpawnedItemObjects.Add(objectAdded.ItemObject.Item.Id, itemObject);
-    }
+    // private void HandleItemObjectAdded(ItemObjectAdded objectAdded)
+    // {
+    //     GameObject itemObject = ItemPool.GetItem(objectAdded.ItemObject.Item.Type, this.transform);
+    //     itemObject.transform.position = objectAdded.ItemObject.Position.ToVector3();
+    //     itemObject.GetComponent<ItemMono>().SetItem(Item.FromSchema(objectAdded.ItemObject.Item));
+    //     SpawnedItemObjects.Add(objectAdded.ItemObject.Item.Id, itemObject);
+    // }
 
-    private void HandleItemObjectRemoved(ItemObjectRemoved objectRemoved)
-    {
-        if (SpawnedItemObjects.ContainsKey(objectRemoved.ItemId))
-        {
-            Destroy(SpawnedItemObjects[objectRemoved.ItemId]);
-            SpawnedItemObjects.Remove(objectRemoved.ItemId);
-        }
-    }
+    // private void HandleItemObjectRemoved(ItemObjectRemoved objectRemoved)
+    // {
+    //     if (SpawnedItemObjects.ContainsKey(objectRemoved.ItemId))
+    //     {
+    //         Destroy(SpawnedItemObjects[objectRemoved.ItemId]);
+    //         SpawnedItemObjects.Remove(objectRemoved.ItemId);
+    //     }
+    // }
 
     private void SetGrassActiveForHex(Point2Int hex, bool active)
     {
