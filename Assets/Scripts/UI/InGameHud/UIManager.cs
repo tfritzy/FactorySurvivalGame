@@ -7,8 +7,11 @@ using UnityEngine.UIElements;
 
 public class UIManager : MonoBehaviour
 {
+    public InputAction pauseAction;
+
     private VisualElement root;
     private InGameHud inGameHud;
+    private PauseMenu pauseMenu;
     private CharacterInspector characterInspector;
 
     private static UIManager _instance;
@@ -25,6 +28,12 @@ public class UIManager : MonoBehaviour
         }
     }
 
+    public enum Page
+    {
+        InGameHud,
+        PauseMenu,
+    }
+
     void Start()
     {
         root = GetComponent<UIDocument>().rootVisualElement;
@@ -32,8 +41,26 @@ public class UIManager : MonoBehaviour
         inGameHud = new InGameHud();
         root.Add(inGameHud);
 
+        pauseMenu = new PauseMenu();
+        root.Add(pauseMenu);
+
         characterInspector = new CharacterInspector(() => { });
         root.Add(characterInspector);
+    }
+
+    public void ShowPage(Page page)
+    {
+        switch (page)
+        {
+            case Page.InGameHud:
+                inGameHud.Show();
+                pauseMenu.Hide();
+                break;
+            case Page.PauseMenu:
+                inGameHud.Hide();
+                pauseMenu.Show();
+                break;
+        }
     }
 
     void Update()
@@ -51,5 +78,10 @@ public class UIManager : MonoBehaviour
     public void CloseCharacterInspector()
     {
         characterInspector?.Hide();
+    }
+
+    public void OnPause()
+    {
+        GameStateActions.Pause();
     }
 }

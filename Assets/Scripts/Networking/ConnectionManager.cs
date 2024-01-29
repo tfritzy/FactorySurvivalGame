@@ -1,5 +1,7 @@
 using System;
+using System.Collections.Generic;
 using System.Net.Sockets;
+using System.Threading;
 using System.Threading.Tasks;
 using Core;
 using UnityEngine;
@@ -8,7 +10,10 @@ using UnityEngine.SceneManagement;
 public class ConnectionManager : MonoBehaviour
 {
     private Connection? connection;
-    private string currentScene = "";
+    private string cachedScene = "";
+    private CancellationTokenSource cancellationTokenSource = new CancellationTokenSource();
+    private Client client;
+    private Queue<UdpReceiveResult> messagesToHandle = new();
 
     private static ConnectionManager? _instance;
     public static ConnectionManager Instance
@@ -31,32 +36,69 @@ public class ConnectionManager : MonoBehaviour
 
     void Start()
     {
-        Task.Run(ReceiveLoop);
+        client = new Client();
+        StartListener();
     }
 
     void Update()
     {
-        connection?.Update();
+        if (SceneManager.GetActiveScene().name != cachedScene)
+        {
+            cachedScene = SceneManager.GetActiveScene().name;
+
+            if (cachedScene == "Game")
+            {
+                OnEnterGame();
+            }
+        }
+
+        if (connection != null)
+        {
+            while (messagesToHandle.Count > 0)
+            {
+                UdpReceiveResult result = messagesToHandle.Dequeue();
+                connection.HandleMessage(result.RemoteEndPoint, result.Buffer);
+            }
+            connection?.Update();
+        }
+
         WaitForClientConnectionToReceiveWorld();
-        OnLoadGameSceneComplete();
+    }
+
+    private void StartListener()
+    {
+        cancellationTokenSource = new CancellationTokenSource();
+        Task.Run(ReceiveLoop);
     }
 
     async Task ReceiveLoop()
     {
         while (true)
         {
+            if (cancellationTokenSource.IsCancellationRequested)
+            {
+                Debug.Log("Receive loop cancelled");
+                break;
+            }
+
             try
             {
-                if (connection != null && connection.Client != null)
+                if (connection != null && client != null)
                 {
                     Debug.Log("Waiting for message...");
-                    await connection.ReadIncomingMessage();
+                    UdpReceiveResult result = await client.ReceiveAsync(cancellationTokenSource.Token);
+                    messagesToHandle.Enqueue(result);
                     Debug.Log("Got one!");
                 }
             }
             catch (SocketException ex)
             {
                 Debug.LogError("SocketException: " + ex.ToString());
+                break;
+            }
+            catch (TaskCanceledException ex)
+            {
+                Debug.Log("Task cancelled.");
                 break;
             }
             catch (System.Exception ex)
@@ -71,7 +113,7 @@ public class ConnectionManager : MonoBehaviour
 
     private void WaitForClientConnectionToReceiveWorld()
     {
-        if (currentScene != "Game")
+        if (cachedScene != "Game")
         {
             return;
         }
@@ -88,26 +130,14 @@ public class ConnectionManager : MonoBehaviour
         }
     }
 
-    private void OnLoadGameSceneComplete()
+    private void OnEnterGame()
     {
-        if (SceneManager.GetActiveScene().name != currentScene)
+        if (connection?.ConnectedWorld == null)
         {
-            currentScene = SceneManager.GetActiveScene().name;
-        }
-        else
-        {
-            return;
+            throw new Exception("ConnectionManager's world should not be null on game load.");
         }
 
-        if (currentScene == "Game")
-        {
-            if (connection?.ConnectedWorld == null)
-            {
-                throw new Exception("ConnectionManager's world should not be null on game load.");
-            }
-
-            WorldMono.Instance.SetWorld(connection.ConnectedWorld);
-        }
+        WorldMono.Instance.SetWorld(connection.ConnectedWorld);
     }
 
     private void LoadGameScene()
@@ -118,9 +148,7 @@ public class ConnectionManager : MonoBehaviour
 
     public async Task StartHostConnection()
     {
-        Client client = new Client();
         connection = new HostConnection(client, LoadGameScene);
-
         Context context = new Context();
         Core.Terrain terrain = new Core.Terrain(new TerrainGenerator(100, 100, 5).GenerateFlatWorld(context), context);
         World world = new World(terrain, context);
@@ -131,8 +159,12 @@ public class ConnectionManager : MonoBehaviour
 
     public async Task StartClientConnection()
     {
-        Client client = new Client();
         connection = new ClientConnection(client, LoadGameScene);
         await connection.Connect();
+    }
+
+    public void ResetState()
+    {
+        connection = null;
     }
 }
