@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
+using System.Net;
 using System.Net.Sockets;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Core;
@@ -37,6 +39,14 @@ public class ConnectionManager : MonoBehaviour
     void Start()
     {
         client = new Client();
+        client.OnMessageSent = (IPEndPoint endpoint, byte[] message) =>
+        {
+            NetworkDebugger.Instance.LogSentMessage(endpoint, Encoding.UTF8.GetString(message));
+        };
+        client.OnMessageReceived = (IPEndPoint endpoint, byte[] message) =>
+        {
+            NetworkDebugger.Instance.LogReceivedMessage(endpoint, Encoding.UTF8.GetString(message));
+        };
         StartListener();
     }
 
@@ -88,7 +98,6 @@ public class ConnectionManager : MonoBehaviour
                     Debug.Log("Waiting for message...");
                     UdpReceiveResult result = await client.ReceiveAsync(cancellationTokenSource.Token);
                     messagesToHandle.Enqueue(result);
-                    Debug.Log("Got one!");
                 }
             }
             catch (SocketException ex)
