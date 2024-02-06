@@ -32,8 +32,8 @@ public class BuildGrid : MonoBehaviour
     void Update()
     {
         if (
-            PlayerMono.Instance.SelectedItem?.Places == null &&
-            PlayerMono.Instance.SelectedItem?.Builds == null)
+            PlayerMono.Instance?.SelectedItem?.Places == null &&
+            PlayerMono.Instance?.SelectedItem?.Builds == null)
         {
             ClearPreviews();
             Disable();

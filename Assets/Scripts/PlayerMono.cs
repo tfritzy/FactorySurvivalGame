@@ -2,16 +2,18 @@ using System.Collections.Generic;
 using System.Linq;
 using Core;
 using DG.Tweening;
+using StarterAssets;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 public class PlayerMono : MonoBehaviour
 {
-    public Inventory SelectedInventory;
+    public Inventory? SelectedInventory;
     public int SelectedInventoryIndex;
     public Player Actual;
     public const float MovementSpeed = 5f;
 
-    public Item? SelectedItem => SelectedInventory.GetItemAt(SelectedInventoryIndex);
+    public Item? SelectedItem => SelectedInventory?.GetItemAt(SelectedInventoryIndex);
     private Building? previewBuilding;
     private Dictionary<Point2Int, GameObject> conveyorArrows = new();
     private PreviewBlockState blockState = new PreviewBlockState();
@@ -36,9 +38,11 @@ public class PlayerMono : MonoBehaviour
         }
     }
 
-    void Awake()
+    void Start()
     {
-        Actual = new Player(WorldMono.Instance.Context, 0);
+        SetupControllable(); // Only controllable players have playerMono.
+        var cinemachine = GameObject.Find("PlayerFollowCamera").GetComponent<Cinemachine.CinemachineVirtualCamera>();
+        cinemachine.LookAt = this.transform;
         SelectedInventory = Actual.GetComponent<ActiveItems>();
         SelectedInventoryIndex = 0;
         InputManager.Instance.RegisterKeyDown(KeyCode.RightArrow, () => IncrementInventoryIndex(1));
@@ -57,7 +61,19 @@ public class PlayerMono : MonoBehaviour
 
     void Update()
     {
-        Actual.SetLocation(this.transform.position.ToPoint3Float());
+        Actual.World.SetUnitLocation(
+            this.Actual.Id,
+            this.transform.position.ToPoint3Float(),
+            Point3Float.Zero);
+    }
+
+    void SetupControllable()
+    {
+        GetComponent<CharacterController>().enabled = true;
+        GetComponent<ThirdPersonController>().enabled = true;
+        GetComponent<BasicRigidBodyPush>().enabled = true;
+        GetComponent<StarterAssetsInputs>().enabled = true;
+        GetComponent<PlayerInput>().enabled = true;
     }
 
     private void UpdateArrows()

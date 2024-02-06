@@ -44,7 +44,6 @@ public class WorldMono : MonoBehaviour
     public void SetWorld(World world)
     {
         Context.SetWorld(world);
-        World.AddCharacter(PlayerMono.Instance.Actual);
         SpawnVegetation();
     }
 
@@ -57,7 +56,11 @@ public class WorldMono : MonoBehaviour
 
         Context.World.Tick(Time.deltaTime * TickPercent);
 
-        Point2Int currentPos = (Point2Int)WorldConversions.UnityPositionToHex(Managers.Player.transform.position);
+        Point2Int currentPos = Point2Int.Zero;
+        if (Managers.Player != null)
+        {
+            currentPos = (Point2Int)WorldConversions.UnityPositionToHex(Managers.Player.transform.position);
+        }
         if (currentPos != PlayerPos)
         {
             PlayerPos = currentPos;
@@ -244,6 +247,25 @@ public class WorldMono : MonoBehaviour
                 Destroy(SpawnedCharacters[updateBuildingRemoved.BuildingId]);
                 SpawnedCharacters.Remove(updateBuildingRemoved.BuildingId);
                 SetGrassActiveForHex((Point2Int)Point3Int.FromSchema(updateBuildingRemoved.GridPosition), true);
+                break;
+            case Schema.OneofUpdate.UpdateOneofCase.CharacterAdded:
+                Schema.CharacterAdded updateCharacterAdded = update.CharacterAdded;
+                Character character = Character.FromSchema(updateCharacterAdded.Character, Context);
+                character = World.GetCharacter(character.Id)!;
+                GameObject characterGO = Instantiate(Models.GetCharacterModel(character.Type));
+                characterGO.transform.position = WorldConversions.HexToUnityPosition(character.GridPosition);
+                characterGO.transform.SetParent(transform);
+                SpawnedCharacters.Add(character.Id, characterGO);
+                if (character is Player && ConnectionManager.Instance?.SelfId == character.Id)
+                {
+                    var um = characterGO.AddComponent<PlayerMono>();
+                    um.Actual = (Player)character;
+                }
+                else
+                {
+                    var um = characterGO.AddComponent<UnitMono>();
+                    um.Setup(character);
+                }
                 break;
                 // case UpdateType.TriUncoveredOrAdded:
                 //     HandleTriUncoveredOrAdded((TriUncoveredOrAdded)update);

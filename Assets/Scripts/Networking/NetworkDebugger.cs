@@ -1,5 +1,9 @@
+using System;
 using System.Collections.Generic;
 using System.Net;
+using System.Text;
+using Core;
+using NUnit.Framework.Constraints;
 using UnityEngine;
 using UnityEngine.Rendering;
 
@@ -23,15 +27,46 @@ public class NetworkDebugger : MonoBehaviour
     void Start()
     {
         DontDestroyOnLoad(gameObject);
-        LogSentMessage(new IPEndPoint(IPAddress.Parse("192.168.0.1"), 1234), "Hello");
-        LogReceivedMessage(new IPEndPoint(IPAddress.Parse("192.168.0.1"), 1234), "Fuck you");
     }
 
-    public void LogSentMessage(IPEndPoint endpoint, string message)
+    private string getMessageString(byte[] bytes)
     {
+        string message = "";
+        try
+        {
+            Schema.OneofRequest request = Schema.OneofRequest.Parser.ParseFrom(bytes);
+            if (request.Heartbeat != null && request.Heartbeat.MissedPacketIds.Count > 0)
+            {
+                message = "Missed: " + string.Join(", ", request.Heartbeat!.MissedPacketIds);
+            }
+        }
+        catch { }
+
+        if (message == "")
+        {
+            try
+            {
+                Schema.Packet packet = Schema.Packet.Parser.ParseFrom(bytes);
+                message = "packet " + packet.Id.ToString();
+            }
+            catch { }
+        }
+
+        if (message == "")
+        {
+            message = Encoding.UTF8.GetString(bytes);
+        }
+
+        return message;
+    }
+
+    public void LogSentMessage(IPEndPoint endpoint, byte[] bytes)
+    {
+        string message = getMessageString(bytes);
+
         lock (logMessages)
         {
-            logMessages.AddLast($"-> {endpoint}: {message}");
+            logMessages.AddLast($"{message} => {endpoint}");
 
             if (logMessages.Count > 70)
             {
@@ -40,29 +75,65 @@ public class NetworkDebugger : MonoBehaviour
         }
     }
 
-    public void LogReceivedMessage(IPEndPoint endpoint, string message)
+    public void LogReceivedMessage(IPEndPoint endpoint, byte[] bytes)
     {
+        string message = getMessageString(bytes);
+
         lock (logMessages)
         {
-            logMessages.AddLast($"<- {endpoint}: {message}");
+            logMessages.AddLast($"{message} <= {endpoint}");
 
             if (logMessages.Count > 70)
             {
                 logMessages.RemoveFirst();
             }
         }
+    }
+
+    private string BuildDebugString()
+    {
+        StringBuilder sb = new StringBuilder();
+
+        if (ConnectionManager.Instance.Connection is HostConnection)
+        {
+            HostConnection connection = (HostConnection)ConnectionManager.Instance.Connection;
+            sb.AppendLine("Host");
+            sb.AppendLine($"  Clients:");
+            foreach (var client in connection.ConnectedPlayers)
+            {
+                sb.AppendLine($"    {client.EndPoint}");
+                sb.AppendLine($"      Ping: {client.Ping.Milliseconds}ms");
+                sb.AppendLine($"      Sent packets: {client.NumSentPackets}");
+                sb.AppendLine($"      Missed packets: {client.NumMissedPackets}");
+                sb.AppendLine($"      PacketLoss: {(client.PacketLoss).ToString("0.00")}%");
+            }
+        }
+        else if (ConnectionManager.Instance.Connection is ClientConnection)
+        {
+            ClientConnection connection = (ClientConnection)ConnectionManager.Instance.Connection;
+            sb.AppendLine("Client");
+            sb.AppendLine($"  Server: {connection.HostEndPoint}");
+            sb.AppendLine($"  Received packets: {connection.NumPacketsReceived}");
+        }
+
+        return sb.ToString();
     }
 
     void OnGUI()
     {
         lock (logMessages)
         {
-            int i = 0;
-            foreach (string message in logMessages)
-            {
-                GUI.Label(new Rect(0, i * 20, 1000, 20), message);
-                i++;
-            }
+            GUILayout.BeginArea(new Rect(10, 10, 400, 400));
+            GUILayout.BeginVertical();
+            GUILayout.Label(BuildDebugString());
+
+            // foreach (var message in logMessages)
+            // {
+            //     GUILayout.Label(message);
+            // }
+
+            GUILayout.EndVertical();
+            GUILayout.EndArea();
         }
     }
 }

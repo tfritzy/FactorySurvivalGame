@@ -12,6 +12,7 @@ public class InGameHud : ActiveElement
     private int selectedSourceIndex;
     private UiItem hoveringSlot;
     private HashSet<int> touchedByDrag = new HashSet<int>();
+    private bool isSetup;
 
     public InGameHud()
     {
@@ -20,20 +21,32 @@ public class InGameHud : ActiveElement
         style.alignItems = Align.Center;
         style.flexDirection = FlexDirection.ColumnReverse;
 
-        InitInventory();
-        InitActionBar();
-        InitCraftingMenu();
-        InitHoveringSlot();
-
         InputManager.Instance.RegisterKeyDown(KeyCode.I, ToggleInventory);
         InputManager.Instance.RegisterKeyDown(KeyCode.C, ToggleCraftingMenu);
     }
 
     public override void Update()
     {
-        inventoryDrawer.Update();
-        activeItemsBar.Update();
-        craftingMenu.Update();
+        if (!isSetup && PlayerMono.Instance != null)
+        {
+            Setup();
+            isSetup = true;
+        }
+
+        if (isSetup)
+        {
+            inventoryDrawer.Update();
+            activeItemsBar.Update();
+            craftingMenu.Update();
+        }
+    }
+
+    private void Setup()
+    {
+        InitInventory();
+        InitActionBar();
+        InitCraftingMenu();
+        InitHoveringSlot();
     }
 
     private void InitInventory()

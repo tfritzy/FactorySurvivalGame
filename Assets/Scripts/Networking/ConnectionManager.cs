@@ -11,11 +11,12 @@ using UnityEngine.SceneManagement;
 
 public class ConnectionManager : MonoBehaviour
 {
-    private Connection? connection;
+    public Connection? Connection { get; private set; }
     private string cachedScene = "";
     private CancellationTokenSource cancellationTokenSource = new CancellationTokenSource();
     private Client client;
     private Queue<UdpReceiveResult> messagesToHandle = new();
+    public ulong SelfId;
 
     private static ConnectionManager? _instance;
     public static ConnectionManager Instance
@@ -41,11 +42,11 @@ public class ConnectionManager : MonoBehaviour
         client = new Client();
         client.OnMessageSent = (IPEndPoint endpoint, byte[] message) =>
         {
-            NetworkDebugger.Instance.LogSentMessage(endpoint, Encoding.UTF8.GetString(message));
+            NetworkDebugger.Instance.LogSentMessage(endpoint, message);
         };
         client.OnMessageReceived = (IPEndPoint endpoint, byte[] message) =>
         {
-            NetworkDebugger.Instance.LogReceivedMessage(endpoint, Encoding.UTF8.GetString(message));
+            NetworkDebugger.Instance.LogReceivedMessage(endpoint, message);
         };
         StartListener();
     }
@@ -62,14 +63,14 @@ public class ConnectionManager : MonoBehaviour
             }
         }
 
-        if (connection != null)
+        if (Connection != null)
         {
             while (messagesToHandle.Count > 0)
             {
                 UdpReceiveResult result = messagesToHandle.Dequeue();
-                connection.HandleMessage(result.RemoteEndPoint, result.Buffer);
+                Connection.HandleMessage(result.RemoteEndPoint, result.Buffer);
             }
-            connection?.Update();
+            Connection?.Update();
         }
 
         WaitForClientConnectionToReceiveWorld();
@@ -93,9 +94,8 @@ public class ConnectionManager : MonoBehaviour
 
             try
             {
-                if (connection != null && client != null)
+                if (Connection != null && client != null)
                 {
-                    Debug.Log("Waiting for message...");
                     UdpReceiveResult result = await client.ReceiveAsync(cancellationTokenSource.Token);
                     messagesToHandle.Enqueue(result);
                 }
@@ -129,7 +129,7 @@ public class ConnectionManager : MonoBehaviour
 
         if (!WorldMono.Instance.Context.HasWorld)
         {
-            if (connection is ClientConnection clientConnection)
+            if (Connection is ClientConnection clientConnection)
             {
                 if (clientConnection.ConnectedWorld != null)
                 {
@@ -141,12 +141,12 @@ public class ConnectionManager : MonoBehaviour
 
     private void OnEnterGame()
     {
-        if (connection?.ConnectedWorld == null)
+        if (Connection?.ConnectedWorld == null)
         {
             throw new Exception("ConnectionManager's world should not be null on game load.");
         }
 
-        WorldMono.Instance.SetWorld(connection.ConnectedWorld);
+        WorldMono.Instance.SetWorld(Connection.ConnectedWorld);
     }
 
     private void LoadGameScene()
@@ -157,23 +157,37 @@ public class ConnectionManager : MonoBehaviour
 
     public async Task StartHostConnection()
     {
-        connection = new HostConnection(client, LoadGameScene);
+        Connection = new HostConnection(client, LoadGameScene);
         Context context = new Context();
         Core.Terrain terrain = new Core.Terrain(new TerrainGenerator(100, 100, 5).GenerateFlatWorld(context), context);
         World world = new World(terrain, context);
-        connection.SetWorld(world);
 
-        await connection.Connect();
+        SelfId = 0;
+
+        Player player1 = new Player(context, 0);
+        player1.Id = 0; // TODO: Use player id.
+        player1.GridPosition = new Point3Int(5, 5, world.GetTopHex(5, 5).z);
+        world.AddCharacter(player1);
+
+        Player player2 = new Player(context, 0);
+        player2.Id = 1; // TODO: Use player id.
+        player2.GridPosition = new Point3Int(6, 6, world.GetTopHex(6, 6).z);
+        world.AddCharacter(player2);
+
+        Connection.SetWorld(world);
+
+        await Connection.Connect();
     }
 
     public async Task StartClientConnection()
     {
-        connection = new ClientConnection(client, LoadGameScene);
-        await connection.Connect();
+        Connection = new ClientConnection(client, LoadGameScene);
+        SelfId = 1;
+        await Connection.Connect();
     }
 
     public void ResetState()
     {
-        connection = null;
+        Connection = null;
     }
 }
