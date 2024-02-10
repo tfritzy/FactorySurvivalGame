@@ -110,6 +110,8 @@ public class NetworkDebugger : MonoBehaviour
                 sb.AppendLine($"      Sent packets: {client.NumSentPackets}");
                 sb.AppendLine($"      Missed packets: {client.NumMissedPackets}");
                 sb.AppendLine($"      PacketLoss: {(client.PacketLoss).ToString("0.00")}%");
+                sb.AppendLine($"      Highest confirmed: {client.HighestConfirmedVersion}");
+                sb.AppendLine($"      Assumed version: {client.AssumedVersion}");
             }
         }
         else if (ConnectionManager.Instance.Connection is ClientConnection)
@@ -121,6 +123,8 @@ public class NetworkDebugger : MonoBehaviour
             sb.AppendLine($"  Own Id: {connection.PlayerId}");
             sb.AppendLine($"  Server: {connection.HostEndPoint}");
             sb.AppendLine($"  Received packets: {connection.NumPacketsReceived}");
+            sb.AppendLine($"  Highest handled: {connection.HighestHandledPacket}");
+            sb.AppendLine($"  Next needed: {connection.NextNeededPacket}");
         }
 
         return sb.ToString();

@@ -229,7 +229,6 @@ public class WorldMono : MonoBehaviour
 
     private void HandleUpdate(Schema.OneofUpdate update)
     {
-        Debug.Log("Handling update " + update.ToString());
         switch (update.UpdateCase)
         {
             case Schema.OneofUpdate.UpdateOneofCase.BuildingAdded:
@@ -260,7 +259,7 @@ public class WorldMono : MonoBehaviour
                 if (character is Player player && ConnectionManager.Instance?.Connection?.PlayerId == player.PlayerId)
                 {
                     var um = characterGO.AddComponent<PlayerMono>();
-                    um.Actual = (Player)character;
+                    um.Actual = player;
                 }
                 else
                 {
