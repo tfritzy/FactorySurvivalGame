@@ -98,10 +98,14 @@ public class NetworkDebugger : MonoBehaviour
         {
             HostConnection connection = (HostConnection)ConnectionManager.Instance.Connection;
             sb.AppendLine("Host");
+            sb.AppendLine($"  Own id: {connection.PlayerId}");
+            sb.AppendLine($"  Listener status: {ConnectionManager.Instance.ListenLoopTask?.Status}");
+            sb.AppendLine($"  Unhandled messages: {ConnectionManager.Instance.UnhandledPacketsCount}");
             sb.AppendLine($"  Clients:");
             foreach (var client in connection.ConnectedPlayers)
             {
                 sb.AppendLine($"    {client.EndPoint}");
+                sb.AppendLine($"      Id: {client.Id}");
                 sb.AppendLine($"      Ping: {client.Ping.Milliseconds}ms");
                 sb.AppendLine($"      Sent packets: {client.NumSentPackets}");
                 sb.AppendLine($"      Missed packets: {client.NumMissedPackets}");
@@ -112,6 +116,9 @@ public class NetworkDebugger : MonoBehaviour
         {
             ClientConnection connection = (ClientConnection)ConnectionManager.Instance.Connection;
             sb.AppendLine("Client");
+            sb.AppendLine($"  Listener status: {ConnectionManager.Instance.ListenLoopTask?.Status}");
+            sb.AppendLine($"  Unhandled messages: {ConnectionManager.Instance.UnhandledPacketsCount}");
+            sb.AppendLine($"  Own Id: {connection.PlayerId}");
             sb.AppendLine($"  Server: {connection.HostEndPoint}");
             sb.AppendLine($"  Received packets: {connection.NumPacketsReceived}");
         }

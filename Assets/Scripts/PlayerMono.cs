@@ -61,10 +61,15 @@ public class PlayerMono : MonoBehaviour
 
     void Update()
     {
-        Actual.World.SetUnitLocation(
-            this.Actual.Id,
-            this.transform.position.ToPoint3Float(),
-            Point3Float.Zero);
+        ConnectionManager.Instance.Connection?.HandleRequest(new Schema.OneofRequest
+        {
+            UpdateOwnLocation = new Schema.UpdateOwnLocation
+            {
+                PlayerId = Actual.Id,
+                Position = this.transform.position.ToPoint3Float().ToSchema(),
+                Velocity = Point3Float.Zero.ToSchema(),
+            }
+        });
     }
 
     void SetupControllable()

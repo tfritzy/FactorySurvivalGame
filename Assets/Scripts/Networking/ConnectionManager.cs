@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
@@ -12,11 +13,13 @@ using UnityEngine.SceneManagement;
 public class ConnectionManager : MonoBehaviour
 {
     public Connection? Connection { get; private set; }
+    public int UnhandledPacketsCount => messagesToHandle.Count;
     private string cachedScene = "";
     private CancellationTokenSource cancellationTokenSource = new CancellationTokenSource();
     private Client client;
     private Queue<UdpReceiveResult> messagesToHandle = new();
     public ulong SelfId;
+    public Task? ListenLoopTask;
 
     private static ConnectionManager? _instance;
     public static ConnectionManager Instance
@@ -79,7 +82,7 @@ public class ConnectionManager : MonoBehaviour
     private void StartListener()
     {
         cancellationTokenSource = new CancellationTokenSource();
-        Task.Run(ReceiveLoop);
+        ListenLoopTask = Task.Run(ReceiveLoop);
     }
 
     async Task ReceiveLoop()
@@ -162,27 +165,24 @@ public class ConnectionManager : MonoBehaviour
         Core.Terrain terrain = new Core.Terrain(new TerrainGenerator(100, 100, 5).GenerateFlatWorld(context), context);
         World world = new World(terrain, context);
 
-        SelfId = 0;
-
-        Player player1 = new Player(context, 0);
-        player1.Id = 0; // TODO: Use player id.
-        player1.GridPosition = new Point3Int(5, 5, world.GetTopHex(5, 5).z);
-        world.AddCharacter(player1);
-
-        Player player2 = new Player(context, 0);
-        player2.Id = 1; // TODO: Use player id.
-        player2.GridPosition = new Point3Int(6, 6, world.GetTopHex(6, 6).z);
-        world.AddCharacter(player2);
+        Player self = new Player(context, 0, Connection.PlayerId);
+        self.GridPosition = new Point3Int(6, 6, 3);
+        world.AddCharacter(self);
+        SelfId = self.Id;
 
         Connection.SetWorld(world);
-
         await Connection.Connect();
     }
 
     public async Task StartClientConnection()
     {
-        Connection = new ClientConnection(client, LoadGameScene);
-        SelfId = 1;
+        var connection = new ClientConnection(client, LoadGameScene);
+        connection.OnSetWorld = (World world) =>
+        {
+            SelfId = world.Characters.Values.First(
+                (c) => c is Player player && player.PlayerId == connection.PlayerId).Id;
+        };
+        Connection = connection;
         await Connection.Connect();
     }
 

@@ -229,6 +229,7 @@ public class WorldMono : MonoBehaviour
 
     private void HandleUpdate(Schema.OneofUpdate update)
     {
+        Debug.Log("Handling update " + update.ToString());
         switch (update.UpdateCase)
         {
             case Schema.OneofUpdate.UpdateOneofCase.BuildingAdded:
@@ -256,7 +257,7 @@ public class WorldMono : MonoBehaviour
                 characterGO.transform.position = WorldConversions.HexToUnityPosition(character.GridPosition);
                 characterGO.transform.SetParent(transform);
                 SpawnedCharacters.Add(character.Id, characterGO);
-                if (character is Player && ConnectionManager.Instance?.SelfId == character.Id)
+                if (character is Player player && ConnectionManager.Instance?.Connection?.PlayerId == player.PlayerId)
                 {
                     var um = characterGO.AddComponent<PlayerMono>();
                     um.Actual = (Player)character;
