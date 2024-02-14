@@ -16,6 +16,7 @@ public class PlayerMono : MonoBehaviour
     public Item? SelectedItem => SelectedInventory?.GetItemAt(SelectedInventoryIndex);
     private Building? previewBuilding;
     private Dictionary<Point2Int, GameObject> conveyorArrows = new();
+    private CharacterController? characterController;
     private PreviewBlockState blockState = new PreviewBlockState();
     private class PreviewBlockState
     {
@@ -43,8 +44,11 @@ public class PlayerMono : MonoBehaviour
         SetupControllable(); // Only controllable players have playerMono.
         var cinemachine = GameObject.Find("PlayerFollowCamera").GetComponent<Cinemachine.CinemachineVirtualCamera>();
         cinemachine.LookAt = this.transform;
+        cinemachine.Follow = this.transform;
+        cinemachine.GetCinemachineComponent<Cinemachine.CinemachineTransposer>().m_BindingMode = Cinemachine.CinemachineTransposer.BindingMode.WorldSpace;
         SelectedInventory = Actual.GetComponent<ActiveItems>();
         SelectedInventoryIndex = 0;
+        characterController = GetComponent<CharacterController>();
         InputManager.Instance.RegisterKeyDown(KeyCode.RightArrow, () => IncrementInventoryIndex(1));
         InputManager.Instance.RegisterKeyDown(KeyCode.LeftArrow, () => IncrementInventoryIndex(-1));
         InputManager.Instance.RegisterKeyDown(
@@ -67,7 +71,8 @@ public class PlayerMono : MonoBehaviour
             {
                 PlayerId = Actual.Id,
                 Position = this.transform.position.ToPoint3Float().ToSchema(),
-                Velocity = Point3Float.Zero.ToSchema(),
+                Velocity = characterController?.velocity.ToPoint3Float().ToSchema(),
+                Rotation = this.transform.rotation.eulerAngles.ToPoint3Float().ToSchema()
             }
         });
     }

@@ -267,21 +267,6 @@ public class WorldMono : MonoBehaviour
                     um.Setup(character);
                 }
                 break;
-                // case UpdateType.TriUncoveredOrAdded:
-                //     HandleTriUncoveredOrAdded((TriUncoveredOrAdded)update);
-                //     break;
-                // case UpdateType.TriHiddenOrDestroyed:
-                //     HandleTriHiddenOrDestroyed((TriHiddenOrDestroyed)update);
-                //     break;
-                // case UpdateType.TerrainObjectChange:
-                //     HandleTerrainObjectChange((TerrainObjectChange)update);
-                //     break;
-                // case UpdateType.ItemObjectAdded:
-                //     HandleItemObjectAdded((ItemObjectAdded)update);
-                //     break;
-                // case UpdateType.ItemObjectRemoved:
-                //     HandleItemObjectRemoved((ItemObjectRemoved)update);
-                //     break;
         }
         World.AckUpdate();
     }

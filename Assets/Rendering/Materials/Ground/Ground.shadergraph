@@ -7,14 +7,7 @@
             "m_Id": "3fe928e1e245487d81e23c6ead66864b"
         }
     ],
-    "m_Keywords": [
-        {
-            "m_Id": "36355dbaee114a35bff1a4fe8f4bb38e"
-        },
-        {
-            "m_Id": "40b0305a470e43edb83db5e2828682e8"
-        }
-    ],
+    "m_Keywords": [],
     "m_Dropdowns": [],
     "m_CategoryData": [
         {
@@ -637,31 +630,6 @@
 }
 
 {
-    "m_SGVersion": 1,
-    "m_Type": "UnityEditor.ShaderGraph.ShaderKeyword",
-    "m_ObjectId": "36355dbaee114a35bff1a4fe8f4bb38e",
-    "m_Guid": {
-        "m_GuidSerialized": "3981f294-5e28-4139-9d30-845ce324b3fc"
-    },
-    "m_Name": "ShadowCascades",
-    "m_DefaultRefNameVersion": 1,
-    "m_RefNameGeneratedByDisplayName": "ShadowCascades",
-    "m_DefaultReferenceName": "_SHADOWCASCADES",
-    "m_OverrideReferenceName": "_MAIN_LIGHT_SHADOWS_CASCADE",
-    "m_GeneratePropertyBlock": false,
-    "m_UseCustomSlotLabel": false,
-    "m_CustomSlotLabel": "",
-    "m_DismissedVersion": 0,
-    "m_KeywordType": 0,
-    "m_KeywordDefinition": 1,
-    "m_KeywordScope": 1,
-    "m_KeywordStages": 63,
-    "m_Entries": [],
-    "m_Value": 1,
-    "m_IsEditable": true
-}
-
-{
     "m_SGVersion": 0,
     "m_Type": "UnityEditor.ShaderGraph.Vector3MaterialSlot",
     "m_ObjectId": "376deb18e4364692a482ee1f2a5d64be",
@@ -826,31 +794,6 @@
 }
 
 {
-    "m_SGVersion": 1,
-    "m_Type": "UnityEditor.ShaderGraph.ShaderKeyword",
-    "m_ObjectId": "40b0305a470e43edb83db5e2828682e8",
-    "m_Guid": {
-        "m_GuidSerialized": "2ec7e634-32b4-4490-b8a4-f5fd789c7022"
-    },
-    "m_Name": "MainLightShadows",
-    "m_DefaultRefNameVersion": 1,
-    "m_RefNameGeneratedByDisplayName": "MainLightShadows",
-    "m_DefaultReferenceName": "_MAINLIGHTSHADOWS",
-    "m_OverrideReferenceName": "_MAIN_LIGHT_SHADOWS",
-    "m_GeneratePropertyBlock": false,
-    "m_UseCustomSlotLabel": false,
-    "m_CustomSlotLabel": "",
-    "m_DismissedVersion": 0,
-    "m_KeywordType": 0,
-    "m_KeywordDefinition": 1,
-    "m_KeywordScope": 1,
-    "m_KeywordStages": 63,
-    "m_Entries": [],
-    "m_Value": 1,
-    "m_IsEditable": true
-}
-
-{
     "m_SGVersion": 0,
     "m_Type": "UnityEditor.ShaderGraph.Vector2MaterialSlot",
     "m_ObjectId": "41af7ab1f42a4d3f88e1bae4a67bc60e",
@@ -1001,12 +944,6 @@
     "m_ChildObjectList": [
         {
             "m_Id": "3fe928e1e245487d81e23c6ead66864b"
-        },
-        {
-            "m_Id": "40b0305a470e43edb83db5e2828682e8"
-        },
-        {
-            "m_Id": "36355dbaee114a35bff1a4fe8f4bb38e"
         }
     ]
 }

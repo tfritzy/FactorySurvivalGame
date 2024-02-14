@@ -23,6 +23,8 @@
 #ifndef CUSTOM_LIGHTING_INCLUDED
 #define CUSTOM_LIGHTING_INCLUDED
 
+#pragma multi_compile _ _MAIN_LIGHT_SHADOWS _MAIN_LIGHT_SHADOWS_CASCADE _MAIN_LIGHT_SHADOWS_SCREEN
+
 // This is a neat trick to work around a bug in the shader graph when
 // enabling shadow keywords. Created by @cyanilux
 // https://github.com/Cyanilux/URP_ShaderGraphCustomLighting
