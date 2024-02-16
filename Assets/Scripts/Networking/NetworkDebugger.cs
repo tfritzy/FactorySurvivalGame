@@ -106,7 +106,7 @@ public class NetworkDebugger : MonoBehaviour
             {
                 sb.AppendLine($"    {client.EndPoint}");
                 sb.AppendLine($"      Id: {client.Id}");
-                sb.AppendLine($"      Ping: {client.Ping.Milliseconds}ms");
+                sb.AppendLine($"      Ping: {client.Ping}ms");
                 sb.AppendLine($"      Sent packets: {client.NumSentPackets}");
                 sb.AppendLine($"      Missed packets: {client.NumMissedPackets}");
                 sb.AppendLine($"      PacketLoss: {(client.PacketLoss).ToString("0.00")}%");
