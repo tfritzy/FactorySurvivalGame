@@ -101,14 +101,12 @@ public class BuildGrid : MonoBehaviour
             rotation = GridHelpers.Rotate60(rotation);
             SetRotation(rotation);
             previewBuilding?.SetRotation(rotation);
-            // UpdateArrows();
         }
         else if (Input.GetKeyDown(KeyCode.E) || Input.mouseScrollDelta.y < 0)
         {
             rotation = GridHelpers.Rotate60(rotation, clockwise: false);
             SetRotation(rotation);
             previewBuilding?.SetRotation(rotation);
-            // UpdateArrows();
         }
     }
 

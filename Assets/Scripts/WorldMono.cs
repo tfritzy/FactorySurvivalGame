@@ -61,6 +61,7 @@ public class WorldMono : MonoBehaviour
         {
             currentPos = (Point2Int)WorldConversions.UnityPositionToHex(Managers.Player.transform.position);
         }
+
         if (currentPos != PlayerPos)
         {
             PlayerPos = currentPos;
@@ -248,6 +249,15 @@ public class WorldMono : MonoBehaviour
                 SpawnedCharacters.Remove(updateBuildingRemoved.BuildingId);
                 SetGrassActiveForHex((Point2Int)Point3Int.FromSchema(updateBuildingRemoved.GridPosition), true);
                 break;
+            case Schema.OneofUpdate.UpdateOneofCase.ItemObjectAdded:
+                HandleItemObjectAdded(update.ItemObjectAdded);
+                break;
+            case Schema.OneofUpdate.UpdateOneofCase.ItemObjectRemoved:
+                HandleItemObjectRemoved(update.ItemObjectRemoved);
+                break;
+            case Schema.OneofUpdate.UpdateOneofCase.ItemVelocityChanged:
+                HandleItemVelocityChange(update.ItemVelocityChanged);
+                break;
             case Schema.OneofUpdate.UpdateOneofCase.CharacterAdded:
                 Schema.CharacterAdded updateCharacterAdded = update.CharacterAdded;
                 Character character = Character.FromSchema(updateCharacterAdded.Character, Context);
@@ -324,22 +334,36 @@ public class WorldMono : MonoBehaviour
     //     }
     // }
 
-    // private void HandleItemObjectAdded(ItemObjectAdded objectAdded)
-    // {
-    //     GameObject itemObject = ItemPool.GetItem(objectAdded.ItemObject.Item.Type, this.transform);
-    //     itemObject.transform.position = objectAdded.ItemObject.Position.ToVector3();
-    //     itemObject.GetComponent<ItemMono>().SetItem(Item.FromSchema(objectAdded.ItemObject.Item));
-    //     SpawnedItemObjects.Add(objectAdded.ItemObject.Item.Id, itemObject);
-    // }
+    private void HandleItemObjectAdded(Schema.ItemObjectAdded objectAdded)
+    {
+        GameObject itemObject = ItemPool.GetItem(objectAdded.Item.Item.Type, this.transform);
+        itemObject.transform.position = objectAdded.Item.Position.ToVector3();
+        itemObject.GetComponent<ItemMono>().SetItem(Item.FromSchema(objectAdded.Item.Item));
+        SpawnedItemObjects.Add(objectAdded.Item.Item.Id, itemObject);
+    }
 
-    // private void HandleItemObjectRemoved(ItemObjectRemoved objectRemoved)
-    // {
-    //     if (SpawnedItemObjects.ContainsKey(objectRemoved.ItemId))
-    //     {
-    //         Destroy(SpawnedItemObjects[objectRemoved.ItemId]);
-    //         SpawnedItemObjects.Remove(objectRemoved.ItemId);
-    //     }
-    // }
+    private void HandleItemObjectRemoved(Schema.ItemObjectRemoved objectRemoved)
+    {
+        if (SpawnedItemObjects.ContainsKey(objectRemoved.ItemId))
+        {
+            Destroy(SpawnedItemObjects[objectRemoved.ItemId]);
+            SpawnedItemObjects.Remove(objectRemoved.ItemId);
+        }
+    }
+
+    private void HandleItemVelocityChange(Schema.ItemVelocityChanged velocityChanged)
+    {
+        if (SpawnedItemObjects.ContainsKey(velocityChanged.Id))
+        {
+            var obj = SpawnedItemObjects[velocityChanged.Id];
+            Vector3 posDelta = velocityChanged.Position.ToVector3() - obj.transform.position;
+            obj.transform.position = velocityChanged.Position.ToVector3();
+            obj.transform.rotation = Quaternion.Lerp(
+                obj.transform.rotation,
+                Quaternion.LookRotation(posDelta),
+                Time.deltaTime * 10);
+        }
+    }
 
     private void SetGrassActiveForHex(Point2Int hex, bool active)
     {

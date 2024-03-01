@@ -164,13 +164,9 @@ public class ConnectionManager : MonoBehaviour
         Context context = new Context();
         Core.Terrain terrain = new Core.Terrain(new TerrainGenerator(100, 100, 5).GenerateFlatWorld(context), context);
         World world = new World(terrain, context);
-
-        Player self = new Player(context, 0, Connection.PlayerId);
-        self.GridPosition = new Point3Int(6, 6, 3);
-        world.AddCharacter(self);
-        SelfId = self.Id;
-
         Connection.SetWorld(world);
+        SelfId = world.Characters.Values.First(
+            (c) => c is Player player && player.PlayerId == Connection.PlayerId).Id;
         await Connection.Connect();
     }
 

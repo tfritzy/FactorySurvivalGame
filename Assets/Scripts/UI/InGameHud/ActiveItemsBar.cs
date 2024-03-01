@@ -64,7 +64,7 @@ public class ActiveItemsBar : ActiveElement
         // inventory.AddItem(new ClayFurnaceItem(32), 4);
 
         inventory.AddItem(new ConveyorItem(16), 5);
-        // inventory.AddItem(new MineshaftItem(1), 6);
+        inventory.AddItem(new MineshaftItem(1), 6);
         // inventory.AddItem(new DepotItem(1), 7);
         // inventory.AddItem(new Limestone(7), 10);
 

@@ -49,30 +49,47 @@ public class PlayerMono : MonoBehaviour
         SelectedInventory = Actual.GetComponent<ActiveItems>();
         SelectedInventoryIndex = 0;
         characterController = GetComponent<CharacterController>();
-        InputManager.Instance.RegisterKeyDown(KeyCode.RightArrow, () => IncrementInventoryIndex(1));
-        InputManager.Instance.RegisterKeyDown(KeyCode.LeftArrow, () => IncrementInventoryIndex(-1));
-        InputManager.Instance.RegisterKeyDown(
-            KeyCode.UpArrow,
-            () => IncrementInventoryIndex(-SelectedInventory.Width));
-        InputManager.Instance.RegisterKeyDown(
-            KeyCode.DownArrow,
-            () => IncrementInventoryIndex(SelectedInventory.Width));
 
 #if UNITY_EDITOR
         Cursor.SetCursor(UIElements.GetElement(UIElementType.Cursor).texture, Vector2.zero, CursorMode.ForceSoftware);
 #endif
     }
 
+    public void OnInventory(InputValue value)
+    {
+        if (SelectedInventory == null)
+        {
+            return;
+        }
+
+        Vector2 vec = value.Get<Vector2>();
+        if (vec.y > 0)
+        {
+            IncrementInventoryIndex(-SelectedInventory.Width);
+        }
+        else if (vec.y < 0)
+        {
+            IncrementInventoryIndex(SelectedInventory.Width);
+        }
+        else if (vec.x > 0)
+        {
+            IncrementInventoryIndex(1);
+        }
+        else if (vec.x < 0)
+        {
+            IncrementInventoryIndex(-1);
+        }
+    }
+
     void Update()
     {
         ConnectionManager.Instance.Connection?.HandleRequest(new Schema.OneofRequest
         {
-            UpdateOwnLocation = new Schema.UpdateOwnLocation
+            VelocityChange = new Schema.VelocityChange
             {
                 PlayerId = Actual.Id,
                 Position = this.transform.position.ToPoint3Float().ToSchema(),
                 Velocity = characterController?.velocity.ToPoint3Float().ToSchema(),
-                Rotation = this.transform.rotation.eulerAngles.ToPoint3Float().ToSchema()
             }
         });
     }
