@@ -50,7 +50,6 @@ public class CharacterMono : EntityMono, Interactable
         }
     }
 
-
     private void SetNonPreview()
     {
         birthTime = Time.time;
@@ -73,6 +72,9 @@ public class CharacterMono : EntityMono, Interactable
 
     public void OnInspect()
     {
+        if (Time.time - birthTime < 0.5f)
+            return;
+
         UIManager.Instance.OpenCharacterInspector((Character)Actual);
     }
 }

@@ -11,11 +11,8 @@ public class PlayerMono : MonoBehaviour
     public Inventory? SelectedInventory;
     public int SelectedInventoryIndex;
     public Player Actual;
-    public const float MovementSpeed = 5f;
 
     public Item? SelectedItem => SelectedInventory?.GetItemAt(SelectedInventoryIndex);
-    private Building? previewBuilding;
-    private Dictionary<Point2Int, GameObject> conveyorArrows = new();
     private CharacterController? characterController;
     private PreviewBlockState blockState = new PreviewBlockState();
     private class PreviewBlockState
@@ -101,28 +98,6 @@ public class PlayerMono : MonoBehaviour
         GetComponent<BasicRigidBodyPush>().enabled = true;
         GetComponent<StarterAssetsInputs>().enabled = true;
         GetComponent<PlayerInput>().enabled = true;
-    }
-
-    private void UpdateArrows()
-    {
-        ClearArrows();
-
-        if (previewBuilding?.Conveyor != null)
-        {
-            var arrow = Instantiate(DecalLoader.GetDecalPrefab(DecalLoader.Decal.Arrow));
-            arrow.transform.position = WorldConversions.HexToUnityPosition(previewBuilding.GridPosition);
-            arrow.transform.rotation = Quaternion.Euler(0, 60 * (int)previewBuilding.Rotation, 0);
-            conveyorArrows.Add((Point2Int)previewBuilding.GridPosition, arrow);
-        }
-    }
-
-    private void ClearArrows()
-    {
-        foreach (var arrow in conveyorArrows.Values)
-        {
-            Destroy(arrow);
-        }
-        conveyorArrows.Clear();
     }
 
     private void IncrementInventoryIndex(int amount)

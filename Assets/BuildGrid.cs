@@ -35,7 +35,7 @@ public class BuildGrid : MonoBehaviour
             PlayerMono.Instance?.SelectedItem?.Places == null &&
             PlayerMono.Instance?.SelectedItem?.Builds == null)
         {
-            ClearPreviews();
+            ClearPreviewBlock();
             Disable();
             return;
         }
@@ -138,16 +138,13 @@ public class BuildGrid : MonoBehaviour
 
     private void PreviewBuilding(Point3Int pos, CharacterType buildingType)
     {
-        ClearPreviews();
-
         var building = PlayerMono.Instance.Actual.BuidPreviewBuildingFromItem(
             PlayerMono.Instance.SelectedInventoryIndex,
             (Point2Int)pos);
         if (building != null)
         {
-            var actualBuilding = WorldMono.Instance.World.GetBuildingAt((Point2Int)pos);
-            actualBuilding?.SetRotation(rotation);
-            previewBuilding = actualBuilding;
+            building?.SetRotation(rotation);
+            previewBuilding = building;
         }
     }
 
@@ -160,17 +157,14 @@ public class BuildGrid : MonoBehaviour
 
         if (Input.GetMouseButton(0))
         {
-            PlayerMono.Instance.Actual.MakePreviewBuildingRealFromItem(
-                PlayerMono.Instance.SelectedInventoryIndex,
-                previewBuilding);
-            previewBuilding = null;
+            PlayerMono.Instance.Actual.MakePreviewBuildingRealFromItem(PlayerMono.Instance.SelectedInventoryIndex);
             Disable();
         }
     }
 
     private void PreviewBlock(Item.PlacedTriangleMetadata[] places)
     {
-        ClearPreviews();
+        ClearPreviewBlock();
 
         previewBlock = new GameObject("PreviewBlock");
         previewBlock.transform.SetParent(transform);
@@ -204,18 +198,12 @@ public class BuildGrid : MonoBehaviour
         }
     }
 
-    private void ClearPreviews()
+    private void ClearPreviewBlock()
     {
         if (previewBlock != null)
         {
             Destroy(previewBlock);
             previewBlock = null;
-        }
-
-        if (previewBuilding != null)
-        {
-            WorldMono.Instance.World.RemoveBuilding(previewBuilding.Id);
-            previewBuilding = null;
         }
     }
 
