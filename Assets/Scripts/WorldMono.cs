@@ -129,11 +129,6 @@ public class WorldMono : MonoBehaviour
                             ShownHexesObjects[point2Hex][hex][i] = hexes[i];
                         }
                     }
-
-                    if (z == topHeight && World.GetBuildingAt(point2Hex) == null)
-                    {
-                        SetGrassActiveForHex(point2Hex, true);
-                    }
                 }
             }
         }
@@ -158,7 +153,6 @@ public class WorldMono : MonoBehaviour
 
         foreach (Point2Int point in toRemove)
         {
-            SetGrassActiveForHex(point, false);
             foreach (GameObject[] hex in ShownHexesObjects[point].Values)
             {
                 foreach (GameObject tri in hex)
@@ -230,24 +224,28 @@ public class WorldMono : MonoBehaviour
 
     private void HandleUpdate(Schema.OneofUpdate update)
     {
+        World.AckUpdate();
         switch (update.UpdateCase)
         {
             case Schema.OneofUpdate.UpdateOneofCase.BuildingAdded:
                 Schema.BuildingAdded updateBuildingAdded = update.BuildingAdded;
-                Building newBuilding = World.GetBuildingAt(Point2Int.FromSchema(updateBuildingAdded.GridPosition));
+                Building? newBuilding = World.GetBuildingAt(Point2Int.FromSchema(updateBuildingAdded.GridPosition));
+                if (newBuilding == null)
+                    return;
                 GameObject building = Instantiate(Models.GetCharacterModel(newBuilding.Type));
                 building.transform.position = WorldConversions.HexToUnityPosition(newBuilding.GridPosition);
                 building.transform.SetParent(transform);
                 SpawnedCharacters.Add(newBuilding.Id, building);
                 var em = building.GetComponent<EntityMono>();
                 em.Setup(newBuilding);
-                SetGrassActiveForHex((Point2Int)newBuilding.GridPosition, false);
                 break;
             case Schema.OneofUpdate.UpdateOneofCase.BuildingRemoved:
                 Schema.BuildingRemoved updateBuildingRemoved = update.BuildingRemoved;
-                Destroy(SpawnedCharacters[updateBuildingRemoved.BuildingId]);
-                SpawnedCharacters.Remove(updateBuildingRemoved.BuildingId);
-                SetGrassActiveForHex((Point2Int)Point3Int.FromSchema(updateBuildingRemoved.GridPosition), true);
+                if (SpawnedCharacters.ContainsKey(updateBuildingRemoved.BuildingId))
+                {
+                    Destroy(SpawnedCharacters[updateBuildingRemoved.BuildingId]);
+                    SpawnedCharacters.Remove(updateBuildingRemoved.BuildingId);
+                }
                 break;
             case Schema.OneofUpdate.UpdateOneofCase.ItemObjectAdded:
                 HandleItemObjectAdded(update.ItemObjectAdded);
@@ -278,7 +276,6 @@ public class WorldMono : MonoBehaviour
                 }
                 break;
         }
-        World.AckUpdate();
     }
 
     // private void HandleTriUncoveredOrAdded(TriUncoveredOrAdded update)
@@ -363,16 +360,5 @@ public class WorldMono : MonoBehaviour
                 Quaternion.LookRotation(posDelta),
                 Time.deltaTime * 10);
         }
-    }
-
-    private void SetGrassActiveForHex(Point2Int hex, bool active)
-    {
-        // if (ShownHexesObjects.ContainsKey(hex))
-        // {
-        //     foreach (var tri in ShownHexesObjects[hex])
-        //     {
-        //         tri.transform.Find("Grass")?.gameObject.SetActive(active);
-        //     }
-        // }
     }
 }

@@ -71,7 +71,14 @@ public class ConnectionManager : MonoBehaviour
             while (messagesToHandle.Count > 0)
             {
                 UdpReceiveResult result = messagesToHandle.Dequeue();
-                Connection.HandleMessage(result.RemoteEndPoint, result.Buffer);
+                try
+                {
+                    Connection.HandleMessage(result.RemoteEndPoint, result.Buffer);
+                }
+                catch (Exception e)
+                {
+                    Debug.LogError(e);
+                }
             }
             Connection?.Update();
         }

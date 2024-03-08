@@ -100,13 +100,11 @@ public class BuildGrid : MonoBehaviour
         {
             rotation = GridHelpers.Rotate60(rotation);
             SetRotation(rotation);
-            previewBuilding?.SetRotation(rotation);
         }
         else if (Input.GetKeyDown(KeyCode.E) || Input.mouseScrollDelta.y < 0)
         {
             rotation = GridHelpers.Rotate60(rotation, clockwise: false);
             SetRotation(rotation);
-            previewBuilding?.SetRotation(rotation);
         }
     }
 
@@ -116,6 +114,10 @@ public class BuildGrid : MonoBehaviour
         if (previewBlock != null)
         {
             previewBlock.transform.localRotation = Quaternion.Euler(0, 60 * (int)rotation, 0);
+        }
+        if (previewBuilding != null)
+        {
+            WorldMono.Instance.World.RotateBuilding(previewBuilding.Id, rotation);
         }
     }
 
@@ -143,7 +145,7 @@ public class BuildGrid : MonoBehaviour
             (Point2Int)pos);
         if (building != null)
         {
-            building?.SetRotation(rotation);
+            WorldMono.Instance.World.RotateBuilding(building.Id, rotation);
             previewBuilding = building;
         }
     }
