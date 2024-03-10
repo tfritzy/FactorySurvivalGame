@@ -54,7 +54,14 @@ public class WorldMono : MonoBehaviour
             return;
         }
 
-        Context.World.Tick(Time.deltaTime * TickPercent);
+        if (ConnectionManager.Instance.Connection is HostConnection)
+        {
+            Context.World.Tick(Time.deltaTime * TickPercent);
+        }
+        else
+        {
+            Context.World.ClientTick(Time.deltaTime);
+        }
 
         Point2Int currentPos = Point2Int.Zero;
         if (Managers.Player != null)

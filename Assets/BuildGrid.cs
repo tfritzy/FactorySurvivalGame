@@ -19,9 +19,9 @@ public class BuildGrid : MonoBehaviour
     private static List<GameObject> EmptyPool = new();
 
     private GameObject? previewBlock;
-    private Building? previewBuilding;
     private HexSide rotation = 0;
     private Point3Int position;
+    private Point3Int previewedPos;
 
     void Start()
     {
@@ -45,7 +45,7 @@ public class BuildGrid : MonoBehaviour
         {
             Point3Int topHex = WorldMono.Instance.World.GetTopHex(hex.Point.x, hex.Point.y, rotation);
             SetPos(topHex);
-            SetItem(PlayerMono.Instance.SelectedItem, topHex);
+            SetItem(PlayerMono.Instance.SelectedItem, hex.Point);
             Enable();
         }
 
@@ -115,10 +115,10 @@ public class BuildGrid : MonoBehaviour
         {
             previewBlock.transform.localRotation = Quaternion.Euler(0, 60 * (int)rotation, 0);
         }
-        if (previewBuilding != null)
-        {
-            WorldMono.Instance.World.RotateBuilding(previewBuilding.Id, rotation);
-        }
+        // if (previewBuilding != null)
+        // {
+        //     WorldMono.Instance.World.RotateBuilding(previewBuilding.Id, rotation);
+        // }
     }
 
     private ItemType? previewedItemType;
@@ -131,35 +131,51 @@ public class BuildGrid : MonoBehaviour
         }
 
         if (item.Builds != null &&
-            (previewBuilding?.GridPosition != pos || item.Type != previewedItemType))
+            (previewedPos != pos || item.Type != previewedItemType))
         {
             PreviewBuilding(pos, item.Builds.Value);
             previewedItemType = item.Type;
+            previewedPos = pos;
         }
     }
 
     private void PreviewBuilding(Point3Int pos, CharacterType buildingType)
     {
-        var building = PlayerMono.Instance.Actual.BuidPreviewBuildingFromItem(
-            PlayerMono.Instance.SelectedInventoryIndex,
-            (Point2Int)pos);
-        if (building != null)
+        // var building = PlayerMono.Instance.Actual.BuidPreviewBuildingFromItem(
+        //     PlayerMono.Instance.SelectedInventoryIndex,
+        //     (Point2Int)pos);
+
+        UnityEngine.Debug.Log("Local preview building");
+        ConnectionManager.Instance.Connection?.HandleRequest(new Schema.OneofRequest
         {
-            WorldMono.Instance.World.RotateBuilding(building.Id, rotation);
-            previewBuilding = building;
-        }
+            PreviewBuilding = new Schema.PreviewBuilding
+            {
+                ItemIndex = PlayerMono.Instance.SelectedInventoryIndex,
+                Location = ((Point2Int)pos).ToSchema(),
+                PlayerId = PlayerMono.Instance.Actual.Id,
+            }
+        });
+
+        // if (building != null)
+        // {
+        //     WorldMono.Instance.World.RotateBuilding(building.Id, rotation);
+        //     previewBuilding = building;
+        // }
     }
 
     private void MakePreviewBuildingReal()
     {
-        if (previewBuilding == null)
-        {
-            return;
-        }
-
         if (Input.GetMouseButton(0))
         {
-            PlayerMono.Instance.Actual.MakePreviewBuildingRealFromItem(PlayerMono.Instance.SelectedInventoryIndex);
+            ConnectionManager.Instance.Connection?.HandleRequest(new Schema.OneofRequest
+            {
+                MakePreviewBuildingReal = new Schema.MakePreviewBuildingReal
+                {
+                    ItemIndex = PlayerMono.Instance.SelectedInventoryIndex,
+                    PlayerId = PlayerMono.Instance.Actual.Id,
+                }
+            });
+
             Disable();
         }
     }
